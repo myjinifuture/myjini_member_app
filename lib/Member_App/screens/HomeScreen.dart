@@ -94,7 +94,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   bool get wantKeepAlive => true;
 
-
   FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   StreamSubscription iosSubscription;
   String fcmToken = "";
@@ -166,18 +165,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }
       if (data["notificationType"].toString() == "JoinSociety") {
         // Get.to(NoticeBoard(message: data));
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => getPendingApprovals()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => getPendingApprovals()));
         // Navigator.pushReplacementNamed(context, "/getPendingApprovals");
         // audioCache.play('Sound.mp3');
         //for vibration
         // Vibration.vibrate(
         //   duration: 15000,
         // );
-      }
-      else if (data["notificationType"].toString() == "AddDocument") {
+      } else if (data["notificationType"].toString() == "AddDocument") {
         // Get.to(NoticeBoard(message: data));
         Navigator.pushReplacementNamed(context, "/Documents");
         // audioCache.play('Sound.mp3');
@@ -185,8 +181,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         // Vibration.vibrate(
         //   duration: 15000,
         // );
-      }
-      else if (data["notificationType"].toString() == "AddGallery") {
+      } else if (data["notificationType"].toString() == "AddGallery") {
         // Get.to(NoticeBoard(message: data));
         Navigator.pushReplacementNamed(context, "/Gallary");
         // audioCache.play('Sound.mp3');
@@ -194,19 +189,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         // Vibration.vibrate(
         //   duration: 15000,
         // );
-      }
-      else if (data["notificationType"].toString() == "StaffEntry" ||
+      } else if (data["notificationType"].toString() == "StaffEntry" ||
           data["notificationType"].toString() == "StaffLeave") {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => NoticeBoard(message: data)));
-      }
-      else if (data["notificationType"] == 'Visitor') {
+      } else if (data["notificationType"] == 'Visitor') {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => NotificationPopup(data)));
-      }
-      else if (data["NotificationType"] == "SOS") {
+      } else if (data["NotificationType"] == "SOS") {
         print('data');
         print(data);
         Navigator.push(
@@ -290,7 +282,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         Vibration.vibrate(
           duration: 5000,
         );
-      } else if (data["notificationType"] == "UnknownVisitor" && data["CallStatus"] == "Accepted") {
+      } else if (data["notificationType"] == "UnknownVisitor" &&
+          data["CallStatus"] == "Accepted") {
         print('data');
         print(data);
         //for vibration
@@ -298,15 +291,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           context,
           MaterialPageRoute(
             builder: (context) => JoinPage(
-                fromMemberData:
-                result.notification.payload.additionalData),
+                fromMemberData: result.notification.payload.additionalData),
           ),
         );
         // Vibration.vibrate(
         //   duration: 5000,
         // );
-      }
-      else if (data["notificationType"] == "UnknownVisitor") {
+      } else if (data["notificationType"] == "UnknownVisitor") {
         print('data');
         print(data);
         //for vibration
@@ -320,8 +311,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         // Vibration.vibrate(
         //   duration: 5000,
         // );
-      }
-      else if (data["NotificationType"] == "VoiceCall") {
+      } else if (data["NotificationType"] == "VoiceCall") {
         print('data');
         print(data);
         //for vibration
@@ -373,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }*/
     getSocietyDetails();
     // initPlayer();
-    // getAdvertisementData(); //Tell monil to give Advertisement service - 1 number
+    getAdvertisementData(); //Tell monil to give Advertisement service - 1 number
     // getAds();
     // initSpeechRecognizer();
     // if (Platform.isIOS) {
@@ -1412,9 +1402,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {
-          "societyId": SocietyId,
-        };
+        var data = {};
 
         setState(() {
           isLoading = true;
@@ -2823,7 +2811,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           notchMargin: 12,
           shape: CircularNotchedRectangle(),
           child: Padding(
-            padding: const EdgeInsets.only(top:10.0,bottom: 10),
+            padding: const EdgeInsets.only(top: 10.0, bottom: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[

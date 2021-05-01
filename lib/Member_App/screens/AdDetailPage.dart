@@ -275,8 +275,8 @@ class _AdDetailPageState extends State<AdDetailPage> {
   }
 
   _launchWebsiteURL() async {
-    if (await canLaunch("http://"+WebURL.split(".")[1]+"."+WebURL.split(".")[2])) {
-      await launch("http://"+WebURL.split(".")[1]+"."+WebURL.split(".")[2]);
+    if (await canLaunch(WebURL)) {
+      await launch(WebURL);
     } else {
       throw 'Could not launch $WebURL';
     }
@@ -363,7 +363,7 @@ class _AdDetailPageState extends State<AdDetailPage> {
                       height: 220,
                       fit: BoxFit.fill,
                       placeholder: "images/Ad1.jpg",
-                      image: "${cnst.Image_Url}" + widget.data["image"].toString()),
+                      image: "${cnst.Image_Url}" + widget.data["Image"][0].toString()),
                   Padding(
                     padding:
                         const EdgeInsets.only(left: 8.0, right: 8.0, top: 3.0),
@@ -402,7 +402,7 @@ class _AdDetailPageState extends State<AdDetailPage> {
                           onTap: () {
                             Share.share('Check out this exclusive AD \n' +
                                 "${cnst.Image_Url}" +
-                                widget.data["image"]);
+                                widget.data["Image"][0]);
                           },
                           child: Icon(
                             Icons.share,
@@ -453,7 +453,7 @@ class _AdDetailPageState extends State<AdDetailPage> {
                             child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            "${widget.data["title"]}",
+                            "${widget.data["Title"]}",
                             style: TextStyle(
                                 fontWeight: FontWeight.w500, fontSize: 18),
                           ),
@@ -485,14 +485,16 @@ class _AdDetailPageState extends State<AdDetailPage> {
                         //               color: Colors.green),
                         //         ),
                         //       ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                                " ${widget.data["type"]}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                                color: Colors.green),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                                  "${widget.data["Description"]}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                  color: Colors.green),
+                            ),
                           ),
                         ),
                       ],
@@ -511,104 +513,104 @@ class _AdDetailPageState extends State<AdDetailPage> {
                         // ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            flex: 5,
-                            child: GestureDetector(
-                              onTap: () {
-                                /*setState(() {
-                                  flag != flag;
-                                });
-                                _addToWishList();*/
-
-                                if (wishliststatus != true) {
-                                  _addToWishList();
-                                } else {
-                                  _wishListDelete();
-                                }
-
-/*
-                                if(WishList[0]["Status"]=="Added"){
-                                  _wishListUpdate();
-                                }
-                                else{
-                                  _addToWishList();
-
-                                }*/
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    wishliststatus == true
-                                        //flag == true
-                                        ? Icon(
-                                            Icons.bookmark,
-                                            size: 25,
-                                            color: Color(0xFF8B0000),
-                                          )
-                                        : Icon(
-                                            Icons.bookmark_border,
-                                            size: 25,
-                                            color: Colors.grey[400],
-                                          ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 8.0),
-                                    ),
-                                    Text(
-                                      "Add to wishlist",
-                                      style: TextStyle(fontSize: 15),
-                                    )
-                                  ],
-                                ),
-                                height: 35,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 5,
-                            child: GestureDetector(
-                              onTap: () {
-                                /* String withappurl = withrefercode.replaceAll("#appurl", cnst.playstoreUrl);
-                                Share.share(withappurl);*/
-                                Share.share('Check out this exclusive AD \n' +
-                                    "${cnst.Image_Url}" +
-                                    widget.data["image"]);
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.share,
-                                      size: 25,
-                                      color: Colors.grey[400],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 8.0),
-                                    ),
-                                    Text(
-                                      "Share this deal",
-                                      style: TextStyle(fontSize: 15),
-                                    )
-                                  ],
-                                ),
-                                height: 35,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+//                     Padding(
+//                       padding: const EdgeInsets.only(top: 20.0),
+//                       child: Row(
+//                         children: <Widget>[
+//                           Expanded(
+//                             flex: 5,
+//                             child: GestureDetector(
+//                               onTap: () {
+//                                 /*setState(() {
+//                                   flag != flag;
+//                                 });
+//                                 _addToWishList();*/
+//
+//                                 if (wishliststatus != true) {
+//                                   _addToWishList();
+//                                 } else {
+//                                   _wishListDelete();
+//                                 }
+//
+// /*
+//                                 if(WishList[0]["Status"]=="Added"){
+//                                   _wishListUpdate();
+//                                 }
+//                                 else{
+//                                   _addToWishList();
+//
+//                                 }*/
+//                               },
+//                               child: Container(
+//                                 decoration: BoxDecoration(
+//                                   border: Border.all(color: Colors.grey),
+//                                 ),
+//                                 child: Row(
+//                                   mainAxisAlignment: MainAxisAlignment.center,
+//                                   children: <Widget>[
+//                                     wishliststatus == true
+//                                         //flag == true
+//                                         ? Icon(
+//                                             Icons.bookmark,
+//                                             size: 25,
+//                                             color: Color(0xFF8B0000),
+//                                           )
+//                                         : Icon(
+//                                             Icons.bookmark_border,
+//                                             size: 25,
+//                                             color: Colors.grey[400],
+//                                           ),
+//                                     Padding(
+//                                       padding: EdgeInsets.only(left: 8.0),
+//                                     ),
+//                                     Text(
+//                                       "Add to wishlist",
+//                                       style: TextStyle(fontSize: 15),
+//                                     )
+//                                   ],
+//                                 ),
+//                                 height: 35,
+//                               ),
+//                             ),
+//                           ),
+//                           Expanded(
+//                             flex: 5,
+//                             child: GestureDetector(
+//                               onTap: () {
+//                                 /* String withappurl = withrefercode.replaceAll("#appurl", cnst.playstoreUrl);
+//                                 Share.share(withappurl);*/
+//                                 Share.share('Check out this exclusive AD \n' +
+//                                     "${cnst.Image_Url}" +
+//                                     widget.data["image"]);
+//                               },
+//                               child: Container(
+//                                 decoration: BoxDecoration(
+//                                   border: Border.all(),
+//                                 ),
+//                                 child: Row(
+//                                   mainAxisAlignment: MainAxisAlignment.center,
+//                                   children: <Widget>[
+//                                     Icon(
+//                                       Icons.share,
+//                                       size: 25,
+//                                       color: Colors.grey[400],
+//                                     ),
+//                                     Padding(
+//                                       padding: EdgeInsets.only(left: 8.0),
+//                                     ),
+//                                     Text(
+//                                       "Share this deal",
+//                                       style: TextStyle(fontSize: 15),
+//                                     )
+//                                   ],
+//                                 ),
+//                                 height: 35,
+//                               ),
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
                   ],
                 ),
               ),
@@ -739,16 +741,16 @@ class _AdDetailPageState extends State<AdDetailPage> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () {
-                          if (widget.data["AdvertiserEmail"] == "" ||
-                              widget.data["AdvertiserEmail"] == null) {
+                          if (widget.data["EmailId"] == "" ||
+                              widget.data["EmailId"] == null) {
                             Fluttertoast.showToast(
                                 msg: "Email not available!!!",
                                 toastLength: Toast.LENGTH_SHORT);
                           } else {
                             _launchURL(
-                                '${widget.data["AdvertiserEmail"]}', '', '');
+                                '${widget.data["EmailId"]}', '', '');
                           }
-                          print("EmailId--> " + widget.data["AdvertiserEmail"]);
+                          print("EmailId--> " + widget.data["EmailId"]);
                         },
                         child: Image.asset(
                           "images/gmail.png",
@@ -795,16 +797,16 @@ class _AdDetailPageState extends State<AdDetailPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          if (widget.data["AdvertiserMobile"] == "" ||
-                              widget.data["AdvertiserMobile"] == null) {
+                          if (widget.data["ContactNo"] == "" ||
+                              widget.data["ContactNo"] == null) {
                             Fluttertoast.showToast(
                                 msg: "Mobile Number not available!!!",
                                 toastLength: Toast.LENGTH_SHORT);
                           } else {
-                            launch('tel:${widget.data["AdvertiserMobile"]}');
+                            launch('tel:${widget.data["ContactNo"]}');
                           }
                           print("VideoLink--> " +
-                              widget.data["AdvertiserMobile"]);
+                              widget.data["ContactNo"]);
                         },
                         child: Image.asset(
                           "images/telephone.png",
@@ -854,7 +856,7 @@ class _AdDetailPageState extends State<AdDetailPage> {
                             color: constant.appPrimaryMaterialColor,
                             textColor: Colors.white,
                             splashColor: Colors.white,
-                            child: Text("Products",
+                            child: Text("Services",
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600)),
                             onPressed: () {
