@@ -83,7 +83,7 @@ class _ProductComponentState extends State<ProductComponent> {
                       setState(() {
                         currentIndex = index;
                       });
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();;
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,

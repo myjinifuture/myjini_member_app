@@ -113,7 +113,7 @@ class _MemberProfileState extends State<MemberProfile> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

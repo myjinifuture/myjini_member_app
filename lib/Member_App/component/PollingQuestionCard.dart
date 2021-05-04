@@ -132,7 +132,7 @@ class _AnswerListState extends State<AnswerList> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

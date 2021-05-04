@@ -87,7 +87,7 @@ class _AddExpenseState extends State<AddExpense> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -200,7 +200,7 @@ class _AddExpenseState extends State<AddExpense> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -208,7 +208,7 @@ class _AddExpenseState extends State<AddExpense> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _addExpenseSource();
               },
             ),
@@ -232,7 +232,7 @@ class _AddExpenseState extends State<AddExpense> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -240,7 +240,7 @@ class _AddExpenseState extends State<AddExpense> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _deleteExpenseSource(id);
               },
             ),

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:easy_permission_validator/easy_permission_validator.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -42,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String fcmToken;
   bool isButtonPressed = false;
 
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
@@ -52,12 +51,12 @@ class _LoginScreenState extends State<LoginScreen> {
     pr.style(message: 'Please Wait');
     // getOTPStatus();
     initPlatformState();
-    _firebaseMessaging.getToken().then((token) {
-      setState(() {
-        fcmToken = token;
-      });
-      print('----------->' + '${token}');
-    });
+    // _firebaseMessaging.getToken().then((token) {
+    //   setState(() {
+    //     fcmToken = token;
+    //   });
+    //   print('----------->' + '${token}');
+    // });
 
     getPermissionStatus();
   }
@@ -116,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -285,6 +284,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   }
                   else {
                     // await mallLocalData();
+                    // Navigator.pushAndRemoveUntil(context,
+                    //     SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -362,7 +363,7 @@ class _LoginScreenState extends State<LoginScreen> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -516,7 +517,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: onWillPop,
-
       child: Scaffold(
           body: SingleChildScrollView(
               child: Container(
@@ -524,7 +524,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: MediaQuery.of(context).size.height,
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 110.0),
+                    padding: const EdgeInsets.only(top: 150.0),
                     child: Container(
                       child: Center(
                         child: Stack(
@@ -688,95 +688,90 @@ class _LoginScreenState extends State<LoginScreen> {
                                               ],
                                             ),
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 18.0, left: 8, right: 8),
-                                            child: SizedBox(
-                                              width: MediaQuery.of(context).size.width,
-                                              height: 45,
-                                              child: RaisedButton(
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                    BorderRadius.circular(5)),
-                                                color: constant.appPrimaryMaterialColor[500],
-                                                textColor: Colors.white,
-                                                splashColor: Colors.white,
-                                                child: isButtonPressed ?
-                                                Center(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(3.0),
-                                                    child: CircularProgressIndicator(
-                                                      valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-                                                      strokeWidth: 5,
-                                                    ),
-                                                  ),
-                                                ):
-                                                Text(
-                                                    "Login",
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight: FontWeight.w600,
-                                                    ),
-                                                ),
-                                                onPressed: isMemberRegistered ? () {
-                                                  setState(() {
-                                                    isButtonPressed = true;
-                                                  });
-                                                    if (isMobileNumberRegistered) {
-                                                      if (selSociety == null &&
-                                                          multipleSociety ==
-                                                              true) {
-                                                        Fluttertoast.showToast(
-                                                            msg: "Please Select Society",
-                                                            backgroundColor: Colors
-                                                                .red,
-                                                            gravity: ToastGravity
-                                                                .BOTTOM,
-                                                            textColor: Colors
-                                                                .white);
-                                                      }
-                                                      else if (
-                                                      _MobileNumber.text !=
-                                                          '' && isMemberRegistered) {
-                                                        print("called");
-                                                        // _checkLogin();
-                                                        // Navigator.push(
-                                                        //     context,
-                                                        //     MaterialPageRoute(
-                                                        //       builder: (
-                                                        //           context) =>
-                                                        //           OTP(
-                                                        //             mobileNo: _MobileNumber
-                                                        //                 .text
-                                                        //                 .toString(),
-                                                        //             onSuccess: () {
-                                                        //               _checkLogin();
-                                                        //             },
-                                                        //           ),
-                                                        //     ));
-                                                      }
-                                                      else {
-                                                        Fluttertoast.showToast(
-                                                          msg: "Please Enter Mobile Number",
-                                                          backgroundColor: Colors
-                                                              .red,
-                                                          gravity: ToastGravity
-                                                              .BOTTOM,
-                                                          textColor: Colors
-                                                              .white,
-                                                        );
-                                                      }
-                                                    }
-                                                }:null,
-                                              ),
-                                            ),
-                                          ),
+                                          // SizedBox(
+                                          //   width: MediaQuery.of(context).size.width,
+                                          //   height: 45,
+                                          //   // child: RaisedButton(
+                                          //   //   shape: RoundedRectangleBorder(
+                                          //   //       borderRadius:
+                                          //   //       BorderRadius.circular(5)),
+                                          //   //   color: constant.appPrimaryMaterialColor[500],
+                                          //   //   textColor: Colors.white,
+                                          //   //   splashColor: Colors.white,
+                                          //   //   child: isButtonPressed ?
+                                          //   //   Center(
+                                          //   //     child: Padding(
+                                          //   //       padding: const EdgeInsets.all(3.0),
+                                          //   //       child: CircularProgressIndicator(
+                                          //   //         valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                                          //   //         strokeWidth: 5,
+                                          //   //       ),
+                                          //   //     ),
+                                          //   //   ):
+                                          //   //   Text(
+                                          //   //       "Login",
+                                          //   //       style: TextStyle(
+                                          //   //           fontSize: 18,
+                                          //   //           fontWeight: FontWeight.w600,
+                                          //   //       ),
+                                          //   //   ),
+                                          //   //   onPressed: isMemberRegistered ? () {
+                                          //   //     setState(() {
+                                          //   //       isButtonPressed = true;
+                                          //   //     });
+                                          //   //       if (isMobileNumberRegistered) {
+                                          //   //         if (selSociety == null &&
+                                          //   //             multipleSociety ==
+                                          //   //                 true) {
+                                          //   //           Fluttertoast.showToast(
+                                          //   //               msg: "Please Select Society",
+                                          //   //               backgroundColor: Colors
+                                          //   //                   .red,
+                                          //   //               gravity: ToastGravity
+                                          //   //                   .BOTTOM,
+                                          //   //               textColor: Colors
+                                          //   //                   .white);
+                                          //   //         }
+                                          //   //         else if (
+                                          //   //         _MobileNumber.text !=
+                                          //   //             '' && isMemberRegistered) {
+                                          //   //           print("called");
+                                          //   //           // _checkLogin();
+                                          //   //           // Navigator.push(
+                                          //   //           //     context,
+                                          //   //           //     MaterialPageRoute(
+                                          //   //           //       builder: (
+                                          //   //           //           context) =>
+                                          //   //           //           OTP(
+                                          //   //           //             mobileNo: _MobileNumber
+                                          //   //           //                 .text
+                                          //   //           //                 .toString(),
+                                          //   //           //             onSuccess: () {
+                                          //   //           //               _checkLogin();
+                                          //   //           //             },
+                                          //   //           //           ),
+                                          //   //           //     ));
+                                          //   //         }
+                                          //   //         else {
+                                          //   //           Fluttertoast.showToast(
+                                          //   //             msg: "Please Enter Mobile Number",
+                                          //   //             backgroundColor: Colors
+                                          //   //                 .red,
+                                          //   //             gravity: ToastGravity
+                                          //   //                 .BOTTOM,
+                                          //   //             textColor: Colors
+                                          //   //                 .white,
+                                          //   //           );
+                                          //   //         }
+                                          //   //       }
+                                          //   //   }:null,
+                                          //   // ),
+                                          // ),
                                         ],
                                       ),
                                     ),
                                     Padding(
-                                      padding:
-                                      const EdgeInsets.only(top: 35.0, bottom: 8.0),
+                                      padding: const EdgeInsets.only(top:8.0),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[

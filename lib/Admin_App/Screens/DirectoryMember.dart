@@ -53,7 +53,7 @@ class _DirectoryMemberState extends State<DirectoryMember> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -169,7 +169,7 @@ class _DirectoryMemberState extends State<DirectoryMember> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

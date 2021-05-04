@@ -123,7 +123,7 @@ class _UpdateAmenityState extends State<UpdateAmenity> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -297,7 +297,7 @@ class _UpdateAmenityState extends State<UpdateAmenity> {
                     GestureDetector(
                       onTap: () {
                         getFromCamera();
-                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();;
                       },
                       child: ListTile(
                         leading: Padding(
@@ -322,7 +322,7 @@ class _UpdateAmenityState extends State<UpdateAmenity> {
                     GestureDetector(
                       onTap: () {
                         getFromGallery();
-                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();;
                       },
                       child: ListTile(
                         leading: Padding(
@@ -346,7 +346,7 @@ class _UpdateAmenityState extends State<UpdateAmenity> {
                         padding: const EdgeInsets.only(right: 25.0, bottom: 5),
                         child: FlatButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();;
                           },
                           child: Text(
                             "Cancel",

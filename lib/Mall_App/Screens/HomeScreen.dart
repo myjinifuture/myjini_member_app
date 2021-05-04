@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
           centerTitle: false,
           leading: GestureDetector(
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/HomeScreen');
+              Navigator.of(context).pop();
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -230,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       )
                     : Container(color: Colors.white),
             onWillPop: () {
-              Navigator.pushReplacementNamed(context, '/HomeScreen');
+              Navigator.of(context).pop();
             }),
         bottomNavigationBar: Container(
           height: 54,

@@ -83,7 +83,7 @@ class _DirectoryProfileVehicleState extends State<DirectoryProfileVehicle> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -135,7 +135,7 @@ class _DirectoryProfileVehicleState extends State<DirectoryProfileVehicle> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -143,7 +143,7 @@ class _DirectoryProfileVehicleState extends State<DirectoryProfileVehicle> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 // _DeleteMemberVehicle(Id);
               },
             ),

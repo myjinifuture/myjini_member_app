@@ -206,7 +206,7 @@ class _DailyResourseComponentState extends State<DailyResourseComponent> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -226,7 +226,7 @@ class _DailyResourseComponentState extends State<DailyResourseComponent> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -370,7 +370,7 @@ class _DailyResourseComponentState extends State<DailyResourseComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -378,7 +378,7 @@ class _DailyResourseComponentState extends State<DailyResourseComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _unMapStaff(staffId);
               },
             ),
@@ -600,7 +600,7 @@ class _AlertDeleteState extends State<AlertDelete> {
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();;
           },
         ),
         new FlatButton(
@@ -609,7 +609,7 @@ class _AlertDeleteState extends State<AlertDelete> {
                   TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           onPressed: () {
             DeleteDailyResource(widget.deleteId, SocietyId, FlatId, WingId);
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();;
           },
         ),
       ],
@@ -662,7 +662,7 @@ class _AlertDeleteState extends State<AlertDelete> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

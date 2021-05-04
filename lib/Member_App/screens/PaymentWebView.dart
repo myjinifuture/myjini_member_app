@@ -473,7 +473,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     '/HomeScreen', (Route<dynamic> route) => false);
               },

@@ -109,7 +109,7 @@ class _AddAmenitiesScreenState extends State<AddAmenitiesScreen> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -296,7 +296,7 @@ class _AddAmenitiesScreenState extends State<AddAmenitiesScreen> {
                     GestureDetector(
                       onTap: () {
                         getFromCamera();
-                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();;
                       },
                       child: ListTile(
                         leading: Padding(
@@ -321,7 +321,7 @@ class _AddAmenitiesScreenState extends State<AddAmenitiesScreen> {
                     GestureDetector(
                       onTap: () {
                         getFromGallery();
-                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();;
                       },
                       child: ListTile(
                         leading: Padding(
@@ -345,7 +345,7 @@ class _AddAmenitiesScreenState extends State<AddAmenitiesScreen> {
                         padding: const EdgeInsets.only(right: 25.0, bottom: 5),
                         child: FlatButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();;
                           },
                           child: Text(
                             "Cancel",

@@ -103,7 +103,7 @@ class _MemberGuestListState extends State<MemberGuestList> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

@@ -284,8 +284,8 @@ class _CreateSocietyState extends State<CreateSociety> {
             });
             print("areaIdSentToBackend");
             print(areaIdSentToBackend);
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();;
+            Navigator.of(context).pop();;
           }
         }, onError: (e) {
           showMsg("$e");
@@ -467,7 +467,7 @@ class _CreateSocietyState extends State<CreateSociety> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -1219,6 +1219,20 @@ class _CreateSocietyState extends State<CreateSociety> {
                        //     selectedStateCode, selectedCity,selectedArea, "http://maps.google.com/maps?q=$lat,$long",
                        //      lat.toString(),long.toString(), txtEmail.text, Price_dropdownValue, txtwings.text);
                         if(!societyExist && areaAddedToDatabase) {
+                          // createNewSociety(
+                          //     txtname.text,
+                          //     txtAddress.text,
+                          //     txtYourName.text,
+                          //     txtmobile.text,
+                          //     selectedStateCode,
+                          //     selectedCity,
+                          //     selectedArea,
+                          //     "http://maps.google.com/maps?q=$lat,$long",
+                          //     lat.toString(),
+                          //     long.toString(),
+                          //     txtEmail.text,
+                          //     Price_dropdownValue,
+                          //     txtwings.text);
                           Navigator.push(
                               context,
                               MaterialPageRoute(

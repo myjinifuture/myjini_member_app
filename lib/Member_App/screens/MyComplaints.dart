@@ -140,7 +140,7 @@ class _MyComplaintsState extends State<MyComplaints> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -268,7 +268,7 @@ class _MyComplaintsState extends State<MyComplaints> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -276,7 +276,7 @@ class _MyComplaintsState extends State<MyComplaints> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _deleteComplaint(Id);
               },
             ),

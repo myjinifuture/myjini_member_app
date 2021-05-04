@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_society_new/DigitalScreens/Home.dart';
 import 'package:smart_society_new/DigitalScreens/More.dart';
@@ -22,7 +21,7 @@ class DashBoard1 extends StatefulWidget {
 }
 
 class _DashBoard1State extends State<DashBoard1> {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   int _currentIndex = 0;
   //
   // @override

@@ -111,7 +111,7 @@ class _CardShareComponentState extends State<CardShareComponent> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

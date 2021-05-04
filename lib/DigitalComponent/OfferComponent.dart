@@ -173,13 +173,13 @@ class _OfferComponentState extends State<OfferComponent> {
                                         child: new Text("Ok"),
                                         onPressed: () {
                                           DeleteOffer();
-                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();;
                                         },
                                       ),
                                       new FlatButton(
                                         child: new Text("Close"),
                                         onPressed: () {
-                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();;
                                         },
                                       ),
                                     ],

@@ -130,7 +130,7 @@ class _MaintainanceState extends State<Maintainance> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

@@ -63,7 +63,7 @@ class _SearchScreenComponentState extends State<SearchScreenComponent> {
                         setState(() {
                           currentIndex = index;
                         });
-                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();;
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,

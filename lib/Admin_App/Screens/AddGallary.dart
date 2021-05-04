@@ -167,7 +167,7 @@ class _AddGallaryState extends State<AddGallary> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

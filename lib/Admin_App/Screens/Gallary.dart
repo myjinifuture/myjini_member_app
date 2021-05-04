@@ -126,7 +126,7 @@ class _GallaryState extends State<Gallary> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -169,8 +169,7 @@ class _GallaryState extends State<Gallary> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              },
+                Navigator.pushReplacementNamed(context, '/Dashboard');              },
             ),
             new FlatButton(
               child: new Text("Yes",
@@ -178,8 +177,7 @@ class _GallaryState extends State<Gallary> {
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
                 deleteGallery(galleryId);
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              },
+                Navigator.pushReplacementNamed(context, '/Dashboard');              },
             ),
           ],
         );
@@ -222,8 +220,8 @@ class _GallaryState extends State<Gallary> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/Dashboard");
-      },
+        Navigator.pushReplacementNamed(context, '/Dashboard');
+        },
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -236,8 +234,7 @@ class _GallaryState extends State<Gallary> {
               color: Colors.white,
             ),
             onPressed: () {
-              Navigator.pushReplacementNamed(context, "/Dashboard");
-            },
+              Navigator.pushReplacementNamed(context, '/Dashboard');            },
           ),
         ),
         body: isLoading

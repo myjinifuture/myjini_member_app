@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:barcode_scan/barcode_scan.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -37,7 +36,7 @@ class _DashboardState extends State<Dashboard> {
   List memberData = [];
   bool _isSearching = false;
   DateTime currentBackPressTime;
-  FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+  // FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   StreamSubscription iosSubscription;
   String fcmToken = "";
 
@@ -465,7 +464,7 @@ class _DashboardState extends State<Dashboard> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -513,7 +512,7 @@ class _DashboardState extends State<Dashboard> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -521,7 +520,7 @@ class _DashboardState extends State<Dashboard> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -541,7 +540,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
+        Navigator.of(context).pop();;
         /*   if (_isSearching)
           _handleSearchEnd();
         else {

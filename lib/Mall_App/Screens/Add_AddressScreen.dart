@@ -65,7 +65,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 style: TextStyle(color: appPrimaryMaterialColor),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

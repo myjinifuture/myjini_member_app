@@ -91,7 +91,7 @@ class _AdvertisementManageState extends State<AdvertisementManage> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -147,7 +147,7 @@ class _AdvertisementManageState extends State<AdvertisementManage> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -170,7 +170,7 @@ class _AdvertisementManageState extends State<AdvertisementManage> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -178,7 +178,7 @@ class _AdvertisementManageState extends State<AdvertisementManage> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _deleteAdvertisement(Id, index);
               },
             ),
@@ -220,7 +220,7 @@ class _AdvertisementManageState extends State<AdvertisementManage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
+        Navigator.of(context).pop();
       },
       child: Scaffold(
         appBar: AppBar(

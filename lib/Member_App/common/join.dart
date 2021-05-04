@@ -12,10 +12,11 @@ class JoinPage extends StatefulWidget {
   Map fromMemberData;
   String videoCall = "",entryIdWhileGuestEntry="";
   String unknownVisitorEntryId = "";
+  bool unknownEntry;
 
   JoinPage({
     this.fromMemberData,
-    this.videoCall,this.entryIdWhileGuestEntry,this.unknownVisitorEntryId
+    this.videoCall,this.entryIdWhileGuestEntry,this.unknownVisitorEntryId,this.unknownEntry
   });
 
   @override
@@ -206,8 +207,13 @@ class _JoinPageState extends State<JoinPage> {
             onPressed: () {
               // Navigator.pushReplacementNamed(
               //     context,'/HomeScreen');
-              Navigator.pushReplacementNamed(context, '/HomeScreen');
-            },
+              if(widget.unknownEntry){
+                Navigator.of(context).pop();;
+              }
+              else {
+                Navigator.pushReplacementNamed(context, '/HomeScreen');
+              }
+              },
             child: Icon(
               Icons.call_end,
               color: Colors.white,
@@ -235,10 +241,6 @@ class _JoinPageState extends State<JoinPage> {
     );
   }
 
-  void _onCallEnd(BuildContext context) {
-    Navigator.pushReplacementNamed(context, '/HomeScreen');
-  }
-
   void _onToggleMute() {
     setState(() {
       muted = !muted;
@@ -256,8 +258,12 @@ class _JoinPageState extends State<JoinPage> {
     print(widget.fromMemberData);
     return WillPopScope(
       onWillPop: (){
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
+        if(widget.unknownEntry){
+          Navigator.of(context).pop();;
+        }
+        else {
+          Navigator.pushReplacementNamed(context, '/HomeScreen');
+        }      },
       child: Scaffold(
         appBar: AppBar(
           title: Text('MYJINI'),

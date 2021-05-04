@@ -256,7 +256,7 @@ class _AddDailyResourceState extends State<AddDailyResource> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -318,7 +318,7 @@ class _AddDailyResourceState extends State<AddDailyResource> {
               color: Colors.grey[100],
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -1352,8 +1352,8 @@ class _AddDailyResourceState extends State<AddDailyResource> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
+                Navigator.of(context).pop();;
                 widget.onAddDailyResource();
               },
             ),
@@ -1433,7 +1433,7 @@ class _AddDailyResourceState extends State<AddDailyResource> {
               color: Colors.grey[100],
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

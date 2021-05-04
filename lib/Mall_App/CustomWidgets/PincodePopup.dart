@@ -78,7 +78,7 @@ class _PinCodePopupState extends State<PinCodePopup> {
             child: FlatButton(
                 color: appPrimaryMaterialColor,
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();;
                 },
                 child: Text("OK", style: TextStyle(color: Colors.white))),
           )

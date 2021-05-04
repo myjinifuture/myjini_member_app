@@ -84,7 +84,7 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -216,7 +216,7 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

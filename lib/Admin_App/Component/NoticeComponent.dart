@@ -82,7 +82,7 @@ class _NoticeComponentState extends State<NoticeComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -90,7 +90,7 @@ class _NoticeComponentState extends State<NoticeComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _deleteNotice();
               },
             ),
@@ -113,7 +113,7 @@ class _NoticeComponentState extends State<NoticeComponent> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

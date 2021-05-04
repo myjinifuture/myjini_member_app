@@ -111,7 +111,7 @@ class _SubServicesScreenState extends State<SubServicesScreen> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -131,7 +131,7 @@ class _SubServicesScreenState extends State<SubServicesScreen> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

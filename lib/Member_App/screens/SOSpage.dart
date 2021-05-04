@@ -130,7 +130,7 @@ class _SOSpageState extends State<SOSpage> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -225,7 +225,7 @@ class _SOSpageState extends State<SOSpage> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -555,7 +555,7 @@ class _SOSpageState extends State<SOSpage> {
           ),
           leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop();;
             },
             icon: Icon(
               Icons.arrow_back,
@@ -1008,7 +1008,7 @@ class _SOSpageState extends State<SOSpage> {
 //             new FlatButton(
 //               child: new Text("Okay"),
 //               onPressed: () {
-//                 Navigator.of(context).pop();
+//                 Navigator.of(context).pop();;
 //               },
 //             ),
 //           ],
@@ -1028,7 +1028,7 @@ class _SOSpageState extends State<SOSpage> {
 //             new FlatButton(
 //               child: new Text("Close"),
 //               onPressed: () {
-//                 Navigator.of(context).pop();
+//                 Navigator.of(context).pop();;
 //               },
 //             ),
 //           ],

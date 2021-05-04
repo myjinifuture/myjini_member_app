@@ -49,7 +49,7 @@ class _StaffComponentBywingState extends State<StaffComponentBywing> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -58,7 +58,7 @@ class _StaffComponentBywingState extends State<StaffComponentBywing> {
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
                 deleteStaff(widget.visitorData['_id'].toString());
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 // widget.onDelete();
               },
             ),
@@ -113,7 +113,7 @@ class _StaffComponentBywingState extends State<StaffComponentBywing> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

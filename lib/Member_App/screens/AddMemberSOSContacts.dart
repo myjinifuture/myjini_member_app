@@ -15,11 +15,10 @@ import 'package:smart_society_new/Member_App/common/constant.dart';
 import 'ContactList.dart';
 
 class AddMemberSOSContacts extends StatefulWidget {
-
-  String name,mobileNo;
+  String name, mobileNo;
   Function newMemberAdded;
 
-  AddMemberSOSContacts({this.newMemberAdded,this.name,this.mobileNo});
+  AddMemberSOSContacts({this.newMemberAdded, this.name, this.mobileNo});
 
   @override
   _AddMemberSOSContactsState createState() => _AddMemberSOSContactsState();
@@ -29,7 +28,7 @@ class _AddMemberSOSContactsState extends State<AddMemberSOSContacts> {
   TextEditingController txtName = new TextEditingController();
   TextEditingController txtNumber = new TextEditingController();
   List<CustomContact> _uiCustomContacts = List<CustomContact>();
-  bool isLoading=false;
+  bool isLoading = false;
 
   Future<void> requestPermission(PermissionGroup permission) async {
     final List<PermissionGroup> permissions = <PermissionGroup>[
@@ -49,7 +48,10 @@ class _AddMemberSOSContactsState extends State<AddMemberSOSContacts> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ContactList(fromSos:true),
+          builder: (context) => ContactList(
+            fromSos: true,
+            onAddFromContactList: widget.newMemberAdded,
+          ),
         ),
       );
     } else
@@ -60,9 +62,10 @@ class _AddMemberSOSContactsState extends State<AddMemberSOSContacts> {
   }
 
   bool isFilled = false;
+
   @override
   void initState() {
-    if(widget.mobileNo!=null){
+    if (widget.mobileNo != null) {
       setState(() {
         isFilled = true;
         txtName.text = widget.name;
@@ -77,13 +80,12 @@ class _AddMemberSOSContactsState extends State<AddMemberSOSContacts> {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String memberId = prefs.getString(Session.Member_Id);
         var data = {
           "memberId": memberId,
-          "contactNo":txtNumber.text,
-          "contactPerson":txtName.text,
+          "contactNo": txtNumber.text,
+          "contactPerson": txtName.text,
         };
         Services.responseHandler(
             apiName: "member/addMemberSOSContacts", body: data)
@@ -95,7 +97,7 @@ class _AddMemberSOSContactsState extends State<AddMemberSOSContacts> {
                 gravity: ToastGravity.TOP,
                 backgroundColor: Colors.green,
                 toastLength: Toast.LENGTH_LONG);
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();;
           } else {}
         }, onError: (e) {
           showMsg("Something Went Wrong Please Try Again");
@@ -118,8 +120,8 @@ class _AddMemberSOSContactsState extends State<AddMemberSOSContacts> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -150,7 +152,6 @@ class _AddMemberSOSContactsState extends State<AddMemberSOSContacts> {
       // );
       setState(() {
         txtName.text = name.toString();
-
       });
       print("mobile" + mobile);
       if (value) {
@@ -244,42 +245,49 @@ class _AddMemberSOSContactsState extends State<AddMemberSOSContacts> {
                     color: Color.fromRGBO(255, 255, 255, 0.5),
                     border: new Border.all(width: 1),
                     borderRadius: BorderRadius.all(Radius.circular(5))),
-                child: TextFormField(maxLength: 10,
+                child: TextFormField(
+                  maxLength: 10,
                   controller: txtNumber,
-                  decoration: InputDecoration(border: InputBorder.none,
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
                       prefixIcon: Icon(Icons.description),
-                      hintText: "Number",counterText: ""),
+                      hintText: "Number",
+                      counterText: ""),
                   keyboardType: TextInputType.number,
                   style: TextStyle(color: Colors.black),
                 ),
                 //height: 40,
                 width: MediaQuery.of(context).size.width - 40,
               ),
-
               Container(
                 width: MediaQuery.of(context).size.width,
                 margin: EdgeInsets.only(top: 10),
                 child: MaterialButton(
                   color: buttoncolor,
                   minWidth: MediaQuery.of(context).size.width - 20,
-                  onPressed: (){
-                      addMemberSOSContact();
+                  onPressed: () {
+                    addMemberSOSContact();
                   },
-                  child: isFilled ? Center(
+                  child: isFilled
+                      ? Center(
                     child: Padding(
                       padding: const EdgeInsets.all(3.0),
                       child: CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.white),
                         strokeWidth: 5,
                       ),
                     ),
-                  ):Text(
+                  )
+                      : Text(
                     "Save Contact",
                     style: TextStyle(
-                        color: Colors.white, fontSize: 18.0, fontWeight: FontWeight.w600),
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600),
                   ),
                 ),
-                  /*RaisedButton(
+                /*RaisedButton(
                         padding: EdgeInsets.symmetric(horizontal: 20),
                         elevation: 5,
                         textColor: Colors.white,
@@ -299,8 +307,7 @@ class _AddMemberSOSContactsState extends State<AddMemberSOSContacts> {
                 width: MediaQuery.of(context).size.width / 1.6,
                 margin: EdgeInsets.only(top: 10),
                 decoration: BoxDecoration(
-                    borderRadius:
-                    BorderRadius.all(Radius.circular(10))),
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
                 child: MaterialButton(
                   shape: RoundedRectangleBorder(
                       borderRadius: new BorderRadius.circular(10.0)),

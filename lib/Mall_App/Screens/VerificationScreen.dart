@@ -213,7 +213,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
         leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.grey, size: 21),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop();;
             }),
         elevation: 0,
         backgroundColor: Colors.white,

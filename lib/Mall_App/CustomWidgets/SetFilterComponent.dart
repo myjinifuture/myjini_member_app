@@ -45,7 +45,7 @@ class _SetFilterComponentState extends State<SetFilterComponent> {
                       setState(() {
                         currentIndex = index;
                       });
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();;
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,

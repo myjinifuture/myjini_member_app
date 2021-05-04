@@ -153,7 +153,7 @@ class _GlobalSearchMembersState extends State<GlobalSearchMembers> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

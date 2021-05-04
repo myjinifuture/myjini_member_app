@@ -74,11 +74,10 @@ class AddFamilyMemberState extends State<AddFamilyMember> {
             Services.responseHandler(apiName: "member/addFamilyMember",body: data).then((data) async {
               // pr.hide();
               print(data.Data);
-              if (data.Data != "0" && data.IsSuccess == true) {
+              if (data.Data.length>0 && data.IsSuccess == true) {
                 showHHMsg("Member Added Successfully", "");
-
               } else {
-                showHHMsg("Mobile Number Already Exist !", "");
+                showHHMsg("Error adding Family Member", "");
                 // pr.hide();
               }
             }, onError: (e) {
@@ -113,7 +112,7 @@ class AddFamilyMemberState extends State<AddFamilyMember> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.pop(context);
+                // Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pop(context);
                 widget.onAddFamily();
@@ -133,7 +132,7 @@ class AddFamilyMemberState extends State<AddFamilyMember> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop();;
       },
       child: Scaffold(
         appBar: new AppBar(
@@ -155,7 +154,7 @@ class AddFamilyMemberState extends State<AddFamilyMember> {
                         decoration: BoxDecoration(
                             color: Colors.grey[200],
                             borderRadius:
-                                BorderRadius.all(Radius.circular(100.0))),
+                            BorderRadius.all(Radius.circular(100.0))),
                         width: 80,
                         height: 80,
                         child: Padding(

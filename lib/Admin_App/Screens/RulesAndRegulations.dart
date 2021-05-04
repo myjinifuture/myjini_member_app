@@ -88,7 +88,7 @@ class _RulesAndRegulationsState extends State<RulesAndRegulations> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

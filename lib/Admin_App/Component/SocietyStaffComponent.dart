@@ -22,7 +22,7 @@ class SocietyStaffComponent extends StatefulWidget {
   int index;
 
   SocietyStaffComponent(
-      {this.visitorData, this.index, this.onDelete, this.onMap,this.onUnMap});
+      {this.visitorData, this.index, this.onDelete, this.onMap, this.onUnMap});
 
   @override
   _SocietyStaffComponentState createState() => _SocietyStaffComponentState();
@@ -43,7 +43,7 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -52,7 +52,7 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
                 deleteStaff(widget.visitorData['_id'].toString());
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 // widget.onDelete();
               },
             ),
@@ -74,19 +74,19 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
         // }
         var data = {"staffId": staffId};
         Services.responseHandler(apiName: "admin/deleteStaff", body: data).then(
-            (data) async {
-          if (data.Data != "0" && data.IsSuccess == true) {
-            print("data.Data");
-            print(data.Data);
-            Fluttertoast.showToast(
-                msg: "Staff deleted Successfully!!!",
-                backgroundColor: Colors.green,
-                gravity: ToastGravity.TOP,
-                textColor: Colors.white);
-          } else {
-            showMsg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
+                (data) async {
+              if (data.Data != "0" && data.IsSuccess == true) {
+                print("data.Data");
+                print(data.Data);
+                Fluttertoast.showToast(
+                    msg: "Staff deleted Successfully!!!",
+                    backgroundColor: Colors.green,
+                    gravity: ToastGravity.TOP,
+                    textColor: Colors.white);
+              } else {
+                showMsg(data.Message, title: "Error");
+              }
+            }, onError: (e) {
           showMsg("Try Again.");
         });
       }
@@ -106,10 +106,12 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
           "staffId": staffId,
           "entryNo": entryNo,
           "societyId": societyId,
-          "type":widget.visitorData["staffCategory"].toString()=="Watchman"?"1":"0",
+          "type": widget.visitorData["staffCategory"].toString() == "Watchman"
+              ? "1"
+              : "0",
         };
         Services.responseHandler(
-                apiName: "watchman/addStaffEntryNo", body: data)
+            apiName: "watchman/addStaffEntryNo", body: data)
             .then((data) async {
           print(data.Message);
           if (data.Data != null && data.Data == 1) {
@@ -139,7 +141,9 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
         staffIdList.add(widget.visitorData["_id"]);
         var data = {
           "staffIdList": staffIdList,
-          "type":widget.visitorData["staffCategory"].toString()=="Watchman"?"1":"0",
+          "type": widget.visitorData["staffCategory"].toString() == "Watchman"
+              ? "1"
+              : "0",
         };
         Services.responseHandler(apiName: "watchman/unMappedStaff", body: data)
             .then((data) async {
@@ -175,7 +179,7 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -237,29 +241,29 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                 children: <Widget>[
                   ClipOval(
                       child: widget.visitorData["staffImage"] != null &&
-                              widget.visitorData["staffImage"] != ""
+                          widget.visitorData["staffImage"] != ""
                           ? FadeInImage.assetNetwork(
-                              placeholder: '',
-                              image: Image_Url +
-                                  "${widget.visitorData["staffImage"]}",
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.fill)
+                          placeholder: '',
+                          image: Image_Url +
+                              "${widget.visitorData["staffImage"]}",
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.fill)
                           : Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: cnst.appPrimaryMaterialColor,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50))),
-                              child: Center(
-                                child: Text(
-                                  "${widget.visitorData["Name"].toString().substring(0, 1).toUpperCase()}",
-                                  style: TextStyle(
-                                      fontSize: 26, color: Colors.white),
-                                ),
-                              ),
-                            )),
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: cnst.appPrimaryMaterialColor,
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(50))),
+                        child: Center(
+                          child: Text(
+                            "${widget.visitorData["Name"].toString().substring(0, 1).toUpperCase()}",
+                            style: TextStyle(
+                                fontSize: 26, color: Colors.white),
+                          ),
+                        ),
+                      )),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8.0),
@@ -276,15 +280,25 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                                       fontSize: 15)),
                               widget.visitorData["staffCategory"] != null
                                   ? Text(
-                                      '${widget.visitorData["staffCategory"]}'
-                                          .toUpperCase(),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 15))
+                                  '${widget.visitorData["staffCategory"]}'
+                                      .toUpperCase(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 15))
                                   : Text('Watchman'.toUpperCase(),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 15)),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 15)),
+                              widget.visitorData["staffCategory"].toString() !=
+                                  'Watchman'
+                                  ? Text(widget.visitorData["entryNo"].toString().split('-')[1],
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15))
+                                  : Text(widget.visitorData["watchmanNo"].toString().split('-')[1],
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15)),
                             ],
                           ),
                           SizedBox(
@@ -294,13 +308,14 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                widget.visitorData['staffCategory'] == "Watchman"
+                                widget.visitorData['staffCategory'] ==
+                                    "Watchman"
                                     ? Text(
-                                        "Wing-" '${widget.visitorData["WingData"][0]["wingName"]}'
-                                            .toUpperCase(),
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15))
+                                    "Wing-" '${widget.visitorData["WingData"][0]["wingName"]}'
+                                        .toUpperCase(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15))
                                     : Container(),
                               ],
                             ),
@@ -310,56 +325,55 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                     ),
                   ),
                   widget.visitorData["isMapped"] == true
-                          ? IconButton(
-                              icon: Icon(
-                                Icons.check_circle,
-                                color: Colors.green,
-                              ),
-                              onPressed: () {
-                                print('check clicked');
-                                // showDialog(
-                                //   context: context,
-                                //   builder: (BuildContext context) {
-                                //     return AlertDialog(
-                                //       title: new Text("MYJINI"),
-                                //       content: new Text(
-                                //           "Are You Sure You Want To UnMap ?"),
-                                //       actions: <Widget>[
-                                //         // usually buttons at the bottom of the dialog
-                                //         new FlatButton(
-                                //           child: new Text("No",
-                                //               style: TextStyle(
-                                //                   color: Colors.black,
-                                //                   fontWeight: FontWeight.w600)),
-                                //           onPressed: () {
-                                //             Navigator.of(context).pop();
-                                //           },
-                                //         ),
-                                //         new FlatButton(
-                                //           child: new Text("Yes",
-                                //               style: TextStyle(
-                                //                   color: Colors.black,
-                                //                   fontWeight: FontWeight.w600)),
-                                //           onPressed: () {
-                                //             Navigator.of(context).pop();
-                                //             unmapSocietyStaff();
-                                //           },
-                                //         ),
-                                //       ],
-                                //     );
-                                //   },
-                                // );
-                              },
-                            )
-                          : IconButton(
-                              icon: Icon(
-                                Icons.qr_code_scanner,
-                                color: Colors.green[700],
-                              ),
-                              onPressed: () {
-                                scan(widget.visitorData['_id']);
-                              }),
-
+                      ? IconButton(
+                    icon: Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                    ),
+                    onPressed: () {
+                      print('check clicked');
+                      // showDialog(
+                      //   context: context,
+                      //   builder: (BuildContext context) {
+                      //     return AlertDialog(
+                      //       title: new Text("MYJINI"),
+                      //       content: new Text(
+                      //           "Are You Sure You Want To UnMap ?"),
+                      //       actions: <Widget>[
+                      //         // usually buttons at the bottom of the dialog
+                      //         new FlatButton(
+                      //           child: new Text("No",
+                      //               style: TextStyle(
+                      //                   color: Colors.black,
+                      //                   fontWeight: FontWeight.w600)),
+                      //           onPressed: () {
+                      //             Navigator.of(context).pop();;
+                      //           },
+                      //         ),
+                      //         new FlatButton(
+                      //           child: new Text("Yes",
+                      //               style: TextStyle(
+                      //                   color: Colors.black,
+                      //                   fontWeight: FontWeight.w600)),
+                      //           onPressed: () {
+                      //             Navigator.of(context).pop();;
+                      //             unmapSocietyStaff();
+                      //           },
+                      //         ),
+                      //       ],
+                      //     );
+                      //   },
+                      // );
+                    },
+                  )
+                      : IconButton(
+                      icon: Icon(
+                        Icons.qr_code_scanner,
+                        color: Colors.green[700],
+                      ),
+                      onPressed: () {
+                        scan(widget.visitorData['_id']);
+                      }),
                   IconButton(
                     icon: Icon(
                       Icons.delete,

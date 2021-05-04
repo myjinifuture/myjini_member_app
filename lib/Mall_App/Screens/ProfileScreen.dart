@@ -65,7 +65,7 @@ class _contactUsState extends State<contactUs> {
               alignment: Alignment.topRight,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();;
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(right: 9.0, top: 3),
@@ -390,7 +390,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(color: appPrimaryMaterialColor),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             FlatButton(
@@ -433,7 +433,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //                   alignment: Alignment.topRight,
   //                   child: GestureDetector(
   //                     onTap: () {
-  //                       Navigator.of(context).pop();
+  //                       Navigator.of(context).pop();;
   //                     },
   //                     child: Padding(
   //                       padding: const EdgeInsets.only(right: 9.0, top: 3),

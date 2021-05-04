@@ -190,7 +190,7 @@ class _HomeState extends State<Home> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -784,8 +784,8 @@ class _HomeState extends State<Home> {
                                 ],
                               ),
                               onPressed: () async {
-                                Navigator.pushReplacementNamed(
-                                    context, '/HomeScreen');
+                                Navigator.of(context).pop();
+
                               },
                               shape: new RoundedRectangleBorder(
                                   borderRadius:

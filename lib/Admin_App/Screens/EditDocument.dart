@@ -105,7 +105,7 @@ class _EditDocumentState extends State<EditDocument> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

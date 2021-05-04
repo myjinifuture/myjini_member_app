@@ -123,7 +123,7 @@ class _AddIncomeState extends State<AddIncome> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -241,7 +241,7 @@ class _AddIncomeState extends State<AddIncome> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -249,7 +249,7 @@ class _AddIncomeState extends State<AddIncome> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _addIncomeSource();
               },
             ),
@@ -274,7 +274,7 @@ class _AddIncomeState extends State<AddIncome> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -282,7 +282,7 @@ class _AddIncomeState extends State<AddIncome> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _deleteIncomeSource(id);
               },
             ),

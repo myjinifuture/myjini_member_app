@@ -3,7 +3,6 @@ import 'dart:io' show Platform;
 
 import 'package:easy_permission_validator/easy_permission_validator.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' as S;
@@ -196,7 +195,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
     print(_notification);
   }
 
-  FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+  // FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -284,17 +283,17 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
       }
       else if (data["notificationType"].toString() == "AddGallery") {
-        Get.to(() => Gallary());
+        Get.to(() => GalleryScreen());
       }
       else if (data["notificationType"].toString() == "StaffEntry" ||
           data["notificationType"].toString() == "StaffLeave") {
         Get.to(() => NoticeBoard(message: data));
       }
       else if (data["notificationType"] == 'Visitor') {
-        Get.to(() => NotificationPopup(data));
+        Get.to(() => NotificationPopup(data,unknownEntry : true));
       }
       else if (data["notificationType"] == 'SendComplainToAdmin') {
-      Get.to(() => NotificationPopup(data));
+      Get.to(() => NotificationPopup(data,unknownEntry : false));
       }
       else if (data["NotificationType"] == "SOS") {
         Get.to(() => SOS(data,
@@ -305,6 +304,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
         print('data');
         print(data);
         Get.to(() => JoinPage(
+            unknownEntry: false,
             fromMemberData:
             notification.payload.additionalData));
       } else if (data["CallResponseIs"] == "Accepted" &&
@@ -312,6 +312,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
         print('data');
         print(data);
         Get.to(() => JoinPage(
+            unknownEntry: false,
             fromMemberData:
             notification.payload.additionalData));
       } else if (data["CallResponseIs"] == "Rejected" &&
@@ -339,6 +340,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
         print('data');
         print(data);
         Get.to(() => JoinPage(
+            unknownEntry: false,
             fromMemberData:
             notification.payload.additionalData),);
       }

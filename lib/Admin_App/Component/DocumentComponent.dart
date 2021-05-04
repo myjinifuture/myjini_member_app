@@ -89,7 +89,7 @@ class _DocumentComponentState extends State<DocumentComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -97,7 +97,7 @@ class _DocumentComponentState extends State<DocumentComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _deleteDocument();
               },
             ),
@@ -119,7 +119,7 @@ class _DocumentComponentState extends State<DocumentComponent> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

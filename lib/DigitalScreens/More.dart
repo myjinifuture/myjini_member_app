@@ -95,7 +95,7 @@ class _MoreState extends State<More> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -154,7 +154,7 @@ class _MoreState extends State<More> {
                 style: TextStyle(color: appMaterialColor),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(

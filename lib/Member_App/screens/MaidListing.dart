@@ -51,13 +51,14 @@ class _MaidListingState extends State<MaidListing> {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               // maidList = data.Data;
+              // isLoading = false;
+              // maidList = data.Data;
+              for(int i=0;i<data.Data.length;i++){
+                if(data.Data[i]["StaffData"][0]["staffCategory"].toString()=="Maid"){
+                  maidList.add(data.Data[i]);
+                }
+              }
               isLoading = false;
-              maidList = data.Data;
-              // for(int i=0;i<data.Data.length;i++){
-              //   if(data.Data[i]["StaffData"][0]["staffCategory"].toString()=="Maid"){
-              //     maidList.add(data.Data[i]);
-              //   }
-              // }
             });
           } else {
             setState(() {
@@ -93,7 +94,7 @@ class _MaidListingState extends State<MaidListing> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -132,10 +133,10 @@ class _MaidListingState extends State<MaidListing> {
             itemBuilder: (BuildContext context, int index) {
               print(maidList);
               // ignore: missing_return
-              if(maidList[index]["StaffData"].length > 0 &&
-                  maidList[index]["StaffData"][0]["staffCategory"].toString()=="Maid") {
+              // if(maidList[index]["StaffData"].length > 0 &&
+              //     maidList[index]["StaffData"][0]["staffCategory"].toString()=="Maid") {
                 return MaidComponent(maidList[index]);
-              };
+              // };
             }):Container(
     child: Center(child: Text("No Data Found")),
     ),

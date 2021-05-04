@@ -12,6 +12,7 @@ import 'package:smart_society_new/Member_App/Services/ServiceList.dart';
 import 'package:smart_society_new/Member_App/Services/SubServicesScreen.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as cnst;
 import 'package:smart_society_new/Member_App/component/MyServiceRequestComponent.dart';
+import 'package:easy_gradient_text/easy_gradient_text.dart';
 
 class ServicesScreen extends StatefulWidget {
   @override
@@ -25,9 +26,12 @@ class _ServicesScreenState extends State<ServicesScreen>
   TabController _tabController;
   List NewList = [];
   ProgressDialog pr;
+  List societyVendorDetails = [];
+  bool societyVendorsLoading = false;
 
   @override
   void initState() {
+    getSocietyVendors();
     _ServiceData();
     _getMyLeadsList();
     _tabController = new TabController(vsync: this, length: 2);
@@ -83,7 +87,7 @@ class _ServicesScreenState extends State<ServicesScreen>
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -138,7 +142,7 @@ class _ServicesScreenState extends State<ServicesScreen>
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -215,6 +219,46 @@ class _ServicesScreenState extends State<ServicesScreen>
     );
   }
 
+  getSocietyVendors() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        setState(() {
+          societyVendorsLoading = true;
+        });
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String societyId = prefs.getString(cnst.Session.SocietyId);
+        var data = {
+          "societyId": societyId,
+        };
+        Services.responseHandler(apiName: "member/getVendors", body: data).then(
+                (data) async {
+              print("data");
+              print(data.Data);
+              if (data.Data != null && data.Data.length > 0) {
+                setState(() {
+                  societyVendorsLoading = false;
+                  societyVendorDetails = data.Data;
+                });
+                // print("societyVendorDetails");
+                // print(societyVendorDetails);
+              } else {
+                setState(() {
+                  societyVendorsLoading = false;
+                });
+              }
+            }, onError: (e) {
+          showMsg("Something Went Wrong.\nPlease Try Again");
+          setState(() {
+            societyVendorsLoading = false;
+          });
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
+  }
+
   final _imageUrls = [
     "http://cashkaro.com/blog/wp-content/uploads/sites/5/2018/03/Housejoy-AC-Service-Offer.gif",
     "https://www.cleaningbyrosie.com/wp-content/uploads/2016/12/facebook-cover2-630x315.jpg",
@@ -225,14 +269,14 @@ class _ServicesScreenState extends State<ServicesScreen>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
+        Navigator.of(context).pop();
       },
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
+                Navigator.of(context).pop();
               }),
           centerTitle: true,
           title: Text(
@@ -298,451 +342,396 @@ class _ServicesScreenState extends State<ServicesScreen>
                     //         ))
                     //   ],
                     // ),
-                    Column(
+
+                    societyVendorsLoading == false
+                        ? societyVendorDetails.length > 0
+                        ? Column(
                       children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width - 30,
-                          child: Card(
-                            color: cnst.appPrimaryMaterialColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15)),
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Container(
-                                      height: 80,
-                                      width: 80,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50),
-                                        color: Colors.lightBlueAccent,
-                                        image: DecorationImage(
-                                          image: AssetImage("images/Staff.png"),
-                                          fit: BoxFit.fill,
-                                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            physics: BouncingScrollPhysics(),
+                            // shrinkWrap: true,
+                            itemCount: societyVendorDetails.length,
+                            itemBuilder:
+                                (BuildContext context, int index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  // showDialog(
+                                  //   barrierDismissible: false,
+                                  //   context: context,
+                                  //   builder: (BuildContext context) {
+                                  //     return AlertDialog(
+                                  //       backgroundColor: cnst
+                                  //           .appPrimaryMaterialColor,
+                                  //       title: Row(
+                                  //         children: [
+                                  //           Expanded(
+                                  //             child: Center(
+                                  //               child: Text(
+                                  //                 "Vendor Details",
+                                  //                 style: TextStyle(
+                                  //                   color: Colors
+                                  //                       .cyan[600],
+                                  //                   fontSize: 18,
+                                  //                   fontWeight:
+                                  //                       FontWeight
+                                  //                           .w600,
+                                  //                 ),
+                                  //               ),
+                                  //             ),
+                                  //           ),
+                                  //           GestureDetector(
+                                  //             onTap: () {
+                                  //               Navigator.pop(
+                                  //                   context);
+                                  //             },
+                                  //             child: Icon(
+                                  //               Icons.close,
+                                  //               color: Colors.white,
+                                  //             ),
+                                  //           ),
+                                  //         ],
+                                  //       ),
+                                  //       content: Column(
+                                  //         mainAxisSize:
+                                  //             MainAxisSize.min,
+                                  //         children: [
+                                  //           Container(
+                                  //             height: 80,
+                                  //             width: 80,
+                                  //             decoration:
+                                  //                 BoxDecoration(
+                                  //               borderRadius:
+                                  //                   BorderRadius
+                                  //                       .circular(50),
+                                  //               color: Colors
+                                  //                   .lightBlueAccent,
+                                  //               image:
+                                  //                   DecorationImage(
+                                  //                 image: AssetImage(
+                                  //                     "images/Staff.png"),
+                                  //                 fit: BoxFit.fill,
+                                  //               ),
+                                  //             ),
+                                  //           ),
+                                  //           SizedBox(
+                                  //             height: 5,
+                                  //           ),
+                                  //           Text(
+                                  //             'XYZ',
+                                  //             style: TextStyle(
+                                  //               fontWeight:
+                                  //                   FontWeight.w600,
+                                  //               fontSize: 20,
+                                  //               color:
+                                  //                   Colors.cyan[600],
+                                  //             ),
+                                  //           ),
+                                  //           SizedBox(
+                                  //             height: 10,
+                                  //           ),
+                                  //           Row(
+                                  //             children: [
+                                  //               Text(
+                                  //                 'Business Name',
+                                  //                 style: TextStyle(
+                                  //                   fontWeight:
+                                  //                       FontWeight
+                                  //                           .w600,
+                                  //                   color:
+                                  //                       Colors.white,
+                                  //                 ),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //           Row(
+                                  //             children: [
+                                  //               Text(
+                                  //                 'ABC Hardware',
+                                  //                 style: TextStyle(
+                                  //                   fontStyle:
+                                  //                       FontStyle
+                                  //                           .italic,
+                                  //                   fontWeight:
+                                  //                       FontWeight
+                                  //                           .w500,
+                                  //                   color: Colors
+                                  //                       .cyan[600],
+                                  //                 ),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //           Row(
+                                  //             children: [
+                                  //               Text(
+                                  //                 'Category',
+                                  //                 style: TextStyle(
+                                  //                   fontWeight:
+                                  //                       FontWeight
+                                  //                           .w600,
+                                  //                   color:
+                                  //                       Colors.white,
+                                  //                 ),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //           Row(
+                                  //             children: [
+                                  //               Text(
+                                  //                 'Plumber',
+                                  //                 style: TextStyle(
+                                  //                   fontWeight:
+                                  //                       FontWeight
+                                  //                           .w500,
+                                  //                   color: Colors
+                                  //                       .cyan[600],
+                                  //                 ),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //           Row(
+                                  //             children: [
+                                  //               Text(
+                                  //                 'Address',
+                                  //                 style: TextStyle(
+                                  //                   fontWeight:
+                                  //                       FontWeight
+                                  //                           .w600,
+                                  //                   color:
+                                  //                       Colors.white,
+                                  //                 ),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //           Row(
+                                  //             children: [
+                                  //               Expanded(
+                                  //                 child: Text(
+                                  //                   'A-103, Someshwara Enclave, Vesu, Surat, 395007',
+                                  //                   style: TextStyle(
+                                  //                     fontWeight:
+                                  //                         FontWeight
+                                  //                             .w500,
+                                  //                     color: Colors
+                                  //                         .cyan[600],
+                                  //                   ),
+                                  //                 ),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //           Row(
+                                  //             children: [
+                                  //               Text(
+                                  //                 'Contact',
+                                  //                 style: TextStyle(
+                                  //                   fontWeight:
+                                  //                       FontWeight
+                                  //                           .w600,
+                                  //                   color:
+                                  //                       Colors.white,
+                                  //                 ),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //           Row(
+                                  //             children: [
+                                  //               Text(
+                                  //                 '989859596565',
+                                  //                 style: TextStyle(
+                                  //                   fontWeight:
+                                  //                       FontWeight
+                                  //                           .w500,
+                                  //                   color: Colors
+                                  //                       .cyan[600],
+                                  //                 ),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //           Row(
+                                  //             children: [
+                                  //               Text(
+                                  //                 'Email',
+                                  //                 style: TextStyle(
+                                  //                   fontWeight:
+                                  //                       FontWeight
+                                  //                           .w600,
+                                  //                   color:
+                                  //                       Colors.white,
+                                  //                 ),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //           Row(
+                                  //             children: [
+                                  //               Text(
+                                  //                 'abc@gmail.com',
+                                  //                 style: TextStyle(
+                                  //                   fontWeight:
+                                  //                       FontWeight
+                                  //                           .w500,
+                                  //                   color: Colors
+                                  //                       .cyan[600],
+                                  //                 ),
+                                  //               ),
+                                  //             ],
+                                  //           ),
+                                  //         ],
+                                  //       ),
+                                  //     );
+                                  //   },
+                                  // );
+                                },
+                                child: Card(
+                                  // color: cnst.appPrimaryMaterialColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius.circular(10)),
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                        height: 10,
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                      Row(
                                         children: [
-                                          Text(
-                                            'XYZ',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 20,
-                                              color:
-                                                  Colors.cyan[600],
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Container(
+                                            height: 55,
+                                            width: 55,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                              BorderRadius
+                                                  .circular(50),
+                                              color: Colors
+                                                  .lightBlueAccent,
+                                              image: DecorationImage(
+                                                image: AssetImage(
+                                                    "images/user.png"),
+                                                fit: BoxFit.fill,
+                                              ),
                                             ),
                                           ),
-                                          // Row(
-                                          //   children: [
-                                          //     Text(
-                                          //       'Business Name : ',
-                                          //       style: TextStyle(
-                                          //         fontWeight: FontWeight.w600,
-                                          //         color: Colors.white,
-                                          //       ),
-                                          //     ),
-                                          //     Text(
-                                          //       'ABC Hardware',
-                                          //       style: TextStyle(
-                                          //         fontWeight: FontWeight.w500,
-                                          //         color: Colors.cyan[600],
-                                          //       ),
-                                          //     ),
-                                          //   ],
-                                          // ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Category : ',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white,
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                              children: [
+                                                GradientText(
+                                                  text:
+                                                  societyVendorDetails[
+                                                  index]
+                                                  ["Name"],
+                                                  colors: <Color>[
+                                                    Color(0xffDA44bb),
+                                                    Color(0xff8921aa)
+                                                  ],
+                                                  style: TextStyle(
+                                                    fontSize: 20.0,
+                                                    fontWeight:
+                                                    FontWeight
+                                                        .w600,
+                                                  ),
                                                 ),
-                                              ),
-                                              Text(
-                                                'Plumber',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Colors.cyan[600],
+                                                GradientText(
+                                                  text: societyVendorDetails[
+                                                  index]
+                                                  ["ServiceName"],
+                                                  colors: <Color>[
+                                                    Color(0xffDA44bb),
+                                                    Color(0xff8921aa)
+                                                  ],
+                                                  style: TextStyle(
+                                                    fontSize: 12.0,
+                                                    // fontWeight: FontWeight.w600,
+                                                  ),
                                                 ),
-                                              )
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.only(
-                                            bottomLeft: Radius.circular(15),
-                                          ),
-                                        ),
-                                        child: IconButton(
-                                          icon: Icon(
-                                            Icons.call,
-                                          ),
-                                          onPressed: () {},
-                                          color: cnst.appPrimaryMaterialColor,
-                                        ),
+                                      SizedBox(
+                                        height: 10,
                                       ),
-                                    ),
-                                    Container(
-                                      color: cnst.appPrimaryMaterialColor,
-                                      width: 1.5,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.057,
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                        ),
-                                        child: IconButton(
-                                          iconSize: 30,
-                                          icon: Image(
-                                            image: AssetImage(
-                                                "images/whatsapp.png"),
-                                            fit: BoxFit.fill,
-                                          ),
-                                          onPressed: () {},
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      color: cnst.appPrimaryMaterialColor,
-                                      width: 1.5,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.057,
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.only(
-                                            bottomRight: Radius.circular(15),
-                                          ),
-                                        ),
-                                        child: IconButton(
-                                          icon: Icon(
-                                            Icons.info,
-                                            color: cnst.appPrimaryMaterialColor,
-                                            size: 27,
-                                          ),
-                                          onPressed: () {
-                                            showDialog(
-                                              barrierDismissible: false,
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return AlertDialog(
-                                                  backgroundColor:
-                                                      cnst.appPrimaryMaterialColor,
-                                                  title: Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Center(
-                                                          child: Text(
-                                                            "Vendor Details",
-                                                            style: TextStyle(
-                                                              color: Colors.cyan[600],
-                                                              fontSize: 18,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: Icon(
-                                                          Icons.close,
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  content: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Container(
-                                                        height: 80,
-                                                        width: 80,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(50),
-                                                          color: Colors
-                                                              .lightBlueAccent,
-                                                          image:
-                                                              DecorationImage(
-                                                            image: AssetImage(
-                                                                "images/Staff.png"),
-                                                            fit: BoxFit.fill,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 5,
-                                                      ),
-                                                      Text(
-                                                        'XYZ',
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          fontSize: 20,
-                                                          color: Colors.cyan[600],
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Business Name',
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'ABC Hardware',
-                                                            style: TextStyle(
-                                                              fontStyle:
-                                                                  FontStyle
-                                                                      .italic,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              color: Colors.cyan[600],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Category',
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Plumber',
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              color: Colors.cyan[600],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Address',
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Expanded(
-                                                            child: Text(
-                                                              'A-103, Someshwara Enclave, Vesu, Surat, 395007',
-                                                              style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                                color: Colors.cyan[600],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Contact',
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            '989859596565',
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              color: Colors.cyan[600],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Email',
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'abc@gmail.com',
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              color: Colors.cyan[600],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
-                        )
+                        ),
                       ],
+                    )
+                        : Center(
+                      child: Text('No Vendors Found'),
+                    )
+                        : Center(
+                      child: CircularProgressIndicator(),
                     ),
                     Column(
                       children: <Widget>[
                         Container(
                             child: CarouselSlider(
-                          height: 115,
-                          // aspectRatio: 16/5,
-                          viewportFraction: 0.8,
-                          initialPage: 0,
-                          // enlargeCenterPage: true,
-                          reverse: false,
-                          autoPlayCurve: Curves.fastOutSlowIn,
-                          autoPlay: true,
-                          items: _imageUrls.map((i) {
-                            return Builder(builder: (BuildContext context) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 10.0, left: 4.0, right: 4.0),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  child: FadeInImage.assetNetwork(
-                                    placeholder: "images/placeholder.png",
-                                    image: '$i',
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              );
-                            });
-                          }).toList(),
-                        )),
+                              height: 115,
+                              // aspectRatio: 16/5,
+                              viewportFraction: 0.8,
+                              initialPage: 0,
+                              // enlargeCenterPage: true,
+                              reverse: false,
+                              autoPlayCurve: Curves.fastOutSlowIn,
+                              autoPlay: true,
+                              items: _imageUrls.map((i) {
+                                return Builder(builder: (BuildContext context) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 10.0, left: 4.0, right: 4.0),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: FadeInImage.assetNetwork(
+                                        placeholder: "images/placeholder.png",
+                                        image: '$i',
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                  );
+                                });
+                              }).toList(),
+                            )),
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 10.0),
                             child: Container(
                                 child: isLoading
                                     ? Container(
-                                        child: Center(
-                                            child: CircularProgressIndicator()),
-                                      )
+                                  child: Center(
+                                      child: CircularProgressIndicator()),
+                                )
                                     : ServiceData.length > 0
-                                        ? GridView.builder(
-                                            shrinkWrap: true,
-                                            itemCount: ServiceData.length,
-                                            itemBuilder: _getServiceMenu,
-                                            gridDelegate:
-                                                SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 4,
+                                    ? GridView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: ServiceData.length,
+                                    itemBuilder: _getServiceMenu,
+                                    gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 4,
 //                                childAspectRatio: MediaQuery.of(context)
 //                                        .size
 //                                        .width /
 //                                    (MediaQuery.of(context).size.height /1.8),
-                                            ))
-                                        : Center(
-                                            child: Text(
-                                            "No Data Founddddd",
-                                            style: TextStyle(
-                                                color: Colors.grey,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 18),
-                                          ))),
+                                    ))
+                                    : Center(
+                                    child: Text(
+                                      "No Data Founddddd",
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 18),
+                                    ))),
                           ),
                         )
                       ],

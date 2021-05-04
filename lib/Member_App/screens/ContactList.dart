@@ -14,7 +14,8 @@ import 'AddGuest.dart';
 
 class ContactList extends StatefulWidget {
   bool fromSos;
-  ContactList({this.fromSos});
+  Function onAddFromContactList;
+  ContactList({this.fromSos,this.onAddFromContactList});
   @override
   _ContactListState createState() => _ContactListState();
 }
@@ -36,7 +37,7 @@ class _ContactListState extends State<ContactList> {
   @override
   void initState() {
     print(widget.fromSos);
-   refreshContacts();
+    refreshContacts();
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(message: 'Please Wait');
   }
@@ -73,11 +74,11 @@ class _ContactListState extends State<ContactList> {
       leading: (c.contact.avatar != null && c.contact.avatar.length > 0)
           ? CircleAvatar(backgroundImage: MemoryImage(c.contact.avatar))
           : CircleAvatar(
-              child: Text(
-                c.contact.displayName.toUpperCase().substring(0, 1) ?? "",
-                style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
-              ),
-            ),
+        child: Text(
+          c.contact.displayName.toUpperCase().substring(0, 1) ?? "",
+          style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
+        ),
+      ),
       title: Text(c.contact.displayName ?? ""),
       subtitle: list.length >= 1 && list[0]?.value != null
           ? Text(list[0].value)
@@ -109,6 +110,9 @@ class _ContactListState extends State<ContactList> {
             setState(() {
               emergencyContact = data.Data;
             });
+            Navigator.pop(context);
+            Navigator.pop(context);
+            widget.onAddFromContactList();
           } else {}
         }, onError: (e) {
           showMsg("Something Went Wrong Please Try Again");
@@ -145,6 +149,8 @@ class _ContactListState extends State<ContactList> {
             ),
           ),
         );
+        // Navigator.pop(context);
+        // Navigator.pop(context);
       }
       else{
         Navigator.push(
@@ -175,12 +181,12 @@ class _ContactListState extends State<ContactList> {
             "WingId": "$wingId",
           });
         }
-          // Fluttertoast.showToast(
-          //     msg: "Mobile Number Is Not Valid",
-          //     backgroundColor: Colors.red,
-          //     textColor: Colors.white,
-          //     gravity: ToastGravity.TOP,
-          //     toastLength: Toast.LENGTH_SHORT);
+        // Fluttertoast.showToast(
+        //     msg: "Mobile Number Is Not Valid",
+        //     backgroundColor: Colors.red,
+        //     textColor: Colors.white,
+        //     gravity: ToastGravity.TOP,
+        //     toastLength: Toast.LENGTH_SHORT);
       } else {
         setState(() {
           c.isChecked = value;
@@ -243,7 +249,7 @@ class _ContactListState extends State<ContactList> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -294,99 +300,99 @@ class _ContactListState extends State<ContactList> {
           actions: <Widget>[
             _selectedContact.length > 0
                 ? GestureDetector(
-                    onTap: () {
-                      AddVisitorList();
-                    },
-                    child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Container(
-                            width: 90,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5))),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 3, right: 3, top: 2, bottom: 2),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                  Text(
-                                    "Add",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.send,
-                                    color: Colors.white,
-                                  ),
-                                ],
+              onTap: () {
+                AddVisitorList();
+              },
+              child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Container(
+                      width: 90,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white),
+                          borderRadius:
+                          BorderRadius.all(Radius.circular(5))),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 3, right: 3, top: 2, bottom: 2),
+                        child: Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Text(
+                              "Add",
+                              style: TextStyle(
+                                color: Colors.white,
                               ),
-                            ))),
-                  )
+                            ),
+                            Icon(
+                              Icons.send,
+                              color: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ))),
+            )
                 : Container(),
           ],
         ),
         body: _isLoading
             ? Container(
-                child: Center(child: CircularProgressIndicator()),
-              )
+          child: Center(child: CircularProgressIndicator()),
+        )
             : Column(
-                children: <Widget>[
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(top: 8.0, right: 8.0, left: 8.0),
-                    child: TextFormField(
-                      onChanged: searchOperation,
-                      controller: txtSearch,
-                      scrollPadding: EdgeInsets.all(0),
-                      decoration: InputDecoration(
-                          counter: Text(""),
-                          border: new OutlineInputBorder(
-                              borderSide: new BorderSide(color: Colors.black),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                          suffixIcon: Icon(
-                            Icons.search,
-                            color: cnst.appPrimaryMaterialColor,
-                          ),
-                          hintText: "Search Contact"),
-                      maxLength: 10,
-                      keyboardType: TextInputType.text,
-                      style: TextStyle(color: Colors.black),
+          children: <Widget>[
+            Padding(
+              padding:
+              const EdgeInsets.only(top: 8.0, right: 8.0, left: 8.0),
+              child: TextFormField(
+                onChanged: searchOperation,
+                controller: txtSearch,
+                scrollPadding: EdgeInsets.all(0),
+                decoration: InputDecoration(
+                    counter: Text(""),
+                    border: new OutlineInputBorder(
+                        borderSide: new BorderSide(color: Colors.black),
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(8))),
+                    suffixIcon: Icon(
+                      Icons.search,
+                      color: cnst.appPrimaryMaterialColor,
                     ),
-                  ),
-                  Expanded(
-                    child: _uiCustomContacts.length > 0
-                        ? isSearching
-                            ? ListView.builder(
-                                itemCount: _searchContact?.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  CustomContact _contact =
-                                      _searchContact[index];
-                                  var _phonesList =
-                                      _contact.contact.phones.toList();
-                                  return _buildListTile(_contact, _phonesList);
-                                },
-                              )
-                            : ListView.builder(
-                                itemCount: _uiCustomContacts?.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  CustomContact _contact =
-                                      _uiCustomContacts[index];
-                                  var _phonesList =
-                                      _contact.contact.phones.toList();
-                                  return _buildListTile(_contact, _phonesList);
-                                },
-                              )
-                        : Container(
-                            child: Center(child: Text("No Data Found")),
-                          ),
-                  ),
-                ],
+                    hintText: "Search Contact"),
+                maxLength: 10,
+                keyboardType: TextInputType.text,
+                style: TextStyle(color: Colors.black),
               ),
+            ),
+            Expanded(
+              child: _uiCustomContacts.length > 0
+                  ? isSearching
+                  ? ListView.builder(
+                itemCount: _searchContact?.length,
+                itemBuilder: (BuildContext context, int index) {
+                  CustomContact _contact =
+                  _searchContact[index];
+                  var _phonesList =
+                  _contact.contact.phones.toList();
+                  return _buildListTile(_contact, _phonesList);
+                },
+              )
+                  : ListView.builder(
+                itemCount: _uiCustomContacts?.length,
+                itemBuilder: (BuildContext context, int index) {
+                  CustomContact _contact =
+                  _uiCustomContacts[index];
+                  var _phonesList =
+                  _contact.contact.phones.toList();
+                  return _buildListTile(_contact, _phonesList);
+                },
+              )
+                  : Container(
+                child: Center(child: Text("No Data Found")),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -139,7 +139,7 @@ class _VisitorOtpScreenState extends State<VisitorOtpScreen> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

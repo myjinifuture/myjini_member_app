@@ -109,7 +109,8 @@ class _RingingState extends State<Ringing> {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    JoinPage(fromMemberData: widget.fromMemberData),
+                    JoinPage(              unknownEntry: false,
+                        fromMemberData: widget.fromMemberData),
               ),
             );
           }else{
@@ -157,7 +158,8 @@ class _RingingState extends State<Ringing> {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    JoinPage(fromMemberData: widget.fromMemberData,
+                    JoinPage(              unknownEntry: false,
+                      fromMemberData: widget.fromMemberData,
                       unknownVisitorEntryId: data.Data["EntryId"],),
               ),
             );
@@ -503,15 +505,5 @@ class _RingingState extends State<Ringing> {
     );
   }
 
-  Future<void> onJoin() async {
-    // update input validation
-      // push video page with given channel name
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => JoinPage(fromMemberData: widget.fromMemberData,),
-        ),
-      );
-  }
 
 }

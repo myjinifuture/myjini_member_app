@@ -81,7 +81,7 @@ class _ViewGalleryPhotosState extends State<ViewGalleryPhotos> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -104,7 +104,7 @@ class _ViewGalleryPhotosState extends State<ViewGalleryPhotos> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -112,7 +112,7 @@ class _ViewGalleryPhotosState extends State<ViewGalleryPhotos> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 deleteGallery();
               },
             ),

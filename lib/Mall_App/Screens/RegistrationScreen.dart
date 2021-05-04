@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -28,17 +28,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formkey = new GlobalKey<FormState>();
   bool isFCMtokenLoading = false;
   String fcmToken;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool isLoading = false;
 
   @override
   void initState() {
-    _firebaseMessaging.getToken().then((token) {
+    // _firebaseMessaging.getToken().then((token) {
       setState(() {
         _phonenumberController.text = widget.Mobile;
-        fcmToken = token;
-        print('fcm in registration----------->' + '${token}');
-      });
+        // fcmToken = token;
+        // print('fcm in registration----------->' + '${token}');
+      // });
     });
 
     print(_phonenumberController.text);

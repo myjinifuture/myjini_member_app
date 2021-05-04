@@ -74,7 +74,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               // DocumentData = data.Data;
-              for(int i=data.Data.length-1;i>0;i--){
+              for(int i=data.Data.length-1;i>=0;i--){
                 DocumentData.add(data.Data[i]);
               }
             });

@@ -13,7 +13,7 @@ class _DailyHelpState extends State<DailyHelp> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
+        Navigator.of(context).pop();
       },
       child: DefaultTabController(
         length: 2,
@@ -44,7 +44,7 @@ class _DailyHelpState extends State<DailyHelp> {
             leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/HomeScreen');
+                  Navigator.of(context).pop();
                 }),
           ),
           body: TabBarView(

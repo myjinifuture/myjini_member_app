@@ -120,7 +120,7 @@ class _ComplaintComponentState extends State<ComplaintComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -128,7 +128,7 @@ class _ComplaintComponentState extends State<ComplaintComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _deleteComplaint();
               },
             ),
@@ -152,7 +152,7 @@ class _ComplaintComponentState extends State<ComplaintComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -160,7 +160,7 @@ class _ComplaintComponentState extends State<ComplaintComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _addToSolved();
               },
             ),
@@ -183,7 +183,7 @@ class _ComplaintComponentState extends State<ComplaintComponent> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

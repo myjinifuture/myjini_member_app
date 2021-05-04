@@ -29,6 +29,7 @@ class _WingFlatState extends State<WingFlat> {
   List colors = [];
   bool allchecked = false;
   bool isSubmitPressed = false;
+  List<String> alphabets = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
 
 
   List flatList = [];
@@ -153,6 +154,47 @@ class _WingFlatState extends State<WingFlat> {
         flatCount = flatCount + 1 - int.parse(widget.maxUnitData) * 100;
       }
     }
+    else if (widget.formatData == 5) {
+      int flatCount = 1;
+      int countOfAlphabet = 0;
+      for (int i = 0; i < int.parse(widget.floorData); i++) {
+        for (int j = 0; j < int.parse(widget.maxUnitData); j++) {
+          print("================");
+          print(flatCount);
+          flatList.add({
+            'flatTypeColor': flatColorsList[0],
+            'flatNumber': flatCount.toString() + "${alphabets[countOfAlphabet]}",
+            "FlatType" : "",
+          });
+          countOfAlphabet+=1;
+          //flatCount++;
+          print("================bb");
+          print(flatCount);
+        }
+        countOfAlphabet = 0;
+        flatCount+=1;
+      }
+    }
+    else if (widget.formatData == 6) {
+      int flatCount = 1;
+      int countOfAlphabet = 0;
+      for (int i = 0; i < int.parse(widget.floorData); i++) {
+        for (int j = 0; j < int.parse(widget.maxUnitData); j++) {
+          print("================");
+          print(flatCount);
+          flatList.add({
+            'flatTypeColor': flatColorsList[0],
+            'flatNumber': "${alphabets[countOfAlphabet]}" + flatCount.toString() ,
+            "FlatType" : "",
+          });
+          flatCount++;
+          print("================bb");
+          print(flatCount);
+        }
+        countOfAlphabet+=1;
+        flatCount=1;
+      }
+    }
   }
 
   List flatnoAndType = [];
@@ -218,7 +260,7 @@ class _WingFlatState extends State<WingFlat> {
     // return columnList;
   }
 
-  changeColor({int index,int flatno}) {
+  changeColor({int index,var flatno}) {
     setState(() {
       int colorIndex = flatColorsList.indexOf(flatList[index]["flatTypeColor"]);
       if (colorIndex <= 3){
@@ -296,7 +338,7 @@ class _WingFlatState extends State<WingFlat> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

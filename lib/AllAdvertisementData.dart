@@ -24,7 +24,7 @@ class _AllAdvertisementDataState extends State<AllAdvertisementData> {
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pushReplacementNamed(context, "/HomeScreen");
+              Navigator.of(context).pop();
             }),
       ),
       body: ListView.builder(

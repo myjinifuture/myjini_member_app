@@ -9486,7 +9486,7 @@ class _MyDialogState extends State<MyDialog> {
                 style: TextStyle(color: cnst.appMaterialColor),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

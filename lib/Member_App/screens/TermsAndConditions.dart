@@ -60,7 +60,7 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

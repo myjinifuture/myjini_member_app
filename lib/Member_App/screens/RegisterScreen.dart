@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -62,7 +61,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String codeValue = "";
   bool isFCMtokenLoading = false;
   String fcmToken;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   bool buttonPressed = false;
   bool isFlatSelected = false;
 
@@ -82,14 +81,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _CodeVerification(widget.societyCode);
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(message: 'Please Wait');
-    _firebaseMessaging.getToken().then((token) {
-      setState(() {
-        fcmToken = token;
-        print('fcm in register----------->' + '${token}');
-      });
-      print("fcmToken1");
-      print(fcmToken);
-    });
+    // _firebaseMessaging.getToken().then((token) {
+    //   setState(() {
+    //     fcmToken = token;
+    //     print('fcm in register----------->' + '${token}');
+    //   });
+    //   print("fcmToken1");
+    //   print(fcmToken);
+    // });
     getAllSocieties();
   }
 
@@ -568,7 +567,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 Navigator.pushReplacementNamed(context, "/LoginScreen");
               },
             ),

@@ -69,7 +69,7 @@ class _ExpenseListOfSingleMonthState extends State<ExpenseListOfSingleMonth> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

@@ -84,13 +84,13 @@ class _ServiceComponentState extends State<ServiceComponent> {
                               child: new Text("Ok"),
                               onPressed: () {
                                 DeleteService();
-                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();;
                               },
                             ),
                             new FlatButton(
                               child: new Text("Close"),
                               onPressed: () {
-                                Navigator.of(context).pop();
+                                Navigator.of(context).pop();;
                               },
                             ),
                           ],

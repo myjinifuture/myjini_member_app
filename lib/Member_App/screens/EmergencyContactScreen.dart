@@ -36,7 +36,7 @@ class _EmergencyContactScreenState extends State<EmergencyContactScreen> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -70,11 +70,11 @@ class _EmergencyContactScreenState extends State<EmergencyContactScreen> {
           "memberId": memberId,
         };
         Services.responseHandler(
-                apiName: "member/getMemberSOSContacts", body: data)
+            apiName: "member/getMemberSOSContacts", body: data)
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
-              // emergencyContact = data.Data;
+              emergencyContact = data.Data;
               isLoading = false;
             });
           } else {}
@@ -115,79 +115,80 @@ class _EmergencyContactScreenState extends State<EmergencyContactScreen> {
       ),
       body: Container(
         color: Colors.grey[200],
-        child: emergencyContact.length > 0
-            ? isLoading == false
-                ? AnimationLimiter(
-                    child: ListView.builder(
-                        itemCount: emergencyContact.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
+        child: isLoading == false
+            ? emergencyContact.length > 0
+            ? AnimationLimiter(
+          child: ListView.builder(
+            itemCount: emergencyContact.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                padding: const EdgeInsets.only(
+                    top: 20.0, left: 15, right: 15),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        FadeInImage.assetNetwork(
+                            placeholder: '',
+                            image: Image_Url +
+                                "${emergencyContact[index]["image"]}",
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.fill),
+                        Expanded(
+                          child: Padding(
                             padding: const EdgeInsets.only(
-                                top: 20.0, left: 15, right: 15),
+                                left: 8.0, right: 8),
                             child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    FadeInImage.assetNetwork(
-                                        placeholder: '',
-                                        image: Image_Url +
-                                            "${emergencyContact[index]["image"]}",
-                                        width: 40,
-                                        height: 40,
-                                        fit: BoxFit.fill),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 8.0, right: 8),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              emergencyContact[index]["contactPerson"],
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                            Text(
-                                              emergencyContact[index]
-                                                  ["contactNo"],
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                        launch(
-                                            ('tel:// ${emergencyContact[index]["ContactNo"]}'));
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10.0),
-                                        child: Icon(
-                                          Icons.call,
-                                          size: 30,
-                                          // color: appPrimaryMaterialColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  emergencyContact[index]
+                                  ["contactPerson"],
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                Text(
+                                  emergencyContact[index]
+                                  ["contactNo"],
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                  ),
                                 ),
                               ],
                             ),
-                          );
-                        },
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                            launch(
+                                ('tel:// ${emergencyContact[index]["ContactNo"]}'));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Icon(
+                              Icons.call,
+                              size: 30,
+                              // color: appPrimaryMaterialColor,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+                  ],
+                ),
+              );
+            },
+          ),
         )
-                : CircularProgressIndicator()
             : Center(
-                child: Text('No Data Found'),
-              ),
+          child: Text('No Data Found'),
+        )
+            : Center(child: CircularProgressIndicator()),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(
@@ -198,9 +199,7 @@ class _EmergencyContactScreenState extends State<EmergencyContactScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => AddMemberSOSContacts(
-                newMemberAdded: (){
-                  _getEmergencyContacts();
-                },
+                newMemberAdded: _getEmergencyContacts,
               ),
             ),
           );

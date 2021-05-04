@@ -88,7 +88,7 @@ class _AddMyResidentsState extends State<AddMyResidents> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -543,8 +543,8 @@ String selectedSocietyId = "";
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
+                Navigator.of(context).pop();;
                 widget.onAddMyResidents();
               },
             ),
@@ -567,7 +567,7 @@ String selectedSocietyId = "";
   //           new FlatButton(
   //             child: new Text("Okay"),
   //             onPressed: () {
-  //               Navigator.of(context).pop();
+  //               Navigator.of(context).pop();;
   //             },
   //           ),
   //         ],
@@ -1620,7 +1620,7 @@ class _AlertStateDialogState extends State<AlertStateDialog> {
             style: TextStyle(color: appPrimaryMaterialColor, fontSize: 18),
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();;
           },
         ),
         new FlatButton(
@@ -1629,7 +1629,7 @@ class _AlertStateDialogState extends State<AlertStateDialog> {
             style: TextStyle(color: appPrimaryMaterialColor, fontSize: 18),
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();;
           },
         ),
       ],
@@ -1739,7 +1739,7 @@ class _AlertSocietyDialogState extends State<AlertSocietyDialog> {
             style: TextStyle(color: appPrimaryMaterialColor, fontSize: 18),
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();;
           },
         ),
         new FlatButton(
@@ -1748,7 +1748,7 @@ class _AlertSocietyDialogState extends State<AlertSocietyDialog> {
             style: TextStyle(color: appPrimaryMaterialColor, fontSize: 18),
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();;
           },
         ),
       ],

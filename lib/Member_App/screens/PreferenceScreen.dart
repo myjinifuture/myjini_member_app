@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 class PreferenceScreen extends StatefulWidget {
   @override
@@ -19,19 +18,19 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
   bool isMuteNotificationsSwitched = false;
   bool isLoading=false;
   String fcmToken;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
 
   @override
   void initState() {
-    _firebaseMessaging.getToken().then((token) {
-      setState(() {
-        fcmToken = token;
-        getMemberPreferences();
-      });
-      print("Preference Screen");
-      print('FCM----------->' + '${token}');
-    });
+    // _firebaseMessaging.getToken().then((token) {
+    //   setState(() {
+    //     fcmToken = token;
+    //     getMemberPreferences();
+    //   });
+    //   print("Preference Screen");
+    //   print('FCM----------->' + '${token}');
+    // });
   }
 
   void toggleEmailSwitch(bool value) {
@@ -200,7 +199,7 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

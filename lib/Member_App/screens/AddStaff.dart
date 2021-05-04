@@ -222,7 +222,7 @@ class _AddStaffState extends State<AddStaff> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -284,7 +284,7 @@ class _AddStaffState extends State<AddStaff> {
               color: Colors.grey[100],
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -1326,7 +1326,7 @@ class _AddStaffState extends State<AddStaff> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -1388,7 +1388,7 @@ class _AddStaffState extends State<AddStaff> {
               color: Colors.grey[100],
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

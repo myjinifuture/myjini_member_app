@@ -160,7 +160,7 @@ class _FamilyMemberComponentState extends State<FamilyMemberComponent> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -352,7 +352,7 @@ class _AlertDeleteState extends State<AlertDelete> {
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();;
           },
         ),
         new FlatButton(
@@ -361,7 +361,7 @@ class _AlertDeleteState extends State<AlertDelete> {
                   TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           onPressed: () {
             _DeleteFamilyMember(widget.deleteId);
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();;
           },
         ),
       ],
@@ -412,7 +412,7 @@ class _AlertDeleteState extends State<AlertDelete> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

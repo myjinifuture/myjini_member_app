@@ -75,7 +75,7 @@ class _GetMyvehicleState extends State<GetMyvehicle> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -138,7 +138,7 @@ class _GetMyvehicleState extends State<GetMyvehicle> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -146,7 +146,7 @@ class _GetMyvehicleState extends State<GetMyvehicle> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _DeleteMemberVehicle(VehicleNo); // ask monil to make deletemembervehicle 12 - number
               },
             ),

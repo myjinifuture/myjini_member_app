@@ -58,7 +58,7 @@ class _MyWishListComponentState extends State<MyWishListComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -66,7 +66,7 @@ class _MyWishListComponentState extends State<MyWishListComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 _wishListDelete();
               },
             ),
@@ -126,7 +126,7 @@ class _MyWishListComponentState extends State<MyWishListComponent> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

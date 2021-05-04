@@ -100,7 +100,7 @@ class _StaffInOutState extends State<StaffInOut> with TickerProviderStateMixin {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

@@ -189,7 +189,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -821,7 +821,7 @@ class _Addvehicale_dialogueState extends State<Addvehicale_dialogue> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

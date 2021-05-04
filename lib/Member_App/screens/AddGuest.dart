@@ -312,7 +312,7 @@ class _AddGuestState extends State<AddGuest> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -346,8 +346,8 @@ class _AddGuestState extends State<AddGuest> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            '/HomeScreen', (Route<dynamic> route) => false);
+        Navigator.of(context).pop();
+
       },
       child: RepaintBoundary(
         key: _containerKey,
@@ -357,8 +357,8 @@ class _AddGuestState extends State<AddGuest> {
             leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/HomeScreen', (Route<dynamic> route) => false);
+                  Navigator.of(context).pop();
+
                 }),
           ),
           body: SingleChildScrollView(

@@ -47,7 +47,7 @@ class getEmergencyNumberSocietyWiseState
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -129,7 +129,7 @@ class getEmergencyNumberSocietyWiseState
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -137,7 +137,7 @@ class getEmergencyNumberSocietyWiseState
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 deleteEmergencyContact();
               },
             ),

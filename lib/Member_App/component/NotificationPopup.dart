@@ -17,8 +17,9 @@ import 'package:smart_society_new/Member_App/screens/ViewVisitorPopUpImage.dart'
 class NotificationPopup extends StatefulWidget {
   var data;
   String sound;
+  bool unknownEntry;
 
-  NotificationPopup(this.data, {this.sound});
+  NotificationPopup(this.data, {this.sound,this.unknownEntry});
 
   @override
   _NotificationPopupState createState() => _NotificationPopupState();
@@ -286,6 +287,7 @@ class _NotificationPopupState extends State<NotificationPopup> {
                 MaterialPageRoute(
                   builder: (context) => JoinPage(
                       fromMemberData: widget.data,
+                      unknownEntry : widget.unknownEntry,
                       entryIdWhileGuestEntry: widget.data["EntryId"],
                       videoCall: isVideoCall.toString()),
                 ),
@@ -296,6 +298,7 @@ class _NotificationPopupState extends State<NotificationPopup> {
                 MaterialPageRoute(
                   builder: (context) => JoinPage(
                       fromMemberData: widget.data,
+                      unknownEntry : widget.unknownEntry,
                       entryIdWhileGuestEntry: data.Data[0]["_id"],
                       videoCall: isVideoCall.toString()),
                 ),
@@ -712,15 +715,4 @@ class _NotificationPopupState extends State<NotificationPopup> {
           );
   }
 
-  Future<void> onJoin() {
-    // await for camera and mic permissions before pushing video page
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => JoinPage(
-          fromMemberData: widget.data,
-        ),
-      ),
-    );
-  }
 }

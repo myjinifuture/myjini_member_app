@@ -53,7 +53,7 @@ class _EventsAdminState extends State<EventsAdmin> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -109,7 +109,7 @@ class _EventsAdminState extends State<EventsAdmin> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
             new FlatButton(
@@ -117,7 +117,7 @@ class _EventsAdminState extends State<EventsAdmin> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 deleteEvent(id);
               },
             ),

@@ -96,7 +96,7 @@ class _UpdateEventState extends State<UpdateEvent> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

@@ -205,7 +205,7 @@ class _VisitorRegisterState extends State<VisitorRegister> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

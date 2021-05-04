@@ -265,7 +265,7 @@ class _SOSDailogState extends State<SOSDailog> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -313,7 +313,7 @@ class _SOSDailogState extends State<SOSDailog> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
                 Navigator.pushReplacementNamed(context, "/LoginScreen");
               },
             ),

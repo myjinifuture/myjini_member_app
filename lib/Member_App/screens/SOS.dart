@@ -298,13 +298,4 @@ class _SOSState extends State<SOS> {
     );
   }
 
-  Future<void> onJoin() {
-    // await for camera and mic permissions before pushing video page
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => JoinPage(),
-      ),
-    );
-  }
 }

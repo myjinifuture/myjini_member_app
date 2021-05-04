@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -34,19 +34,19 @@ class _LoginScreenState extends State<LoginScreen> {
   bool ischeckloading = false;
   bool isFCMtokenLoading = false;
   String fcmToken;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   String OTPstatus = "1";
 
   @override
   void initState() {
-    _firebaseMessaging.getToken().then((token) {
-      setState(() {
-        fcmToken = token;
-      });
-      print("loginscreen");
-      print('FCM----------->' + '${token}');
-    });
+    // _firebaseMessaging.getToken().then((token) {
+    //   setState(() {
+    //     fcmToken = token;
+    //   });
+    //   print("loginscreen");
+    //   print('FCM----------->' + '${token}');
+    // });
   }
 
   saveDataToSession(var data) async {

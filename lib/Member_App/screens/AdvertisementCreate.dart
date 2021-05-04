@@ -290,7 +290,7 @@ class _AdvertisementCreateState extends State<AdvertisementCreate> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],

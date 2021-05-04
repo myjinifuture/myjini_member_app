@@ -25,7 +25,9 @@ class _WingDetailState extends State<WingDetail> {
     ["7", "8", "9", "4", "5", "6", "1", "2", "3"],
     ["201", "202", "203", "101", "102", "103", "G1", "G2", "G3"],
     ["4", "5", "6", "1", "2", "3", "G1", "G2", "G3"],
-    ["103", "203", "303", "102", "202", "302", "101", "201", "301"]
+    ["103", "203", "303", "102", "202", "302", "101", "201", "301"],
+    ["3A", "3B", "3C", "2A", "2B", "2C", "1A", "1B", "1C"],
+    ["C3", "C2", "C1", "B3", "B2", "B1", "A3", "A2", "A1"],
   ];
   TextEditingController txtname = new TextEditingController();
   TextEditingController txtfloor = new TextEditingController();
@@ -114,7 +116,7 @@ class _WingDetailState extends State<WingDetail> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -129,6 +131,70 @@ class _WingDetailState extends State<WingDetail> {
     super.didChangeDependencies();
     print("yes");
   }
+
+  List<TextEditingController> _optionList = [];
+
+  Widget setupAlertDialoadContainer() {
+    return Container(
+      height: 300.0, // Change as per your requirement
+      width: 300.0,
+        child: Stack(
+          children: [
+            ListView.builder(
+              padding: EdgeInsets.all(0),
+              shrinkWrap: true,
+              // physics: NeverScrollableScrollPhysics(),
+              itemCount: _optionList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  height: 45,
+                  margin: EdgeInsets.only(
+                      top: 5, left: 5, right: 5),
+                  child: TextFormField(
+                    controller: _optionList[index],
+                    scrollPadding: EdgeInsets.all(0),
+                    decoration: InputDecoration(
+                        border: new OutlineInputBorder(
+                            borderSide: new BorderSide(
+                                color: Colors.black),
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(10))),
+                        hintText: "Option ${index + 1}",
+                        hintStyle: TextStyle(
+                          fontSize: 13,
+                        )),
+                    keyboardType: TextInputType.text,
+                    style: TextStyle(color: Colors.black),
+                  ),
+                );
+              },
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: RaisedButton(
+                elevation: 3,
+                onPressed: () {
+                  Navigator.of(context).pop();;
+                },
+                color: constant.appPrimaryMaterialColor,
+                child: Text(
+                  'Submit',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ],
+        ),
+    );
+  }
+
+  TextEditingController txtOption =
+  new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -257,47 +323,6 @@ class _WingDetailState extends State<WingDetail> {
               ),
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
-          //   child: Row(
-          //     children: <Widget>[
-          //       Text("Parking Slots",
-          //           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500))
-          //     ],
-          //   ),
-          // ),
-          // Padding(
-          //   padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 6.0),
-          //   child: SizedBox(
-          //     height: 50,
-          //     child: TextFormField(
-          //       validator: (value) {
-          //         if (value.trim() == "" || value.length < 10) {
-          //           return 'Please Enter Parking slots';
-          //         }
-          //         return null;
-          //       },
-          //       maxLength: 10,
-          //       keyboardType: TextInputType.number,
-          //       controller: txtParkingSlots,
-          //       textInputAction: TextInputAction.next,
-          //       decoration: InputDecoration(
-          //           counterText: "",
-          //           fillColor: Colors.grey[200],
-          //           contentPadding:
-          //           EdgeInsets.only(top: 5, left: 10, bottom: 5),
-          //           focusedBorder: OutlineInputBorder(
-          //               borderRadius: BorderRadius.all(Radius.circular(5)),
-          //               borderSide: BorderSide(width: 0, color: Colors.black)),
-          //           enabledBorder: OutlineInputBorder(
-          //               borderRadius: BorderRadius.all(Radius.circular(4)),
-          //               borderSide: BorderSide(width: 0, color: Colors.black)),
-          //           hintText: 'Enter Parking Slots',
-          //           // labelText: "Maximum Units",
-          //           hintStyle: TextStyle(color: Colors.grey, fontSize: 14)),
-          //     ),
-          //   ),
-          // ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -547,7 +572,54 @@ class _WingDetailState extends State<WingDetail> {
                         ));
                   }),
             ),
-          )
+          ),
+          // RaisedButton(
+          //   elevation: 3,
+          //   onPressed: () {
+          //     if(txtUnit.text == "" || txtUnit.text == null){
+          //       Fluttertoast.showToast(
+          //           msg: "Please Select Flats Per Floor First",
+          //           backgroundColor: Colors.red,
+          //           gravity: ToastGravity.TOP,
+          //           textColor: Colors.white);
+          //     }
+          //     else{
+          //       _optionList.clear();
+          //       for (int i = 0; i < int.parse(txtUnit.text); i++) {
+          //         _optionList.add(txtOption);
+          //       }
+          //       print("_optionList");
+          //       print(_optionList);
+          //       print(txtUnit.text.length);
+          //       showDialog(
+          //           context: context,
+          //           builder: (BuildContext context) {
+          //             return AlertDialog(
+          //               title: Text('Select Number Sequence per Floor'),
+          //               content: setupAlertDialoadContainer(),
+          //             );
+          //           });
+          //       // showTextField(txtUnit : txtUnit.text);
+          //       // showDialog(
+          //       //   context: context,
+          //       //   builder: (BuildContext context) => showTextField(txtUnit : txtUnit.text),
+          //       //
+          //       //
+          //       // );
+          //     }
+          //     // Navigator.pushNamed(context, '/AllRemindersScreen');
+          //   },
+          //   color: constant.appPrimaryMaterialColor,
+          //   child: Text(
+          //     'Create Custom',
+          //     style: TextStyle(
+          //       color: Colors.white,
+          //     ),
+          //   ),
+          //   shape: RoundedRectangleBorder(
+          //     borderRadius: BorderRadius.circular(10),
+          //   ),
+          // ),
         ],
       ),
       bottomNavigationBar: SizedBox(
@@ -595,5 +667,86 @@ class _WingDetailState extends State<WingDetail> {
         ),
       ),
     );
+  }
+}
+
+class showTextField extends StatefulWidget {
+  String txtUnit;
+  showTextField({this.txtUnit});
+  @override
+  _showTextFieldState createState() => _showTextFieldState();
+}
+
+class _showTextFieldState extends State<showTextField> {
+
+  List<TextEditingController> _optionList = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    for (int i = 0; i <
+        widget.txtUnit.length; i++) {
+      TextEditingController txtOption =
+      new TextEditingController();
+      _optionList.add(txtOption);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("widget.txtUnit.length");
+    print(widget.txtUnit.length);
+    return AlertDialog(
+          title: new Text("Delete Confirmation"),
+          content: new Container(
+            height: 50.0 * widget.txtUnit.length,
+            child: ListView.builder(
+              padding: EdgeInsets.all(0),
+              shrinkWrap: true,
+              // physics: NeverScrollableScrollPhysics(),
+              itemCount: widget.txtUnit.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  height: 45,
+                  margin: EdgeInsets.only(
+                      top: 5, left: 5, right: 5),
+                  child: TextFormField(
+                    controller: _optionList[index],
+                    scrollPadding: EdgeInsets.all(0),
+                    decoration: InputDecoration(
+                        border: new OutlineInputBorder(
+                            borderSide: new BorderSide(
+                                color: Colors.black),
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(10))),
+                        hintText: "Option ${index + 1}",
+                        hintStyle: TextStyle(
+                          fontSize: 13,
+                        )),
+                    keyboardType: TextInputType.text,
+                    style: TextStyle(color: Colors.black),
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Ok"),
+              onPressed: () {
+                // DeleteOffer();
+                Navigator.of(context).pop();;
+              },
+            ),
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();;
+              },
+            ),
+          ],
+        );
   }
 }

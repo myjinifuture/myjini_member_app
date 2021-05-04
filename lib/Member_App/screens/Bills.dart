@@ -28,15 +28,15 @@ class _BillsState extends State<Bills> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
-      },
+Navigator.of(context).pop();
+},
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
           leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
+                Navigator.of(context).pop();
               }),
           centerTitle: true,
           title: Text(
