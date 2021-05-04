@@ -416,6 +416,7 @@ String selectedSocietyId = "";
                 backgroundColor: Colors.green);
             // Navigator.pushReplacementNamed(context, "/ProfileDetail");
             Navigator.pop(context);
+            widget.onAddMyResidents();
           } else {
             Fluttertoast.showToast(
                 msg: "Details Already Exists!!!",

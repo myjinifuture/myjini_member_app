@@ -227,243 +227,238 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/Complaints');
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/Complaints');
-              }),
-          centerTitle: true,
-          title: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Text(
-              'Add Complaint',
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(10),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pushReplacementNamed(context, '/Complaints');
+        //     }),
+        centerTitle: true,
+        title: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text(
+            'Add Complaint',
+            style: TextStyle(fontSize: 18),
           ),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                          child: Image.asset('images/Complain.png',
-                              width: 30, height: 30)),
-                    ],
-                  ),
-                ),
-                Row(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(10),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text("Complaint to Secretary",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black54,
-                            fontSize: 16))
+                    Container(
+                        child: Image.asset('images/Complain.png',
+                            width: 30, height: 30)),
                   ],
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(top: 15.0, right: 8.0, left: 8.0),
-                  child: Row(
-                    children: <Widget>[
-                      Text("Complaint Title",
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500))
-                    ],
-                  ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text("Complaint to Secretary",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black54,
+                          fontSize: 16))
+                ],
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.only(top: 15.0, right: 8.0, left: 8.0),
+                child: Row(
+                  children: <Widget>[
+                    Text("Complaint Title",
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500))
+                  ],
                 ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 8.0, right: 8.0, top: 6.0),
-                  child: Container(
-                    height: 55,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: TextFormField(
-                            controller: _Title,
-                            decoration: InputDecoration(
-                              hintText: "Title",
-                              hintStyle: TextStyle(
-                                  fontSize: 14, color: Colors.grey[400]),
-                              border: InputBorder.none,
-                            ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.only(left: 8.0, right: 8.0, top: 6.0),
+                child: Container(
+                  height: 55,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: TextFormField(
+                          controller: _Title,
+                          decoration: InputDecoration(
+                            hintText: "Title",
+                            hintStyle: TextStyle(
+                                fontSize: 14, color: Colors.grey[400]),
+                            border: InputBorder.none,
                           ),
                         ),
-                      ],
-                    ),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 1, color: constant.appPrimaryMaterialColor),
-                        borderRadius: BorderRadius.all(Radius.circular(6.0))),
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(top: 15.0, right: 8.0, left: 8.0),
-                  child: Row(
-                    children: <Widget>[
-                      Text("Description",
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500))
+                      ),
                     ],
                   ),
-                ),
-                Container(
                   decoration: BoxDecoration(
                       border: Border.all(
                           width: 1, color: constant.appPrimaryMaterialColor),
                       borderRadius: BorderRadius.all(Radius.circular(6.0))),
-                  margin: EdgeInsets.all(8.0),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 8.0, right: 6.0, bottom: 4.0),
-                    child: TextFormField(
-                      controller: _Description,
-                      maxLines: 3,
-                      maxLength: 100,
-                      keyboardType: TextInputType.multiline,
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Enter Something",
-                          hintStyle:
-                              TextStyle(fontSize: 14, color: Colors.grey[400])),
-                    ),
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.only(top: 15.0, right: 8.0, left: 8.0),
+                child: Row(
+                  children: <Widget>[
+                    Text("Description",
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500))
+                  ],
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 1, color: constant.appPrimaryMaterialColor),
+                    borderRadius: BorderRadius.all(Radius.circular(6.0))),
+                margin: EdgeInsets.all(8.0),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 8.0, right: 6.0, bottom: 4.0),
+                  child: TextFormField(
+                    controller: _Description,
+                    maxLines: 3,
+                    maxLength: 100,
+                    keyboardType: TextInputType.multiline,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Enter Something",
+                        hintStyle:
+                            TextStyle(fontSize: 14, color: Colors.grey[400])),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    height: 48,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: constant.appPrimaryMaterialColor)),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<dynamic>(
-                        hint: dropdownValue == null
-                            ? Text(
-                          "  Select Complaint Category",
-                          style: TextStyle(
-                            color: Colors.black,
-                          ),
-                        )
-                            : Text(dropdownValue),
-                        dropdownColor: Colors.white,
-                        icon: Icon(
-                          Icons.arrow_drop_down,
-                          size: 40,
-                          color: Colors.grey,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Container(
+                  height: 48,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: constant.appPrimaryMaterialColor)),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<dynamic>(
+                      hint: dropdownValue == null
+                          ? Text(
+                        "  Select Complaint Category",
+                        style: TextStyle(
+                          color: Colors.black,
                         ),
-                        isExpanded: true,
-                        value: dropdownValue,
-                        items: complaintsName.map((value) {
-                          return DropdownMenuItem<dynamic>(
-                              value: value["complainName"],
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text(value["complainName"]),
-                              ));
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            dropdownValue = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Capture Complaint Image",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[600])),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    child: _image == null
-                        ? Container()
-                        : Container(
-                            child: Image.file(File(_image.path),
-                                height: 200, width: 200, fit: BoxFit.fill),
-                          ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      GestureDetector(
-                        child: Image.asset('images/Camera.png',
-                            fit: BoxFit.cover,
-                            width: 50,
-                            height: 50,
-                            color: Colors.grey),
-                        onTap: () {
-                          cameraImage();
-                        },
-                      ),
-                      GestureDetector(
-                        child: Image.asset('images/galleryselect.png',
-                            fit: BoxFit.cover,
-                            width: 50,
-                            height: 50,
-                            color: Colors.grey),
-                        onTap: () {
-                          galleryImage();
-                        },
                       )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 15.0, bottom: 10.0),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width / 1.5,
-                    height: 50,
-                    child: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                      color: constant.appPrimaryMaterialColor,
-                      textColor: Colors.white,
-                      child: Text("Send Complaint",
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w300)),
-                      onPressed: () {
-                        SaveComplain();
+                          : Text(dropdownValue),
+                      dropdownColor: Colors.white,
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        size: 40,
+                        color: Colors.grey,
+                      ),
+                      isExpanded: true,
+                      value: dropdownValue,
+                      items: complaintsName.map((value) {
+                        return DropdownMenuItem<dynamic>(
+                            value: value["complainName"],
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(value["complainName"]),
+                            ));
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          dropdownValue = value;
+                        });
                       },
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("Capture Complaint Image",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[600])),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  child: _image == null
+                      ? Container()
+                      : Container(
+                          child: Image.file(File(_image.path),
+                              height: 200, width: 200, fit: BoxFit.fill),
+                        ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    GestureDetector(
+                      child: Image.asset('images/Camera.png',
+                          fit: BoxFit.cover,
+                          width: 50,
+                          height: 50,
+                          color: Colors.grey),
+                      onTap: () {
+                        cameraImage();
+                      },
+                    ),
+                    GestureDetector(
+                      child: Image.asset('images/galleryselect.png',
+                          fit: BoxFit.cover,
+                          width: 50,
+                          height: 50,
+                          color: Colors.grey),
+                      onTap: () {
+                        galleryImage();
+                      },
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 15.0, bottom: 10.0),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width / 1.5,
+                  height: 50,
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)),
+                    color: constant.appPrimaryMaterialColor,
+                    textColor: Colors.white,
+                    child: Text("Send Complaint",
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w300)),
+                    onPressed: () {
+                      SaveComplain();
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

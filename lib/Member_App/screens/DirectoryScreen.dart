@@ -182,219 +182,214 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
   //Members can see this directory
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
-      },
-      child: Scaffold(
-        appBar: buildAppBar(context),
-        body: isLoading
-            ? LoadingComponent()
-            : Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                for (int i = 0; i < _wingList.length; i++) ...[
-                  GestureDetector(
-                    onTap: () {
-                      if (selectedWing != _wingList[i]["_id"].toString()) {
-                        setState(() {
-                          selectedWing = _wingList[i]["_id"].toString();
-                          _getDirectoryListing(selectedWing);
-                        });
-                        setState(() {
-                          memberData = [];
-                          filterMemberData = [];
-                          searchMemberData = [];
-                          isFilter = false;
-                          _isSearching = false;
-                        });
-                      }
-                    },
-                    child: Container(
-                      width: selectedWing == _wingList[i]["_id"].toString()
-                          ? 60
-                          : 45,
-                      height:
-                      selectedWing == _wingList[i]["_id"].toString()
-                          ? 60
-                          : 45,
-                      margin: EdgeInsets.only(top: 10, left: 5, right: 5),
-                      decoration: BoxDecoration(
+    return Scaffold(
+      appBar: buildAppBar(context),
+      body: isLoading
+          ? LoadingComponent()
+          : Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              for (int i = 0; i < _wingList.length; i++) ...[
+                GestureDetector(
+                  onTap: () {
+                    if (selectedWing != _wingList[i]["_id"].toString()) {
+                      setState(() {
+                        selectedWing = _wingList[i]["_id"].toString();
+                        _getDirectoryListing(selectedWing);
+                      });
+                      setState(() {
+                        memberData = [];
+                        filterMemberData = [];
+                        searchMemberData = [];
+                        isFilter = false;
+                        _isSearching = false;
+                      });
+                    }
+                  },
+                  child: Container(
+                    width: selectedWing == _wingList[i]["_id"].toString()
+                        ? 60
+                        : 45,
+                    height:
+                    selectedWing == _wingList[i]["_id"].toString()
+                        ? 60
+                        : 45,
+                    margin: EdgeInsets.only(top: 10, left: 5, right: 5),
+                    decoration: BoxDecoration(
+                        color: selectedWing ==
+                            _wingList[i]["_id"].toString()
+                            ? cnst.appPrimaryMaterialColor
+                            : Colors.white,
+                        border: Border.all(
+                            color: cnst.appPrimaryMaterialColor),
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(4))),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "${_wingList[i]["wingName"]}",
+                      style: TextStyle(
                           color: selectedWing ==
                               _wingList[i]["_id"].toString()
-                              ? cnst.appPrimaryMaterialColor
-                              : Colors.white,
-                          border: Border.all(
-                              color: cnst.appPrimaryMaterialColor),
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(4))),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "${_wingList[i]["wingName"]}",
-                        style: TextStyle(
-                            color: selectedWing ==
-                                _wingList[i]["_id"].toString()
-                                ? Colors.white
-                                : cnst.appPrimaryMaterialColor,
-                            fontSize: 19),
-                      ),
+                              ? Colors.white
+                              : cnst.appPrimaryMaterialColor,
+                          fontSize: 19),
                     ),
                   ),
-                ],
+                ),
               ],
+            ],
+          ),
+          // Align(
+          //   alignment: Alignment.centerRight,
+          //   child: FlatButton(
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.end,
+          //       mainAxisSize: MainAxisSize.min,
+          //       children: <Widget>[
+          //         Text(
+          //           "Filter",
+          //           style: TextStyle(
+          //               fontSize: 16,
+          //               color: cnst.appPrimaryMaterialColor,
+          //               fontWeight: FontWeight.bold),
+          //         ),
+          //         SizedBox(
+          //           width: 6,
+          //         ),
+          //         Icon(
+          //           Icons.filter_list,
+          //           size: 19,
+          //           color: cnst.appPrimaryMaterialColor,
+          //         ),
+          //       ],
+          //     ),
+          //     onPressed: () {
+          //       showDialog(
+          //           context: context,
+          //           builder: (context) {
+          //             return showFilterDailog(
+          //               onSelect: (gender, isOwned, isOwner, isRented) {
+          //                 String owned = isOwned ? "Owned" : "";
+          //                 String owner = isOwner ? "Owner" : "";
+          //                 String rented = isRented ? "Rented" : "";
+          //                 setState(() {
+          //                   isFilter = true;
+          //                   filterMemberData.clear();
+          //                 });
+          //                 for (int i = 0; i < memberData.length; i++) {
+          //                   if (memberData[i]["Gender"] ==
+          //                           gender ||
+          //                       memberData[i]["MemberData"]
+          //                               ["ResidenceType"] ==
+          //                           owned ||
+          //                       memberData[i]["MemberData"]
+          //                               ["ResidenceType"] ==
+          //                           owner ||
+          //                       memberData[i]["MemberData"]
+          //                               ["ResidenceType"] ==
+          //                           rented) {
+          //                     print("matched");
+          //                     filterMemberData.add(memberData[i]);
+          //                   }
+          //                 }
+          //                 setState(() {});
+          //               },
+          //             );
+          //           });
+          //     },
+          //   ),
+          // ),
+          isMemberLoading
+              ? Container(
+            child: Center(
+              child: CircularProgressIndicator(),
             ),
-            // Align(
-            //   alignment: Alignment.centerRight,
-            //   child: FlatButton(
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.end,
-            //       mainAxisSize: MainAxisSize.min,
-            //       children: <Widget>[
-            //         Text(
-            //           "Filter",
-            //           style: TextStyle(
-            //               fontSize: 16,
-            //               color: cnst.appPrimaryMaterialColor,
-            //               fontWeight: FontWeight.bold),
-            //         ),
-            //         SizedBox(
-            //           width: 6,
-            //         ),
-            //         Icon(
-            //           Icons.filter_list,
-            //           size: 19,
-            //           color: cnst.appPrimaryMaterialColor,
-            //         ),
-            //       ],
-            //     ),
-            //     onPressed: () {
-            //       showDialog(
-            //           context: context,
-            //           builder: (context) {
-            //             return showFilterDailog(
-            //               onSelect: (gender, isOwned, isOwner, isRented) {
-            //                 String owned = isOwned ? "Owned" : "";
-            //                 String owner = isOwner ? "Owner" : "";
-            //                 String rented = isRented ? "Rented" : "";
-            //                 setState(() {
-            //                   isFilter = true;
-            //                   filterMemberData.clear();
-            //                 });
-            //                 for (int i = 0; i < memberData.length; i++) {
-            //                   if (memberData[i]["Gender"] ==
-            //                           gender ||
-            //                       memberData[i]["MemberData"]
-            //                               ["ResidenceType"] ==
-            //                           owned ||
-            //                       memberData[i]["MemberData"]
-            //                               ["ResidenceType"] ==
-            //                           owner ||
-            //                       memberData[i]["MemberData"]
-            //                               ["ResidenceType"] ==
-            //                           rented) {
-            //                     print("matched");
-            //                     filterMemberData.add(memberData[i]);
-            //                   }
-            //                 }
-            //                 setState(() {});
-            //               },
-            //             );
-            //           });
-            //     },
-            //   ),
-            // ),
-            isMemberLoading
-                ? Container(
-              child: Center(
-                child: CircularProgressIndicator(),
+          )
+              : Expanded(
+            child: isFilter
+                ? filterMemberData.length == 0 ? Center(
+              child: CircularProgressIndicator(),
+            ):
+            filterMemberData.length > 0
+                ? AnimationLimiter(
+              child: ListView.builder(
+                padding: EdgeInsets.all(0),
+                itemCount: filterMemberData.length,
+                itemBuilder:
+                    (BuildContext context, int index) {
+                  return DirectoryMemberComponent(
+                      filterMemberData[index],
+                      index);
+                },
               ),
             )
-                : Expanded(
-              child: isFilter
-                  ? filterMemberData.length == 0 ? Center(
-                child: CircularProgressIndicator(),
-              ):
-              filterMemberData.length > 0
-                  ? AnimationLimiter(
-                child: ListView.builder(
-                  padding: EdgeInsets.all(0),
-                  itemCount: filterMemberData.length,
-                  itemBuilder:
-                      (BuildContext context, int index) {
-                    return DirectoryMemberComponent(
-                        filterMemberData[index],
-                        index);
-                  },
-                ),
-              )
-                  : Container(
-                child: Center(
-                    child: Text("No Member Found")),
-              )
-                  : memberData.length > 0 && memberData != null
-                  ? searchMemberData.length != 0
-                  ? AnimationLimiter(
-                child: ListView.builder(
-                  padding: EdgeInsets.all(0),
-                  itemCount: searchMemberData.length,
-                  itemBuilder: (BuildContext context,
-                      int index) {
-                    return DirectoryMemberComponent(
-                        searchMemberData[index],
-                        index);
-                  },
-                ),
-              )
-                  : _isSearching && isfirst
-                  ? AnimationLimiter(
-                child: ListView.builder(
-                  padding: EdgeInsets.all(0),
-                  itemCount:
-                  searchMemberData.length,
-                  itemBuilder:
-                      (BuildContext context,
-                      int index) {
-                    return DirectoryMemberComponent(
-                        searchMemberData[index],
-                        index);
-                  },
-                ),
-              )
-                  : AnimationLimiter(
-                child: ListView.builder(
-                  padding: EdgeInsets.all(0),
-                  itemCount: memberData.length,
-                  itemBuilder:
-                      (BuildContext context,
-                      int index) {
-                    return DirectoryMemberComponent(
-                        memberData[index],
-                        index);
-                  },
-                ),
-              )
-                  : Center(child: CircularProgressIndicator(),),
-            ),
-          ],
-        ),
+                : Container(
+              child: Center(
+                  child: Text("No Member Found")),
+            )
+                : memberData.length > 0 && memberData != null
+                ? searchMemberData.length != 0
+                ? AnimationLimiter(
+              child: ListView.builder(
+                padding: EdgeInsets.all(0),
+                itemCount: searchMemberData.length,
+                itemBuilder: (BuildContext context,
+                    int index) {
+                  return DirectoryMemberComponent(
+                      searchMemberData[index],
+                      index);
+                },
+              ),
+            )
+                : _isSearching && isfirst
+                ? AnimationLimiter(
+              child: ListView.builder(
+                padding: EdgeInsets.all(0),
+                itemCount:
+                searchMemberData.length,
+                itemBuilder:
+                    (BuildContext context,
+                    int index) {
+                  return DirectoryMemberComponent(
+                      searchMemberData[index],
+                      index);
+                },
+              ),
+            )
+                : AnimationLimiter(
+              child: ListView.builder(
+                padding: EdgeInsets.all(0),
+                itemCount: memberData.length,
+                itemBuilder:
+                    (BuildContext context,
+                    int index) {
+                  return DirectoryMemberComponent(
+                      memberData[index],
+                      index);
+                },
+              ),
+            )
+                : Center(child: CircularProgressIndicator(),),
+          ),
+        ],
       ),
     );
   }
 
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
-      title: appBarTitle,
-      leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          Navigator.pushReplacementNamed(context, "/HomeScreen");
-        },
-      ),
+      title: appBarTitle,centerTitle: true,
+      // leading: IconButton(
+      //   icon: Icon(
+      //     Icons.arrow_back,
+      //     color: Colors.white,
+      //   ),
+      //   onPressed: () {
+      //     Navigator.pushReplacementNamed(context, "/HomeScreen");
+      //   },
+      // ),
       actions: <Widget>[
         new IconButton(
           icon: icon,

@@ -66,10 +66,9 @@ class _EventsState extends State<Events> {
         setState(() {
           isLoading = true;
         });
-        var data = {
-          "societyId": SocietyId
-        };
-        Services.responseHandler(apiName: "admin/getSocietyEvent",body: data).then((data) async {
+        var data = {"societyId": SocietyId};
+        Services.responseHandler(apiName: "admin/getSocietyEvent", body: data)
+            .then((data) async {
           setState(() {
             isLoading = false;
           });
@@ -129,111 +128,116 @@ class _EventsState extends State<Events> {
 
   @override
   Widget build(BuildContext context) {
-    print(EventsData);
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Events",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          // leading: IconButton(
-          //     icon: Icon(Icons.arrow_back),
-          //     onPressed: () {
-          //       Navigator.of(context).pushNamedAndRemoveUntil(
-          //           '/HomeScreen', (Route<dynamic> route) => false);
-          //     },
-          // ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Events",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        body: ListView.separated(
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        EventDetail(EventsData: EventsData[index]),
+        centerTitle: true,
+
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.of(context).pushNamedAndRemoveUntil(
+        //           '/HomeScreen', (Route<dynamic> route) => false);
+        //     },
+        // ),
+      ),
+      body: isLoading == false
+          ? ListView.separated(
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EventDetail(
+                          EventsData: EventsData[index],
+                          onEventResponse: GetEventDetails,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "${EventsData[index]["Title"]}",
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                              Text(
+                                "${EventsData[index]["Description"]}\nAll are Requested To Give Confirmation For Comming OR Not",
+                                style: TextStyle(
+                                    fontSize: 13, color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Column(
+                          children: <Widget>[
+                            Text(
+                              "${EventsData[index]["date"]}",
+                              style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              children: <Widget>[
+                                EventsData[index]["Registration"].length != 0
+                                    ? Text(
+                                        "Total : ${EventsData[index]["Registration"][0]["noOfPerson"]}",
+                                        style: TextStyle(
+                                          color:
+                                              constant.appPrimaryMaterialColor,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      )
+                                    : Container(),
+                              ],
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "${EventsData[index]["Title"]}",
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            "${EventsData[index]["Description"]}\nAll are Requested To Give Confirmation For Comming OR Not",
-                            style: TextStyle(
-                                fontSize: 13, color: Colors.grey[600]),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Column(
-                      children: <Widget>[
-                        Text(
-                          "${EventsData[index]["date"]}",
-                          style: TextStyle(
-                              color: Colors.grey[700],
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            EventsData[index]["Registration"].length !=0 ? Text(
-                              "Total : ${EventsData[index]["Registration"][0]["Count"]}",
-                              style: TextStyle(
-                                color: constant.appPrimaryMaterialColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ):Container(),
-                          ],
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-          itemCount: EventsData.length,
-        ),
-        // floatingActionButton: FloatingActionButton(
-        //   backgroundColor: constant.appPrimaryMaterialColor,
-        //   child: Icon(Icons.add),
-        //   onPressed: () {
-        //     Navigator.pushAndRemoveUntil(
-        //         context,
-        //         MaterialPageRoute(builder: (context) => AddEvent()),
-        //         (Route<dynamic> route) => false);
-        //     // Navigator.pushReplacementNamed(context, '/AddEvent');
-        //   },
-        // ),
-      ),
+              separatorBuilder: (context, index) {
+                return Divider();
+              },
+              itemCount: EventsData.length,
+            )
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: constant.appPrimaryMaterialColor,
+      //   child: Icon(Icons.add),
+      //   onPressed: () {
+      //     Navigator.pushAndRemoveUntil(
+      //         context,
+      //         MaterialPageRoute(builder: (context) => AddEvent()),
+      //         (Route<dynamic> route) => false);
+      //     // Navigator.pushReplacementNamed(context, '/AddEvent');
+      //   },
+      // ),
     );
   }
 }

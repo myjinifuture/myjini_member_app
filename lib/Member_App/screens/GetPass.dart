@@ -169,18 +169,11 @@ class _GetPassState extends State<GetPass> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top:60.0),
+                    padding: const EdgeInsets.only(top:40.0),
                     child: Container(
                       child: Column(
                         children: [
-                          Text("Please show this QR code",
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25,
-                            ),
-                          ),
-                          Text("to the watchman at the gate",
+                          Text("Please show this QR code to the Watchman at the Gate",textAlign: TextAlign.justify,
                             style: TextStyle(
                               color: Colors.green,
                               fontWeight: FontWeight.bold,

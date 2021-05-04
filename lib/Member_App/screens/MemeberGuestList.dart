@@ -242,8 +242,17 @@ class _MemberGuestListState extends State<MemberGuestList> {
 
                     },
                     child: Padding(
-                        padding: const EdgeInsets.only(top: 12.0,right: 10),
-                        child: Icon( Icons.share_sharp,color: Colors.green,size: 30,)
+                      padding: EdgeInsets.only(
+                        right: 10.0,top:20,
+                      ),
+                      child: Container(
+                        height: 30,
+                        width: 30,
+                        child: Image.asset(
+                          "images/gatepass.png",
+                          // fit: BoxFit.fill,
+                        ),
+                      ),
                     ),
                   ),
                   // Padding(

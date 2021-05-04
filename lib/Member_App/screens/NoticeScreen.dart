@@ -230,56 +230,51 @@ class _NoticeScreenState extends State<NoticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
-              }),
-          centerTitle: true,
-          title: Text('Notice', style: TextStyle(fontSize: 18)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(10),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pushReplacementNamed(context, "/HomeScreen");
+        //     }),
+        centerTitle: true,
+        title: Text('Notice', style: TextStyle(fontSize: 18)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(10),
           ),
         ),
-        body: Container(
-          color: Colors.grey[100],
-          child: isLoading
-              ? Container(
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              : NoticeData.length > 0
-                  ? AnimationLimiter(
-                      child: ListView.builder(
-                        itemBuilder: _NoticeCard,
-                        itemCount: NoticeData.length,
-                      ),
-                    )
-                  : Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset("images/no_data.png",
-                              width: 50, height: 50, color: Colors.grey),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text("No Notice Found",
-                                style: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w600)),
-                          )
-                        ],
-                      ),
+      ),
+      body: Container(
+        color: Colors.grey[100],
+        child: isLoading
+            ? Container(
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : NoticeData.length > 0
+                ? AnimationLimiter(
+                    child: ListView.builder(
+                      itemBuilder: _NoticeCard,
+                      itemCount: NoticeData.length,
                     ),
-        ),
+                  )
+                : Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset("images/no_data.png",
+                            width: 50, height: 50, color: Colors.grey),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("No Notice Found",
+                              style: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w600)),
+                        )
+                      ],
+                    ),
+                  ),
       ),
     );
   }

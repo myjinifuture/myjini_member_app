@@ -31,6 +31,8 @@ class _MemberProfileState extends State<MemberProfile> {
   List _vehicleData = [];
   bool isLoading = false;
   bool isAdmin = false;
+  List memberRoleDetails=[];
+
 
   ProgressDialog pr;
 
@@ -49,6 +51,7 @@ class _MemberProfileState extends State<MemberProfile> {
           if (data.Data[0]["society"]["isAdmin"].toString() == "1") {
             setState(() {
               // Profile = data.Data[0]["Image"];
+              memberRoleDetails=data.Data;
               isAdmin = true;
               isLoading = false;
             });
@@ -126,7 +129,8 @@ class _MemberProfileState extends State<MemberProfile> {
         // pr.show();
         var data = {
           "societyId": widget.memberData["society"]["societyId"].toString(),
-          "memberId": widget.memberData["_id"].toString()
+          "memberId": widget.memberData["_id"].toString(),
+          "makeAdmin":memberRoleDetails[0]["society"]["isAdmin"]==1?0:1,
         };
         Services.responseHandler(apiName: "admin/assignAdminRole", body: data)
             .then((data) async {
@@ -701,6 +705,8 @@ class _MemberProfileState extends State<MemberProfile> {
 
   @override
   Widget build(BuildContext context) {
+    print("memberRoleDetails");
+    print(memberRoleDetails);
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -716,7 +722,10 @@ class _MemberProfileState extends State<MemberProfile> {
                     onPressed: () {
                       _makeAdmin(); // ask monil to make makeadmin api 17 - number
                     },
-                    child: Text(
+                    child: memberRoleDetails[0]["society"]["isAdmin"]==1?Text(
+                      "Revoke Admin",
+                      style: TextStyle(color: Colors.white),
+                    ):Text(
                       "Make Admin",
                       style: TextStyle(color: Colors.white),
                     ),

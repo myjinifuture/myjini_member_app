@@ -159,47 +159,42 @@ class _EmergencyNumberState extends State<EmergencyNumber> {
   Widget build(BuildContext context) {
     print("EmergencyNumberData");
     print(EmergencyNumberData);
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
-              }),
-          centerTitle: true,
-          title: Text(
-            'Emergency Number',
-            style: TextStyle(fontSize: 18),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(10),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pushReplacementNamed(context, "/HomeScreen");
+        //     }),
+        centerTitle: true,
+        title: Text(
+          'Emergency Number',
+          style: TextStyle(fontSize: 18),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(10),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 8.0, left: 2, right: 2),
-          child: isLoading
-              ? Container(
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              : EmergencyNumberData.length > 0
-                  ? ListView.builder(
-                      itemBuilder: _NumberCard,
-                      itemCount: EmergencyNumberData.length,
-                    )
-                  : Container(
-                      child: Center(
-                        child: Text("No Emergency Number Added"),
-                      ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 8.0, left: 2, right: 2),
+        child: isLoading
+            ? Container(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : EmergencyNumberData.length > 0
+                ? ListView.builder(
+                    itemBuilder: _NumberCard,
+                    itemCount: EmergencyNumberData.length,
+                  )
+                : Container(
+                    child: Center(
+                      child: Text("No Emergency Number Added"),
                     ),
-        ),
+                  ),
       ),
     );
   }

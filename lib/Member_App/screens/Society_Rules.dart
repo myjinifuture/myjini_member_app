@@ -31,40 +31,48 @@ class _SocietyRulesState extends State<SocietyRules> {
 
   @override
   void initState() {
-    GetSocietyRules();
+    _getRules();
     _getLocaldata();
   }
 
-  GetSocietyRules() async {
+  _getRules() async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        RulesData.clear();
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String societyId = prefs.getString(constant.Session.SocietyId);
+        var data = {
+          "societyId": societyId,
+        };
         setState(() {
           isLoading = true;
         });
-
-        Services.GetSocietyRuls(SocietyId).then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null && data.length > 0) {
+        Services.responseHandler(apiName: "admin/getSocietyRules", body: data)
+            .then((data) async {
+          if (data.Data != null && data.Data.length > 0) {
             setState(() {
-              RulesData = data;
+              RulesData = data.Data;
+              isLoading = false;
             });
+            print("RulesData");
+            print(RulesData);
           } else {
             setState(() {
               isLoading = false;
             });
+            // showMsg("Data Not Found");
           }
         }, onError: (e) {
+          print("Error : rules data Call $e");
           setState(() {
             isLoading = false;
           });
-          showHHMsg("Try Again.", "");
+          showHHMsg("Something Went Wrong Please Try Again","");
         });
       }
     } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
+      showHHMsg("No Internet Connection.","");
     }
   }
 
@@ -98,14 +106,13 @@ class _SocietyRulesState extends State<SocietyRules> {
 
   Future<void> _downloadFile(String url) async {
     var file = url.split('/');
-
     Dio dio = Dio();
     try {
       var dir = await getExternalStorageDirectory();
-      print("${dir.path}/${file[3].toString()}");
+      print("${dir.path}/${file[2].toString()}");
       await dio.download(
-          "http://smartsociety.itfuturz.com/${url.replaceAll(" ", "%20")}",
-          "${dir.path}/${file[3].toString()}", onReceiveProgress: (rec, total) {
+          "http://13.127.1.141/${url.replaceAll(" ", "%20")}",
+          "${dir.path}/${file[2].toString()}", onReceiveProgress: (rec, total) {
         print("Rec: $rec , Total: $total");
         setState(() {
           downloading = true;
@@ -128,7 +135,7 @@ class _SocietyRulesState extends State<SocietyRules> {
     ImgUrl = ImgUrl.replaceAll(" ", "%20");
     if (ImgUrl.toString() != "null" && ImgUrl.toString() != "") {
       var request = await HttpClient()
-          .getUrl(Uri.parse("http://smartsociety.itfuturz.com${ImgUrl}"));
+          .getUrl(Uri.parse("http://13.127.1.141/${ImgUrl}"));
       var response = await request.close();
       Uint8List bytes = await consolidateHttpClientResponseBytes(response);
       await Share.files('Share Rule', {'eyes.$Extension': bytes}, 'image/pdf');
@@ -193,7 +200,7 @@ class _SocietyRulesState extends State<SocietyRules> {
                 GestureDetector(
                   onTap: () {
                     _launchURL(Image_Url +
-                        "${RulesData[index]["File"]}");
+                        "${RulesData[index]["FileAttachment"]}");
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(6.0),
@@ -212,33 +219,33 @@ class _SocietyRulesState extends State<SocietyRules> {
                     ),
                   ),
                 ),
+                // GestureDetector(
+                //   onTap: () {
+                //     _downloadFile("${RulesData[index]["FileAttachment"]}");
+                //   },
+                //   child: Padding(
+                //     padding: const EdgeInsets.all(6.0),
+                //     child: Container(
+                //       width: 35,
+                //       height: 35,
+                //       decoration: BoxDecoration(
+                //           borderRadius: BorderRadius.all(Radius.circular(100)),
+                //           color: Colors.grey[200]),
+                //       child: Center(
+                //           child: Icon(
+                //         Icons.sd_card,
+                //         color: Colors.grey,
+                //         size: 20,
+                //       )),
+                //     ),
+                //   ),
+                // ),
                 GestureDetector(
                   onTap: () {
-                    _downloadFile("${RulesData[index]["File"]}");
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(100)),
-                          color: Colors.grey[200]),
-                      child: Center(
-                          child: Icon(
-                        Icons.sd_card,
-                        color: Colors.grey,
-                        size: 20,
-                      )),
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    var array = RulesData[index]["File"].split(".");
+                    var array = RulesData[index]["FileAttachment"].split(".");
                     print("=============");
                     print(array[1].toString());
-                    shareFile("${RulesData[index]["File"]}", array[1]);
+                    shareFile("${RulesData[index]["FileAttachment"]}", array[1]);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(6.0),
@@ -265,6 +272,8 @@ class _SocietyRulesState extends State<SocietyRules> {
 
   @override
   Widget build(BuildContext context) {
+    print("RulesData");
+    print(RulesData);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

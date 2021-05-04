@@ -92,64 +92,59 @@ class _PollingScreenState extends State<PollingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
-      },
-      child: Stack(
-        children: [
-          Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, "/HomeScreen");
-                  }),
-              centerTitle: true,
-              title: Text(
-                'Polling',
-                style: TextStyle(fontSize: 18),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(10),
-                ),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            // leading: IconButton(
+            //     icon: Icon(Icons.arrow_back),
+            //     onPressed: () {
+            //       Navigator.pushReplacementNamed(context, "/HomeScreen");
+            //     }),
+            centerTitle: true,
+            title: Text(
+              'Polling',
+              style: TextStyle(fontSize: 18),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(10),
               ),
             ),
-            body: isLoading == false
-                ? PollingData.length > 0
-                    ? ListView.builder(
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          return AnswerList(PollingData[index], index + 1,
-                              () {
-                            GetPollingData();
-                          });
-                        },
-                        itemCount: PollingData.length,
-                      )
-                    : Container(
-                        child: Center(
-                          child: Text("No Polling Added"),
-                        ),
-                      )
-                : Container()),
-          isLoading == true
-              ? Opacity(
-              opacity: 0.5,
-              child: Container(
-                color: Colors.black,
-              ))
-              : Container(),
-          isLoading == true
-              ? Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                  Colors.white,),
-            ),
-          )
-              : Container(),]
-      ),
+          ),
+          body: isLoading == false
+              ? PollingData.length > 0
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) {
+                        return AnswerList(PollingData[index], index + 1,
+                            () {
+                          GetPollingData();
+                        });
+                      },
+                      itemCount: PollingData.length,
+                    )
+                  : Container(
+                      child: Center(
+                        child: Text("No Polling Added"),
+                      ),
+                    )
+              : Container()),
+        isLoading == true
+            ? Opacity(
+            opacity: 0.5,
+            child: Container(
+              color: Colors.black,
+            ))
+            : Container(),
+        isLoading == true
+            ? Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+                Colors.white,),
+          ),
+        )
+            : Container(),]
     );
   }
 }

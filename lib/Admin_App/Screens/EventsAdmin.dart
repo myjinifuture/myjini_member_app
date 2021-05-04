@@ -235,7 +235,7 @@ class _EventsAdminState extends State<EventsAdmin> {
                           children: <Widget>[
                             EventsData[index]["Registration"].length > 0
                                 ? Text(
-                                    "Total : ${EventsData[index]["Registration"][0]["Count"]}",
+                                    "Total : ${EventsData[index]["ComingMemberCount"]}",
                                     style: TextStyle(
                                       color: constant.appPrimaryMaterialColor,
                                       fontSize: 16,

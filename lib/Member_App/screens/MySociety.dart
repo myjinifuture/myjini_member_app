@@ -33,11 +33,11 @@ class _MySocietyState extends State<MySociety> {
       "title": "Building Info",
       "screen": "BuildingInfo",
     },
-    // {
-    //   "image": "images/Rules.png",
-    //   "title": "Rules",
-    //   "screen": "Rules",
-    // },
+    {
+      "image": "images/Rules.png",
+      "title": "Rules",
+      "screen": "Rules",
+    },
     {
       "image": "images/document.png",
       "title": "Documents",
@@ -119,80 +119,75 @@ class _MySocietyState extends State<MySociety> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
-              }),
-          centerTitle: true,
-          title: Text('My Society', style: TextStyle(fontSize: 18)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(10),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pushReplacementNamed(context, "/HomeScreen");
+        //     }),
+        centerTitle: true,
+        title: Text('My Society', style: TextStyle(fontSize: 18)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(10),
           ),
         ),
-        body: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : StaggeredGridView.countBuilder(
-                crossAxisCount: 2,
-                itemCount: menuList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () {
-                      if (menuList[index]["screen"] == "BuildingInfo") {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BuildingInfo(
-                              societyData: _societyData,
-                            ),
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : StaggeredGridView.countBuilder(
+              crossAxisCount: 2,
+              itemCount: menuList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                  onTap: () {
+                    if (menuList[index]["screen"] == "BuildingInfo") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BuildingInfo(
+                            societyData: _societyData,
                           ),
-                        );
-                      } else if (menuList[index]["screen"] == "BankDetails") {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BankDetails(
-                              bankData: _societyData,
-                            ),
-                          ),
-                        );
-                      } else
-                        Navigator.pushNamed(
-                            context, "/${menuList[index]["screen"]}");
-                    },
-                    child: Card(
-                      child: Container(
-                        padding: EdgeInsets.only(top: 8, bottom: 8),
-                        child: Column(
-                          children: <Widget>[
-                            Image.asset(
-                              menuList[index]["image"],
-                              width: 30,
-                              height: 30,
-                            ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              menuList[index]["title"],
-                            ),
-                          ],
                         ),
+                      );
+                    } else if (menuList[index]["screen"] == "BankDetails") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BankDetails(
+                            bankData: _societyData,
+                          ),
+                        ),
+                      );
+                    } else
+                      Navigator.pushNamed(
+                          context, "/${menuList[index]["screen"]}");
+                  },
+                  child: Card(
+                    child: Container(
+                      padding: EdgeInsets.only(top: 8, bottom: 8),
+                      child: Column(
+                        children: <Widget>[
+                          Image.asset(
+                            menuList[index]["image"],
+                            width: 30,
+                            height: 30,
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            menuList[index]["title"],
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-                staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-              ),
-      ),
+                  ),
+                );
+              },
+              staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+            ),
     );
   }
 }

@@ -145,13 +145,13 @@ class _DashboardState extends State<Dashboard> {
       "screen": "getPendingApprovals"
     },
     {
-      "image": "images/event_society.png",
+      "image": "images/editsocietydetails.png",
       "count": "0",
       "title": "Edit Society Details",
       "screen": "getPendingApprovals"
     },
     {
-      "image": "images/event_society.png",
+      "image": "images/adminemergencynumbers.png",
       "count": "0",
       "title": "Emergency Numbers",
       "screen": "getEmergencyNumberSocietyWise"
