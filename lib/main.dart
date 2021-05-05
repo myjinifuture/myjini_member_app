@@ -26,6 +26,8 @@ import 'package:smart_society_new/Admin_App/Screens/Document.dart';
 import 'package:smart_society_new/Admin_App/Screens/EditDocument.dart';
 import 'package:smart_society_new/Admin_App/Screens/EventsAdmin.dart';
 import 'package:smart_society_new/Admin_App/Screens/Expense.dart';
+import 'package:smart_society_new/Admin_App/Screens/SocietyVendorsAdminScreen.dart';
+import 'package:smart_society_new/Admin_App/Screens/AddSocietyVendor.dart';
 import 'package:smart_society_new/Admin_App/Screens/ViewGalleryPhotos.dart';
 import 'package:smart_society_new/Admin_App/Screens/ExpenseByMonth.dart';
 import 'package:smart_society_new/Admin_App/Screens/Gallary.dart';
@@ -1175,6 +1177,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
         '/CreateBuildingSlider': (context) => CreateBuildingSlider(),
         '/SetupWingScreen': (context) => SetupWingScreen(),
         '/BannerScreen': (context) => BannerScreen(),
+        '/SocietyVendorsAdminScreen': (context) => SocietyVendorsAdminScreen(),
+        '/AddSocietyVendor': (context) => AddSocietyVendor(),
         //===============digital card screen=============
         '/AddCard': (context) => AddCard(),
         '/ChangeTheme': (context) => ChangeTheme(),

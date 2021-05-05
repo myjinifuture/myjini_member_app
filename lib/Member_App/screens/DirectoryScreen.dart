@@ -320,8 +320,8 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
                 itemBuilder:
                     (BuildContext context, int index) {
                   return DirectoryMemberComponent(
-                      filterMemberData[index],
-                      index);
+                      MemberData:filterMemberData[index],
+                      index:index);
                 },
               ),
             )
@@ -338,8 +338,8 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
                 itemBuilder: (BuildContext context,
                     int index) {
                   return DirectoryMemberComponent(
-                      searchMemberData[index],
-                      index);
+                      MemberData:searchMemberData[index],
+                      index:index);
                 },
               ),
             )
@@ -353,8 +353,8 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
                     (BuildContext context,
                     int index) {
                   return DirectoryMemberComponent(
-                      searchMemberData[index],
-                      index);
+                      MemberData:searchMemberData[index],
+                      index:index);
                 },
               ),
             )
@@ -366,8 +366,8 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
                     (BuildContext context,
                     int index) {
                   return DirectoryMemberComponent(
-                      memberData[index],
-                      index);
+                      MemberData:memberData[index],
+                      index:index);
                 },
               ),
             )

@@ -15,9 +15,10 @@ import 'package:smart_society_new/Member_App/common/constant.dart';
 
 class MemberProfile extends StatefulWidget {
   var memberData;
+  Function onAdminUpdate;
   String isContactNumberPrivate;
 
-  MemberProfile({this.memberData,this.isContactNumberPrivate});
+  MemberProfile({this.memberData,this.isContactNumberPrivate,this.onAdminUpdate});
 
   @override
   _MemberProfileState createState() => _MemberProfileState();
@@ -30,48 +31,56 @@ class _MemberProfileState extends State<MemberProfile> {
   List _familyMemberData = [];
   List _vehicleData = [];
   bool isLoading = false;
-  bool isAdmin = false;
+  bool isMemberLoading = false;
+  bool isAdmin;
   List memberRoleDetails=[];
-
-
   ProgressDialog pr;
 
-  getMemberRole(String memberId, String societyId) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {"memberId": memberId, "societyId": societyId};
-        setState(() {
-          isLoading = true;
-        });
-        Services.responseHandler(apiName: "member/getMemberRole", body: data)
-            .then((data) async {
-          print("data");
-          print(data);
-          if (data.Data[0]["society"]["isAdmin"].toString() == "1") {
-            setState(() {
-              // Profile = data.Data[0]["Image"];
-              memberRoleDetails=data.Data;
-              isAdmin = true;
-              isLoading = false;
-            });
-          } else {
-            setState(() {
-              // Profile = data.Data[0]["Image"];
-              isLoading = false;
-              // _advertisementData = data;
-            });
-          }
-        }, onError: (e) {
-          showMsg("Something Went Wrong.\nPlease Try Again");
-          setState(() {
-            isLoading = false;
-          });
-        });
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
+  bool madeAdmin = false;
+  String ResidanceType = "";
+  String MemberId = "";
+  String ContactNo = "";
+  String SocietyId, FlatId, WingId;
+
+  @override
+  void initState() {
+    if( widget.memberData["FlatData"][0]["residenceType"].toString()=="0"){
+      ResidanceType = "Owner";
     }
+    else if( widget.memberData["FlatData"][0]["residenceType"].toString()=="1"){
+      ResidanceType = "Closed";
+    }
+    else if( widget.memberData["FlatData"][0]["residenceType"].toString()=="2"){
+      ResidanceType = "Rent";
+    }
+    else{
+      ResidanceType = "Dead";
+    }
+    // print("widget.isCONTACTPRIVATE");
+    // print(widget.isContactNumberPrivate);
+    _getLocaldata();
+    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
+    pr.style(
+        message: "Please Wait",
+        borderRadius: 10.0,
+        progressWidget: Container(
+          padding: EdgeInsets.all(15),
+          child: CircularProgressIndicator(),
+        ),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        messageTextStyle: TextStyle(
+            color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+  }
+
+  _getLocaldata() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    MemberId = prefs.getString(Session.Member_Id);
+    ContactNo = prefs.getString(Session.session_login);
+    SocietyId = prefs.getString(Session.SocietyId);
+    FlatId = prefs.getString(Session.FlatId);
+    WingId = prefs.getString(Session.WingId);
+    getMemberRole(widget.memberData["_id"], widget.memberData["society"]["societyId"]);
   }
 
   _getVisitor() async {
@@ -91,7 +100,7 @@ class _MemberProfileState extends State<MemberProfile> {
           isLoading = true;
         });
         Services.responseHandler(
-                apiName: "member/getMemberVisitor_V1", body: data)
+            apiName: "member/getMemberVisitor_V1", body: data)
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
@@ -118,93 +127,6 @@ class _MemberProfileState extends State<MemberProfile> {
     } on SocketException catch (_) {
       showMsg("No Internet Connection.");
     }
-  }
-
-  bool madeAdmin = false;
-
-  _makeAdmin() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // pr.show();
-        var data = {
-          "societyId": widget.memberData["society"]["societyId"].toString(),
-          "memberId": widget.memberData["_id"].toString(),
-          "makeAdmin":memberRoleDetails[0]["society"]["isAdmin"]==1?0:1,
-        };
-        Services.responseHandler(apiName: "admin/assignAdminRole", body: data)
-            .then((data) async {
-          // pr.hide();
-          setState(() {
-            madeAdmin = true;
-          });
-          if (data.toString() == "1") {
-            setState(() {
-              Fluttertoast.showToast(
-                  msg: "Made Admin Successfully",
-                  backgroundColor: Colors.green,
-                  gravity: ToastGravity.TOP,
-                  textColor: Colors.red);
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          showMsg("Something Went Wrong Please Try Again");
-          setState(() {
-            isLoading = false;
-          });
-        });
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
-  }
-
-  String ResidanceType = "";
-  @override
-  void initState() {
-    if( widget.memberData["FlatData"][0]["residenceType"].toString()=="0"){
-      ResidanceType = "Owner";
-    }
-    else if( widget.memberData["FlatData"][0]["residenceType"].toString()=="1"){
-      ResidanceType = "Closed";
-    }
-    else if( widget.memberData["FlatData"][0]["residenceType"].toString()=="2"){
-      ResidanceType = "Rent";
-    }
-    else{
-      ResidanceType = "Dead";
-    }
-    print("widget.isCONTACTPRIVATE");
-    print(widget.isContactNumberPrivate);
-    _getLocaldata();
-    pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
-    pr.style(
-        message: "Please Wait",
-        borderRadius: 10.0,
-        progressWidget: Container(
-          padding: EdgeInsets.all(15),
-          child: CircularProgressIndicator(),
-        ),
-        elevation: 10.0,
-        insetAnimCurve: Curves.easeInOut,
-        messageTextStyle: TextStyle(
-            color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
-  }
-
-  String MemberId = "";
-  String SocietyId, FlatId, WingId;
-
-  _getLocaldata() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    MemberId = prefs.getString(Session.Member_Id);
-    SocietyId = prefs.getString(Session.SocietyId);
-    FlatId = prefs.getString(Session.FlatId);
-    WingId = prefs.getString(Session.WingId);
-    getMemberRole(MemberId, SocietyId);
   }
 
   _getVehicle() async {
@@ -703,10 +625,102 @@ class _MemberProfileState extends State<MemberProfile> {
     }
   }
 
+  getMemberRole(String memberId, String societyId) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {"memberId": memberId, "societyId": societyId};
+        setState(() {
+          isMemberLoading = true;
+        });
+        Services.responseHandler(apiName: "member/getMemberRole", body: data)
+            .then((data) async {
+          if (data.Data.length>0&&data.IsSuccess==true) {
+            setState(() {
+              // Profile = data.Data[0]["Image"];
+              memberRoleDetails=data.Data;
+              isMemberLoading = false;
+              if(memberRoleDetails[0]["society"]["isAdmin"].toString()=='1'){
+                isAdmin=true;
+              }
+              else{
+                isAdmin=false;
+              }
+            });
+          } else {
+            setState(() {
+              // Profile = data.Data[0]["Image"];
+              isMemberLoading = false;
+              // _advertisementData = data;
+            });
+          }
+        }, onError: (e) {
+          showMsg("Something Went Wrong.\nPlease Try Again");
+          setState(() {
+            isMemberLoading = false;
+          });
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
+  }
+
+  _makeAdmin() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        // pr.show();
+        var data = {
+          "societyId": widget.memberData["society"]["societyId"].toString(),
+          "memberId": widget.memberData["_id"].toString(),
+          "makeAdmin":widget.memberData["society"]["isAdmin"]==0?1:0,
+        };
+        Services.responseHandler(apiName: "admin/assignAdminRole", body: data)
+            .then((data) async {
+              print("data displayed");
+              print(data.Data);
+          if (data.toString() == "1") {
+            setState(() {
+              Fluttertoast.showToast(
+                  msg: "Made Admin Successfully",
+                  backgroundColor: Colors.green,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.red);
+            });
+          }
+          else if (data.toString() == "2") {
+            setState(() {
+              Fluttertoast.showToast(
+                  msg: "Admin Revoked Successfully",
+                  backgroundColor: Colors.green,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.red);
+            });
+          }
+          else {
+            setState(() {
+              isLoading = false;
+            });
+          }
+        }, onError: (e) {
+          showMsg("Something Went Wrong Please Try Again");
+          setState(() {
+            isLoading = false;
+          });
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("memberRoleDetails");
-    print(memberRoleDetails);
+    print('widget.memberData');
+    print(widget.memberData);
+    // print("memberRoleDetails");
+    // print(memberRoleDetails);
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -715,14 +729,16 @@ class _MemberProfileState extends State<MemberProfile> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         actions: [
-          isAdmin && !madeAdmin
-              ? Padding(
+          widget.memberData["ContactNo"]!=ContactNo?Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: OutlineButton(
+                  child: isMemberLoading==false?OutlineButton(
                     onPressed: () {
-                      _makeAdmin(); // ask monil to make makeadmin api 17 - number
+                      print("function called");
+                      _makeAdmin();
+                      Navigator.pushNamedAndRemoveUntil(context, '/HomeScreen', (route) => false);
+                      // Navigator.pushReplacementNamed(context, '/MemberProfile');// ask monil to make makeadmin api 17 - number
                     },
-                    child: memberRoleDetails[0]["society"]["isAdmin"]==1?Text(
+                    child: widget.memberData["society"]["isAdmin"]!=0?Text(
                       "Revoke Admin",
                       style: TextStyle(color: Colors.white),
                     ):Text(
@@ -736,9 +752,8 @@ class _MemberProfileState extends State<MemberProfile> {
                         new Radius.circular(4),
                       ),
                     ),
-                  ),
-                )
-              : Container(),
+                  ):Container(),
+                ):Container(),
         ],
       ),
       body: isLoading
@@ -1065,7 +1080,7 @@ class _MemberProfileState extends State<MemberProfile> {
             Flexible(
               child: GestureDetector(
                 onTap: () {
-                  print('${widget.memberData}');
+                  // print('${widget.memberData}');
                   _getVisitor();
                 },
                 child: Container(

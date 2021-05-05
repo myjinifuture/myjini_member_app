@@ -17,10 +17,11 @@ import 'package:smart_society_new/Member_App/common/Services.dart';
 
 class DirectoryMemberComponent extends StatefulWidget {
   var MemberData;
+  Function onAdminUpdate;
 
   int index;
 
-  DirectoryMemberComponent(this.MemberData, this.index);
+  DirectoryMemberComponent({this.MemberData, this.index, this.onAdminUpdate});
 
   @override
   _DirectoryMemberComponentState createState() =>
@@ -345,6 +346,7 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => MemberProfile(
+                                      // onAdminUpdate: widget.onAdminUpdate,
                                           memberData: widget.MemberData,
                                       isContactNumberPrivate:widget.MemberData["Private"]["ContactNo"]
                                           .toString(),

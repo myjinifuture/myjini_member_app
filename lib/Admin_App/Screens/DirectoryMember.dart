@@ -53,7 +53,8 @@ class _DirectoryMemberState extends State<DirectoryMember> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -62,24 +63,24 @@ class _DirectoryMemberState extends State<DirectoryMember> {
     );
   }
 
-  String SocietyId,MobileNo;
+  String SocietyId, MobileNo;
+
   _getDirectoryListing(String seletecedWing) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {
-          "societyId" : SocietyId
-        };
+        var data = {"societyId": SocietyId};
         // setState(() {
         //   isLoading = true;
         // });
-        Services.responseHandler(apiName: "admin/directoryListing",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/directoryListing", body: data)
+            .then((data) async {
           memberData.clear();
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               // memberData = data.Data;
-              for(int i=0;i<data.Data.length;i++){
-                if(data.Data[i]["society"]["wingId"] == selectedWing){
+              for (int i = 0; i < data.Data.length; i++) {
+                if (data.Data[i]["society"]["wingId"] == selectedWing) {
                   memberData.add(data.Data[i]);
                 }
               }
@@ -93,14 +94,14 @@ class _DirectoryMemberState extends State<DirectoryMember> {
             // });
           }
         }, onError: (e) {
-          showHHMsg("Something Went Wrong Please Try Again","");
+          showHHMsg("Something Went Wrong Please Try Again", "");
           setState(() {
             isLoading = false;
           });
         });
       }
     } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.","");
+      showHHMsg("No Internet Connection.", "");
     }
   }
 
@@ -108,21 +109,22 @@ class _DirectoryMemberState extends State<DirectoryMember> {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {
-          "societyId" : societyId
-        };
+        var data = {"societyId": societyId};
 
         setState(() {
           isLoading = true;
         });
-        Services.responseHandler(apiName: "admin/getAllWingOfSociety",body: data).then((data) async {
+        Services.responseHandler(
+                apiName: "admin/getAllWingOfSociety", body: data)
+            .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
-              for(int i=0;i<data.Data.length;i++){
-                if(data.Data[i]["totalFloor"].toString()!="0"){
+              for (int i = 0; i < data.Data.length; i++) {
+                if (data.Data[i]["totalFloor"].toString() != "0") {
                   _wingList.add(data.Data[i]);
                 }
-              };
+              }
+              ;
               // _wingList = data.Data;
               isLoading = false;
               selectedWing = data.Data[0]["_id"].toString();
@@ -169,7 +171,8 @@ class _DirectoryMemberState extends State<DirectoryMember> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -196,7 +199,8 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                       for (int i = 0; i < _wingList.length; i++) ...[
                         GestureDetector(
                           onTap: () {
-                            if (selectedWing != _wingList[i]["_id"].toString()) {
+                            if (selectedWing !=
+                                _wingList[i]["_id"].toString()) {
                               setState(() {
                                 selectedWing = _wingList[i]["_id"].toString();
                                 _getDirectoryListing(selectedWing);
@@ -211,9 +215,10 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                             }
                           },
                           child: Container(
-                            width: selectedWing == _wingList[i]["_id"].toString()
-                                ? 60
-                                : 45,
+                            width:
+                                selectedWing == _wingList[i]["_id"].toString()
+                                    ? 60
+                                    : 45,
                             height:
                                 selectedWing == _wingList[i]["_id"].toString()
                                     ? 60
@@ -319,8 +324,7 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                                         itemBuilder:
                                             (BuildContext context, int index) {
                                           return DirectoryMemberComponent(
-                                              filterMemberData[index],
-                                              index);
+                                              MemberData:filterMemberData[index], index:index);
                                         },
                                       ),
                                     )
@@ -337,8 +341,8 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                                             itemBuilder: (BuildContext context,
                                                 int index) {
                                               return DirectoryMemberComponent(
-                                                  searchMemberData[index],
-                                                  index);
+                                                  MemberData:searchMemberData[index],
+                                                  index:index);
                                             },
                                           ),
                                         )
@@ -352,8 +356,8 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                                                     (BuildContext context,
                                                         int index) {
                                                   return DirectoryMemberComponent(
-                                                      searchMemberData[index],
-                                                      index);
+                                                      MemberData:searchMemberData[index],
+                                                      index:index);
                                                 },
                                               ),
                                             )
@@ -365,12 +369,13 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                                                     (BuildContext context,
                                                         int index) {
                                                   return DirectoryMemberComponent(
-                                                      memberData[index],
-                                                      index);
+                                                      MemberData:memberData[index],index: index);
                                                 },
                                               ),
                                             )
-                                  : Center(child: CircularProgressIndicator(),),
+                                  : Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
                         ),
                 ],
               ),
@@ -433,7 +438,7 @@ class _DirectoryMemberState extends State<DirectoryMember> {
         color: Colors.white,
       );
       this.appBarTitle = new Text(
-        'Member Directory'  ,
+        'Member Directory',
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
       );
       _isSearching = false;
@@ -455,8 +460,8 @@ class _DirectoryMemberState extends State<DirectoryMember> {
         String wing = memberData[i]["WingData"][0]["wingName"].toString();
         String contactNo = memberData[i]["ContactNo"].toString();
         if (name.toLowerCase().contains(searchText.toLowerCase()) ||
-            flat.toLowerCase().contains(searchText.toLowerCase())  ||
-            wing.toLowerCase().contains(searchText.toLowerCase())||
+            flat.toLowerCase().contains(searchText.toLowerCase()) ||
+            wing.toLowerCase().contains(searchText.toLowerCase()) ||
             contactNo.toLowerCase().contains(searchText.toLowerCase())) {
           searchMemberData.add(memberData[i]);
         }

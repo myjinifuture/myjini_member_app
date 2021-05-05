@@ -156,6 +156,12 @@ class _DashboardState extends State<Dashboard> {
       "title": "Emergency Numbers",
       "screen": "getEmergencyNumberSocietyWise"
     },
+    {
+      "image": "images/user.png",
+      "count": "0",
+      "title": "Society Vendors",
+      "screen": "SocietyVendorsAdminScreen"
+    },
     /*  {
       "image": "images/Vendors.png",
       "count": "0",
