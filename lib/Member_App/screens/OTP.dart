@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pin_input_text_field/pin_input_text_field.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
 
 class OTP extends StatefulWidget {
