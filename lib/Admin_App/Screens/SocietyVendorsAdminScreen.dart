@@ -6,10 +6,7 @@ import 'package:smart_society_new/Member_App/common/constant.dart' as cnst;
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Admin_App/Screens/AddSocietyVendor.dart';
 
-
 class SocietyVendorsAdminScreen extends StatefulWidget {
-  const SocietyVendorsAdminScreen({Key key}) : super(key: key);
-
   @override
   _SocietyVendorsAdminScreenState createState() =>
       _SocietyVendorsAdminScreenState();
@@ -417,11 +414,15 @@ class _SocietyVendorsAdminScreenState extends State<SocietyVendorsAdminScreen> {
           Icons.add,
           color: Colors.white,
         ),
-        onPressed: (){
+        onPressed: () {
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => AddSocietyVendor()));
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddSocietyVendor(
+                onAddSocietyVendor: getSocietyVendors,
+              ),
+            ),
+          );
         },
       ),
     );

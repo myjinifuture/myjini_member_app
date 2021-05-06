@@ -676,22 +676,24 @@ class _AdDetailPageState extends State<AdDetailPage> {
                             padding: const EdgeInsets.all(10.0),
                             child: GestureDetector(
                               onTap: () {
-                                if (widget.data["AdvertiserLocation"] == "" ||
-                                    widget.data["AdvertiserLocation"] == null) {
-                                  Fluttertoast.showToast(
-                                      msg: "Location not available!!!",
-                                      toastLength: Toast.LENGTH_SHORT);
-                                } else {
-                                  var latlong = widget
-                                      .data["AdvertiserLocation"]
-                                      .toString()
-                                      .split(",");
-                                  openMap(double.parse(latlong[0]),
-                                      double.parse(latlong[1]));
-                                }
-                                print("LAT-LONG == >>>" +
-                                    widget.data["AdvertiserLocation"]
-                                        .toString());
+                                // if (widget.data["AdvertiserLocation"] == "" ||
+                                //     widget.data["AdvertiserLocation"] == null) {
+                                //   Fluttertoast.showToast(
+                                //       msg: "Location not available!!!",
+                                //       toastLength: Toast.LENGTH_SHORT);
+                                // } else {
+                                //   var latlong = widget
+                                //       .data["AdvertiserLocation"]
+                                //       .toString()
+                                //       .split(",");
+                                //   openMap(double.parse(latlong[0]),
+                                //       double.parse(latlong[1]));
+                                // }
+                                // print("LAT-LONG == >>>" +
+                                //     widget.data["AdvertiserLocation"]
+                                //         .toString());
+                                launch(
+                                    '${widget.data["GoogleMap"]}');
                               },
                               child: Container(
                                 width: MediaQuery.of(context).size.width / 1.3,

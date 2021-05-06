@@ -44,6 +44,7 @@ import 'package:smart_society_new/Member_App/screens/SOSDailog.dart';
 import 'package:vibration/vibration.dart';
 import '../screens/SOSpage.dart';
 import '../screens/AdDetailPage.dart';
+import 'LoginScreen.dart';
 import 'NoticeBoard.dart';
 import 'Ringing.dart';
 import 'SOS.dart';
@@ -159,6 +160,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           }
           if (data["notificationType"].toString() == "JoinSociety") {
             Get.to(() => getPendingApprovals());
+          }
+          else if (data["notificationType"].toString() == "RevokeAdminRole") {
+            Get.to(() => LoginScreen());
+          }
+          else if (data["notificationType"].toString() == "AssignAdminRole") {
+            Get.to(() => LoginScreen());
           }
           else if (data["notificationType"].toString() == "AddDocument") {
             Get.to(() => DocumentScreen());
@@ -2797,7 +2804,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ],
                 ),
                 onTap: () {
-                  Navigator.pushNamed(context, '/DailyHelp');
+                  Navigator.pushNamed(context, '/MyStaffScreen');
                   //  Navigator.pushNamed(context, '/Mall');
                   // Navigator.pushReplacement(
                   //     context, FadeRoute(page: home.HomeScreen()));

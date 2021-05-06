@@ -35,9 +35,8 @@ class _GetPassState extends State<GetPass> {
 
   Future<void> _shareImage(Uint8List image) async {
     try {
-      // await Share.file('QR CODE IMAGE', 'esys.png', image, 'image/png',
-      //     text: "${name}" + " is inviting you as a guest in their society\nPlease use this QrCode at the society gate");
-      await launch('https://wa.me/+91${widget.mobileNo}?text=${name}+ is inviting you as a guest in their society\nPlease show this Code at the society gate ${widget.Id}');
+      await Share.file('esys image', 'esys.png', image, 'image/png',
+          text: "Gate Pass");
     } catch (e) {
       print('error: $e');
     }

@@ -6,10 +6,12 @@ import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
-
+import 'package:dio/dio.dart';
 
 class AddSocietyVendor extends StatefulWidget {
-  const AddSocietyVendor({Key key}) : super(key: key);
+  Function onAddSocietyVendor;
+
+  AddSocietyVendor({this.onAddSocietyVendor});
 
   @override
   _AddSocietyVendorState createState() => _AddSocietyVendorState();
@@ -17,12 +19,14 @@ class AddSocietyVendor extends StatefulWidget {
 
 class _AddSocietyVendorState extends State<AddSocietyVendor> {
   List<String> vendorCategoryList = [];
+  List vendorCategoryDetailsList = [];
 
   String selectedVendorCategory;
   String selectedState;
   String selectedStateCode;
   String selectedCountryCode;
   String selectedCity;
+  String vendorCategoryId;
 
   bool isLoading = false;
   bool stateLoading = false;
@@ -48,7 +52,18 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
 
   @override
   void initState() {
-    getVendorCategory();getState();
+    getVendorCategory();
+    getState();
+    _getLocaldata();
+  }
+
+  String societyId;
+  String memberId;
+
+  _getLocaldata() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    societyId = prefs.getString(cnst.Session.SocietyId);
+    memberId = prefs.getString(cnst.Session.Member_Id);
   }
 
   getVendorCategory() async {
@@ -65,11 +80,89 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               isLoading = false;
+              vendorCategoryDetailsList = data.Data;
               for (int i = 0; i < data.Data.length; i++) {
                 vendorCategoryList
                     .add(data.Data[i]["vendorCategoryName"].toString());
               }
             });
+          } else {
+            setState(() {
+              isLoading = false;
+            });
+          }
+        }, onError: (e) {
+          setState(() {
+            isLoading = false;
+          });
+          Fluttertoast.showToast(
+              msg: "Something Went Wrong", toastLength: Toast.LENGTH_LONG);
+        });
+      }
+    } on SocketException catch (_) {
+      setState(() {
+        isLoading = false;
+      });
+      Fluttertoast.showToast(
+          msg: "No Internet Access", toastLength: Toast.LENGTH_LONG);
+    }
+  }
+
+  addVendor() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        setState(() {
+          isLoading = true;
+        });
+        print('hiiiiiii');
+        FormData data = FormData.fromMap({
+          "vendorCategoryId": vendorCategoryId,
+          "Name": nameController.text,
+          "Address": addressController.text,
+          "ContactNo": contactNumberController.text,
+          "EmergencyContactNo": emergencyContactNumberController.text,
+          "ContactPerson": memberId,
+          "About": aboutController.text,
+          "GSTNo": gstNoController.text,
+          "PAN": panNoController.text,
+          "StateCode": selectedStateCode.toString(),
+          "City": selectedCity.toString(),
+          "emailId": emailController.text,
+          "societyId": societyId,
+          "vendorBelongsTo": "society",
+          "vendorImage": _image == null ? "" : _image,
+        });
+        print({
+          "vendorCategoryId": vendorCategoryId,
+          "Name": nameController.text,
+          "Address": addressController.text,
+          "ContactNo": contactNumberController.text,
+          "EmergencyContactNo": emergencyContactNumberController.text,
+          "ContactPerson": memberId,
+          "About": aboutController.text,
+          "GSTNo": gstNoController.text,
+          "PAN": panNoController.text,
+          "StateCode": selectedStateCode.toString(),
+          "City": selectedCity.toString(),
+          "emailId": emailController.text,
+          "societyId": societyId,
+          "vendorBelongsTo": "society",
+          "vendorImage": _image == null ? "" : _image,
+        });
+        Services.responseHandler(apiName: "member/addVendor", body: data).then(
+            (data) async {
+          if (data.Data != null && data.IsSuccess == true) {
+            setState(() {
+              isLoading = false;
+              Fluttertoast.showToast(
+                  msg: "Vendor Added Successfully",
+                  backgroundColor: Colors.green,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.white);
+            });
+            Navigator.pop(context);
+            widget.onAddSocietyVendor();
           } else {
             setState(() {
               isLoading = false;
@@ -99,23 +192,22 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
         setState(() {
           stateLoading = true;
         });
-        var body = {
-          "countryCode" : "IN"
-        };
-        Services.responseHandler(apiName: "admin/getState",body: body).then((data) async {
+        var body = {"countryCode": "IN"};
+        Services.responseHandler(apiName: "admin/getState", body: body).then(
+            (data) async {
           setState(() {
             stateLoading = false;
           });
           if (data.Data != null && data.Data.length > 0) {
             print(stateClassList.runtimeType);
             setState(() {
-              for(int i=0;i<data.Data.length;i++){
-                if(!stateClassList.contains(DropdownMenuItem(
+              for (int i = 0; i < data.Data.length; i++) {
+                if (!stateClassList.contains(DropdownMenuItem(
                   child: Column(
                     children: [
                       Text(data.Data[i]["name"]),
                       Padding(
-                        padding: const EdgeInsets.only(top:12.0),
+                        padding: const EdgeInsets.only(top: 12.0),
                         child: Container(
                           color: Colors.black,
                           height: 0.5,
@@ -163,31 +255,29 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
     }
   }
 
-  getCity(String stateCode,String countryCode) async {
+  getCity(String stateCode, String countryCode) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         setState(() {
           cityLoading = true;
         });
-        var body = {
-          "countryCode" : countryCode,
-          "stateCode" : stateCode
-        };
-        Services.responseHandler(apiName: "admin/getCity",body: body).then((data) async {
+        var body = {"countryCode": countryCode, "stateCode": stateCode};
+        Services.responseHandler(apiName: "admin/getCity", body: body).then(
+            (data) async {
           // pr.hide();
           setState(() {
             cityLoading = false;
           });
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
-              for(int i=0;i<data.Data.length;i++){
+              for (int i = 0; i < data.Data.length; i++) {
                 cityClassList.add(DropdownMenuItem(
                   child: Column(
                     children: [
                       Text(data.Data[i]["name"]),
                       Padding(
-                        padding: const EdgeInsets.only(top:12.0),
+                        padding: const EdgeInsets.only(top: 12.0),
                         child: Container(
                           color: Colors.black,
                           height: 0.5,
@@ -238,7 +328,8 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -302,7 +393,7 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                       ),
                     ),
                     Text(
-                      'Vendor Category:',
+                      'Vendor Category *:',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
@@ -329,10 +420,23 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                                   ),
                             value: selectedVendorCategory,
                             onChanged: (val) {
-                              print(val);
+                              vendorCategoryId = '';
                               setState(() {
                                 selectedVendorCategory = val;
                               });
+                              for (int i = 0;
+                                  i < vendorCategoryDetailsList.length;
+                                  i++) {
+                                if (vendorCategoryDetailsList[i]
+                                        ["vendorCategoryName"] ==
+                                    selectedVendorCategory) {
+                                  setState(() {
+                                    vendorCategoryId =
+                                        vendorCategoryDetailsList[i]["_id"]
+                                            .toString();
+                                  });
+                                }
+                              }
                             },
                             items: vendorCategoryList.map((val) {
                               return new DropdownMenuItem(
@@ -348,7 +452,7 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                       ),
                     ),
                     Text(
-                      'Name:',
+                      'Name *:',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
@@ -366,7 +470,7 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                       ),
                     ),
                     Text(
-                      'Contact:',
+                      'Contact *:',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
@@ -375,6 +479,7 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                       child: TextFormField(
                         controller: contactNumberController,
                         keyboardType: TextInputType.number,
+                        maxLength: 10,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           counterText: "",
@@ -393,6 +498,7 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                       child: TextFormField(
                         controller: emergencyContactNumberController,
                         keyboardType: TextInputType.number,
+                        maxLength: 10,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           counterText: "",
@@ -420,13 +526,17 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                       ),
                     ),
                     Padding(
-                      padding:
-                      const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
+                      padding: const EdgeInsets.only(
+                          top: 15.0, right: 5.0, left: 5.0),
                       child: Row(
                         children: <Widget>[
-                          Text("State",
-                              style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500))
+                          Text(
+                            "State *",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -437,7 +547,7 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                         value: selectedState,
                         hint: "Select Your State",
                         searchHint: "Select one",
-                        onClear: (){
+                        onClear: () {
                           setState(() {
                             buttonPressed = false;
                           });
@@ -445,18 +555,17 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                         onChanged: (value) {
                           print(value);
                           print(selectedState);
-                          for(int i=0;i<allStates.length;i++){
-                            if(allStates[i]["name"].toString() == value){
+                          for (int i = 0; i < allStates.length; i++) {
+                            if (allStates[i]["name"].toString() == value) {
                               print("true");
-                              FocusScope.of(context)
-                                  .requestFocus(FocusNode());
+                              FocusScope.of(context).requestFocus(FocusNode());
                               selectedStateCode = allStates[i]["isoCode"];
                               selectedCountryCode = allStates[i]["countryCode"];
                               break;
                             }
                           }
                           // pr.show();
-                          getCity(selectedStateCode,selectedCountryCode);
+                          getCity(selectedStateCode, selectedCountryCode);
                           setState(() {
                             selectedState = value;
                           });
@@ -465,13 +574,13 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                       ),
                     ),
                     Padding(
-                      padding:
-                      const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
+                      padding: const EdgeInsets.only(
+                          top: 15.0, right: 5.0, left: 5.0),
                       child: Row(
                         children: <Widget>[
-                          Text("City",
+                          Text("City *",
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500))
+                                  fontSize: 15, fontWeight: FontWeight.bold))
                         ],
                       ),
                     ),
@@ -482,7 +591,7 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                         value: selectedCity,
                         hint: "Select Your City",
                         searchHint: "Select one",
-                        onClear: (){
+                        onClear: () {
                           print('hi');
                           print(selectedCity);
                         },
@@ -492,8 +601,8 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                             // _cityDropdownError = null;
                             // areaClassList = [];
                           });
-                          for(int i=0;i<allCities.length;i++){
-                            if(newValue==allCities[i]["name"]){
+                          for (int i = 0; i < allCities.length; i++) {
+                            if (newValue == allCities[i]["name"]) {
                               selectedStateCode = allCities[i]["stateCode"];
                               selectedCity = allCities[i]["name"];
                               break;
@@ -577,16 +686,27 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10,),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Center(
                       child: Container(
                         height: 45,
                         width: 170,
-                        child: RaisedButton(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10),),
+                        child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           color: cnst.appPrimaryMaterialColor,
-                          child: Text('Add Vendor',style: TextStyle(color: Colors.white,),),
+                          child: Text(
+                            'Add Vendor',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
                           onPressed: () {
                             print('Add vendor cicked');
+                            addVendor();
                           },
                         ),
                       ),

@@ -10,14 +10,18 @@ import 'package:vibration/vibration.dart';
 
 class JoinPage extends StatefulWidget {
   Map fromMemberData;
-  String videoCall = "",entryIdWhileGuestEntry="";
+  String videoCall = "", entryIdWhileGuestEntry = "";
   String unknownVisitorEntryId = "";
   bool unknownEntry;
+  bool isAudioCallAccepted;
 
-  JoinPage({
-    this.fromMemberData,
-    this.videoCall,this.entryIdWhileGuestEntry,this.unknownVisitorEntryId,this.unknownEntry
-  });
+  JoinPage(
+      {this.fromMemberData,
+      this.videoCall,
+      this.entryIdWhileGuestEntry,
+      this.unknownVisitorEntryId,
+      this.unknownEntry,
+      this.isAudioCallAccepted});
 
   @override
   _JoinPageState createState() => _JoinPageState();
@@ -58,18 +62,20 @@ class _JoinPageState extends State<JoinPage> {
     //   data = preferences.getString('data');
     // }
     // else{
-    if(widget.unknownVisitorEntryId != null){
+    if (widget.unknownVisitorEntryId != null) {
       data = widget.unknownVisitorEntryId;
-    }
-    else if(widget.entryIdWhileGuestEntry!=null){
+    } else if (widget.entryIdWhileGuestEntry != null) {
       data = widget.entryIdWhileGuestEntry.toString();
-    }else{
+    } else {
       data = widget.fromMemberData["CallingId"].toString();
     }
     // }
     print("data on join page");
     print(data);
-    widget.fromMemberData["NotificationType"] == "VoiceCall" || widget.videoCall=="false" ? await AgoraRtcEngine.disableVideo() : null;
+    widget.fromMemberData["NotificationType"] == "VoiceCall" ||
+            widget.videoCall == "false"
+        ? await AgoraRtcEngine.disableVideo()
+        : null;
     await AgoraRtcEngine.setParameters(
         '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
     await AgoraRtcEngine.joinChannel(null, data, null, 0).then((value) {
@@ -84,7 +90,9 @@ class _JoinPageState extends State<JoinPage> {
 
   Future<void> _initAgoraRtcEngine() async {
     await AgoraRtcEngine.create(APP_ID);
-    widget.fromMemberData["NotificationType"] == "VoiceCall" ? await AgoraRtcEngine.disableVideo():await AgoraRtcEngine.enableVideo();
+    widget.fromMemberData["NotificationType"] == "VoiceCall"
+        ? await AgoraRtcEngine.disableVideo()
+        : await AgoraRtcEngine.enableVideo();
   }
 
   void _addAgoraEventHandlers() {
@@ -207,13 +215,13 @@ class _JoinPageState extends State<JoinPage> {
             onPressed: () {
               // Navigator.pushReplacementNamed(
               //     context,'/HomeScreen');
-              if(widget.unknownEntry){
-                Navigator.of(context).pop();;
-              }
-              else {
+              if (widget.unknownEntry) {
+                Navigator.of(context).pop();
+                ;
+              } else {
                 Navigator.pushReplacementNamed(context, '/HomeScreen');
               }
-              },
+            },
             child: Icon(
               Icons.call_end,
               color: Colors.white,
@@ -257,13 +265,15 @@ class _JoinPageState extends State<JoinPage> {
     print("widget.memberdata");
     print(widget.fromMemberData);
     return WillPopScope(
-      onWillPop: (){
-        if(widget.unknownEntry){
-          Navigator.of(context).pop();;
+      onWillPop: () {
+        if (widget.unknownEntry) {
+          Navigator.of(context).pop();
+          ;
+        } else {
+          // Navigator.pushReplacementNamed(context, '/HomeScreen');
+          Navigator.pushNamedAndRemoveUntil(context, '/HomeScreen', (route) => false);
         }
-        else {
-          Navigator.pushReplacementNamed(context, '/HomeScreen');
-        }      },
+      },
       child: Scaffold(
         appBar: AppBar(
           title: Text('MYJINI'),

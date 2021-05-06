@@ -77,6 +77,8 @@ import 'package:smart_society_new/Member_App/screens/Bills.dart';
 import 'package:smart_society_new/Member_App/screens/BuildingInfo.dart';
 import 'package:smart_society_new/Member_App/screens/Committees.dart';
 import 'package:smart_society_new/Member_App/screens/ComplaintScreen.dart';
+import 'package:smart_society_new/Member_App/screens/MyStaffOthersListing.dart';
+import 'package:smart_society_new/Member_App/screens/MyStaffMaidListing.dart';
 import 'package:smart_society_new/Member_App/screens/ContactList.dart';
 import 'package:smart_society_new/Member_App/screens/ContactUs.dart';
 import 'package:smart_society_new/Member_App/screens/CreateBuildingScreen.dart';
@@ -99,6 +101,7 @@ import 'package:smart_society_new/Member_App/screens/GlobalSearchMembers.dart';
 import 'package:smart_society_new/Member_App/screens/HomeScreen.dart';
 import 'package:smart_society_new/Member_App/screens/JoinCreateBuildingScreen.dart';
 import 'package:smart_society_new/Member_App/screens/LoginScreen.dart';
+import 'package:smart_society_new/Member_App/screens/MyStaffScreen.dart';
 import 'package:smart_society_new/Member_App/screens/MaintainanceScreen.dart';
 import 'package:smart_society_new/Member_App/screens/MemberVehicleDetail.dart';
 import 'package:smart_society_new/Member_App/screens/MyComplaints.dart';
@@ -277,8 +280,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
       if (data["notificationType"].toString() == "AddEvent") {
         Get.to(() => Events());
       }
-      if (data["notificationType"].toString() == "JoinSociety") {
+      else if (data["notificationType"].toString() == "JoinSociety") {
         Get.to(() => getPendingApprovals());
+      }
+      else if (data["notificationType"].toString() == "RevokeAdminRole") {
+        Get.to(() => LoginScreen());
+      }
+      else if (data["notificationType"].toString() == "AssignAdminRole") {
+        Get.to(() => LoginScreen());
       }
       else if (data["notificationType"].toString() == "AddDocument") {
         Get.to(() => DocumentScreen());
@@ -313,7 +322,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
           data["NotificationType"] == "VoiceCall") {
         print('data');
         print(data);
-        Get.to(() => JoinPage(
+        Get.to(() => JoinPage(isAudioCallAccepted: true,
             unknownEntry: false,
             fromMemberData:
             notification.payload.additionalData));
@@ -1107,6 +1116,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
         '/AdvertisementCreate': (context) => AdvertisementCreate(),
         '/NoticeBoard': (context) => NoticeBoard(),
         '/Vendors': (context) => ServicesScreen(),
+        '/MyStaffScreen': (context) => MyStaffScreen(),
+        '/MyStaffMaidListing': (context) => MyStaffMaidListing(),
+        '/MyStaffOthersListing': (context) => MyStaffOthersListing(),
         '/MyServiceRequests': (context) => MyServiceRequests(),
         '/AdvertisementList': (context) => AdvertisementList(),
         '/MyWishList': (context) => MyWishList(),

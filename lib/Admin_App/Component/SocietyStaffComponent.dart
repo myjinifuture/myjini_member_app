@@ -324,7 +324,8 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                       ),
                     ),
                   ),
-                  widget.visitorData["isMapped"] == true
+                  widget.visitorData['staffCategory'] !=
+                      "Watchman"?widget.visitorData["isMapped"] == true
                       ? IconButton(
                     icon: Icon(
                       Icons.check_circle,
@@ -373,7 +374,7 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                       ),
                       onPressed: () {
                         scan(widget.visitorData['_id']);
-                      }),
+                      }):Container(),
                   IconButton(
                     icon: Icon(
                       Icons.delete,

@@ -10,7 +10,7 @@ import 'package:smart_society_new/Member_App/common/Classlist.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
 import 'package:smart_society_new/Member_App/component/masktext.dart';
-
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'OTP.dart';
 
 
@@ -1218,6 +1218,9 @@ class _AddDailyResourceState extends State<AddDailyResource> {
   List allFlatList = [];
   List allWingList = [];
   int counter = 1;
+  String _path;
+  String _fileName;
+
 
   @override
   void initState() {
@@ -1494,6 +1497,26 @@ class _AddDailyResourceState extends State<AddDailyResource> {
               break;
             }
           }
+          String filename = "";
+          String filePath = "";
+          File compressedFile;
+          if (_image != null) {
+            ImageProperties properties =
+            await FlutterNativeImage.getImageProperties(_image.path);
+
+            compressedFile = await FlutterNativeImage.compressImage(
+              _image.path,
+              quality: 80,
+              targetWidth: 600,
+              targetHeight: (properties.height * 600 / properties.width).round(),
+            );
+
+            filename = _image.path.split('/').last;
+            filePath = compressedFile.path;
+          } else if (_path != null && _path != '') {
+            filePath = _path;
+            filename = _fileName;
+          }
           FormData formData = new FormData.fromMap({
             "Name": txtName.text,
             "ContactNo1": txtContactNo.text,
@@ -1502,7 +1525,10 @@ class _AddDailyResourceState extends State<AddDailyResource> {
             // "wingId" : selectedWingId,
             // "flatId" : finalWingFlatIds[0]["flatId"],
             // "identityProof" : null,
-            "staffImage" : image == null ? "":image,
+            "staffImage" :(filePath != null && filePath != '')
+                ? await MultipartFile.fromFile(filePath,
+                filename: filename.toString())
+                : null,
             "AadharcardNo": adharnumbertxt.text,
             "VoterId": txtvoterId.text,
             "DateOfBirth": SelectedDOB.toString(),
@@ -1525,7 +1551,10 @@ class _AddDailyResourceState extends State<AddDailyResource> {
             // "wingId" : selectedWingId,
             // "flatId" : finalWingFlatIds[0]["flatId"],
             // "identityProof" : null,
-            "staffImage" : image == null ? "":image,
+            "staffImage" : (filePath != null && filePath != '')
+                ? await MultipartFile.fromFile(filePath,
+                filename: filename.toString())
+                : null,
             "AadharcardNo": adharnumbertxt.text,
             "VoterId": txtvoterId.text,
             "DateOfBirth": SelectedDOB.toString(),
@@ -1572,7 +1601,6 @@ class _AddDailyResourceState extends State<AddDailyResource> {
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
-
     setState(() {
       _image = image;
     });

@@ -675,7 +675,10 @@ class _MemberProfileState extends State<MemberProfile> {
           "societyId": widget.memberData["society"]["societyId"].toString(),
           "memberId": widget.memberData["_id"].toString(),
           "makeAdmin":widget.memberData["society"]["isAdmin"]==0?1:0,
+          "adminId" : MemberId
         };
+        print("data");
+        print(data);
         Services.responseHandler(apiName: "admin/assignAdminRole", body: data)
             .then((data) async {
               print("data displayed");

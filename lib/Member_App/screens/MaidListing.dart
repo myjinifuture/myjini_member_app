@@ -47,7 +47,7 @@ class _MaidListingState extends State<MaidListing> {
           isLoading = true;
         });
         maidList.clear();
-        Services.responseHandler(apiName: "admin/getStaffEntry",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/getStaffEntry_v1",body: data).then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               // maidList = data.Data;
