@@ -71,12 +71,16 @@ import 'package:smart_society_new/Member_App/screens/Amenities.dart';
 import 'package:smart_society_new/Member_App/screens/Approval_Pending.dart';
 import 'package:smart_society_new/Member_App/screens/BankDetails.dart';
 import 'package:smart_society_new/Member_App/screens/BannerScreen.dart';
+import 'package:smart_society_new/Member_App/screens/DailyServicesScreen.dart';
 import 'package:smart_society_new/Member_App/screens/Bills.dart';
 import 'package:smart_society_new/Member_App/screens/BuildingInfo.dart';
 import 'package:smart_society_new/Member_App/screens/Committees.dart';
 import 'package:smart_society_new/Member_App/screens/ComplaintScreen.dart';
 import 'package:smart_society_new/Member_App/screens/ContactList.dart';
 import 'package:smart_society_new/Member_App/screens/ContactUs.dart';
+import 'package:smart_society_new/Member_App/screens/DailyServicesStaffListing.dart';
+import 'package:smart_society_new/Member_App/screens/DailyServicesStaffProfileScreen.dart';
+import 'package:smart_society_new/Member_App/screens/StaffReviewListingScreen.dart';
 import 'package:smart_society_new/Member_App/screens/CreateBuildingScreen.dart';
 import 'package:smart_society_new/Member_App/screens/CreateBuildingSlider.dart';
 import 'package:smart_society_new/Member_App/screens/CreateSociety.dart';
@@ -1091,6 +1095,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
           '/Emergency': (context) => EmergencyNumber(),
           '/Gallery': (context) => GalleryScreen(),
           '/Reminders': (context) => Reminders(),
+          '/DailyServicesScreen': (context) => DailyServicesScreen(),
+          '/DailyServicesStaffListing': (context) => DailyServicesStaffListing(),
+          '/DailyServicesStaffProfileScreen': (context) => DailyServicesStaffProfileScreen(),
+          '/StaffReviewListingScreen': (context) => StaffReviewListingScreen(),
           '/EditDocument': (context) => EditDocument(),
           '/AllRemindersScreen': (context) => AllRemindersScreen(),
           '/AddReminderScreen': (context) => AddReminderScreen(),
