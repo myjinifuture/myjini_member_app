@@ -118,63 +118,63 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
     );
   }
 
-  memberToMemberCalling(bool isVideoCall) async {
-    try {
-      print("tapped");
-      final result = await InternetAddress.lookup('google.com');
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
 
-        var data = {
-          "societyId" : prefs.getString(Session.SocietyId),
-          "callerMemberId" : prefs.getString(Session.Member_Id),
-          "callerWingId" : prefs.getString(Session.WingId),
-          "callerFlatId" : prefs.getString(Session.FlatId),
-          "receiverMemberId" : widget.MemberData["_id"].toString(),
-          "receiverWingId" : widget.MemberData["WingData"][0]["_id"].toString(),
-          "receiverFlatId" : widget.MemberData["FlatData"][0]["_id"].toString(),
-          "contactNo" : widget.MemberData["ContactNo"].toString(),
-          "AddedBy" : "Member",
-          "isVideoCall" : isVideoCall,
-          "callFor" : 0,
-          "deviceType" : Platform.isAndroid ? "Android" : "IOS"
-        };
+  @override
+  Widget build(BuildContext context) {
+    print(widget.MemberData);  memberToMemberCalling(bool isVideoCall) async {
+      try {
+        print("tapped");
+        final result = await InternetAddress.lookup('google.com');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
 
-        print("memberToMemberCalling Data = ${data}");
-        Services.responseHandler(apiName: "member/memberCalling",body: data).then((data) async {
-          if (data.Data.length > 0 && data.IsSuccess == true) {
-            SharedPreferences preferences =
-            await SharedPreferences.getInstance();
-            // await preferences.setString('data', data.Data);
-            // await for camera and mic permissions before pushing video page
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FromMemberScreen(fromMemberData: widget.MemberData,isVideoCall:isVideoCall.toString()),
-              ),
-            );
-            /*Navigator.push(
+          var data = {
+            "societyId" : prefs.getString(Session.SocietyId),
+            "callerMemberId" : prefs.getString(Session.Member_Id),
+            "callerWingId" : prefs.getString(Session.WingId),
+            "callerFlatId" : prefs.getString(Session.FlatId),
+            "receiverMemberId" : widget.MemberData["_id"].toString(),
+            "receiverWingId" : widget.MemberData["WingData"][0]["_id"].toString(),
+            "receiverFlatId" : widget.MemberData["FlatData"][0]["_id"].toString(),
+            "contactNo" : widget.MemberData["ContactNo"].toString(),
+            "AddedBy" : "Member",
+            "isVideoCall" : isVideoCall,
+            "callFor" : 0,
+            "deviceType" : Platform.isAndroid ? "Android" : "IOS"
+          };
+
+          print("memberToMemberCalling Data = ${data}");
+          Services.responseHandler(apiName: "member/memberCalling",body: data).then((data) async {
+            if (data.Data.length > 0 && data.IsSuccess == true) {
+              SharedPreferences preferences =
+              await SharedPreferences.getInstance();
+              // await preferences.setString('data', data.Data);
+              // await for camera and mic permissions before pushing video page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FromMemberScreen(fromMemberData: widget.MemberData,isVideoCall:isVideoCall.toString()),
+                ),
+              );
+              /*Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => JoinPage(),
                     ),
                   );*/
-          } else {
+            } else {
 
-          }
-        }, onError: (e) {
-          showHHMsg("Try Again.","MyJini");
-        });
-      } else
+            }
+          }, onError: (e) {
+            showHHMsg("Try Again.","MyJini");
+          });
+        } else
+          showHHMsg("No Internet Connection.","MyJini");
+      } on SocketException catch (_) {
         showHHMsg("No Internet Connection.","MyJini");
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.","MyJini");
+      }
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    print(widget.MemberData);
     return AnimationConfiguration.staggeredList(
       position: widget.index,
       duration: const Duration(milliseconds: 450),

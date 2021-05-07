@@ -50,8 +50,8 @@ class _EventsState extends State<Events> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              },
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              },
             ),
           ],
         );

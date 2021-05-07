@@ -35,8 +35,8 @@ class _SplashscreenState extends State<Splashscreen> {
         print("constant.NODE_API");
         print(constant.NODE_API);
         if (MemberId != null && MemberId != ""){
-          Navigator.pushReplacementNamed(context, '/HomeScreen');
-          // Navigator.push(
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/HomeScreen', (route) => false);          // Navigator.push(
           //     context,
           //     MaterialPageRoute(
           //         builder: (context) => HomeScreen(navigatorKey: widget.navigatorKey,isAppOpenedAfterNotification:widget.isAppOpenedAfterNotification)));

@@ -43,8 +43,8 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              },
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              },
             ),
           ],
         );
@@ -151,8 +151,8 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () {
-          Navigator.pushReplacementNamed(context, '/HomeScreen');
-        },
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/HomeScreen', (route) => false);        },
       child: Scaffold(
         appBar: AppBar(
           title: Text("Pending Approvals"),

@@ -22,6 +22,7 @@ import 'package:smart_society_new/Member_App/component/NotificationPopup.dart';
 import 'package:smart_society_new/Member_App/screens/CustomerProfile.dart';
 import 'package:smart_society_new/Member_App/screens/GalleryScreen.dart';
 import 'package:smart_society_new/Member_App/screens/getPendingApprovals.dart';
+import 'package:smart_society_new/screens/bottom_navigation_screen.dart';
 import 'package:unique_identifier/unique_identifier.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -1978,632 +1979,705 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // print(Profile);
     // print("banners data:");
     // print(banners);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "MYJINI",
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-        ),
-        centerTitle: true,
-        actions: <Widget>[
-          // FGBGNotifier(
-          //   onEvent: (event) {
-          //     print(event); // FGBGType.foreground or FGBGType.background
-          //   },
-          //   child: Text("event"),
-          // ),
-          // Text(_isInForeground.toString()),
-          IconButton(
-            icon: isAdmin
-                ? Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Icon(
-                Icons.share,
-              ),
-            )
-                : Padding(
-              padding: const EdgeInsets.only(left: 4.0),
-              child: Icon(
-                Icons.share,
-              ),
-            ),
-            onPressed: () {
-              print("maplink :");
-              print(mapLink);
-              Share.share(
-                  "Society Name : $societyName\nAddress : $societyAddress\nGoogle map link : '$mapLink'");
-            },
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "MYJINI",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
           ),
-          // GestureDetector(
-          //   onTap: onJoin,
-          //   child: Column(
-          //     children: <Widget>[
-          //       Padding(
-          //         padding: const EdgeInsets.only(top: 9.0, right: 2.0),
-          //         child: Image.asset(
-          //           'images/video_call.png',
-          //           width: 23,
-          //           height: 23,
-          //           color: Colors.white,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          isAdmin
-              ? IconButton(
-              icon: Padding(
-                padding: EdgeInsets.only(left: 13.0),
-                child: Icon(Icons.add_to_home_screen),
+          centerTitle: true,
+          actions: <Widget>[
+            // FGBGNotifier(
+            //   onEvent: (event) {
+            //     print(event); // FGBGType.foreground or FGBGType.background
+            //   },
+            //   child: Text("event"),
+            // ),
+            // Text(_isInForeground.toString()),
+            IconButton(
+              icon: isAdmin
+                  ? Padding(
+                padding: const EdgeInsets.only(left: 20.0),
+                child: Icon(
+                  Icons.share,
+                ),
+              )
+                  : Padding(
+                padding: const EdgeInsets.only(left: 4.0),
+                child: Icon(
+                  Icons.share,
+                ),
               ),
               onPressed: () {
-                Navigator.pushNamed(context, "/Dashboard");
-              })
-              : Container(),
-          IconButton(
-            iconSize: 30,
-            icon: Image.asset(
-              'images/bloodplasma.png',
-              fit: BoxFit.fill,
-            ),
-            onPressed: () {
-              // Navigator.pushNamed(context, '/BloodPlasma');
-              Fluttertoast.showToast(
-                  msg: "Coming Soon!!!",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.BOTTOM,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0);
-            },
-          ),
-        ],
-        bottom: PreferredSize(
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, "/GlobalSearch");
+                print("maplink :");
+                print(mapLink);
+                Share.share(
+                    "Society Name : $societyName\nAddress : $societyAddress\nGoogle map link : '$mapLink'");
               },
-              child: Container(
-                margin:
-                EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 10),
-                height: 40,
-                padding: EdgeInsets.only(left: 10, right: 10),
-                //width: MediaQuery.of(context).size.width - 50,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(4.0))),
-                child: Row(
+            ),
+            // GestureDetector(
+            //   onTap: onJoin,
+            //   child: Column(
+            //     children: <Widget>[
+            //       Padding(
+            //         padding: const EdgeInsets.only(top: 9.0, right: 2.0),
+            //         child: Image.asset(
+            //           'images/video_call.png',
+            //           width: 23,
+            //           height: 23,
+            //           color: Colors.white,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            isAdmin
+                ? IconButton(
+                icon: Padding(
+                  padding: EdgeInsets.only(left: 13.0),
+                  child: Icon(Icons.add_to_home_screen),
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/Dashboard");
+                })
+                : Container(),
+            IconButton(
+              iconSize: 30,
+              icon: Image.asset(
+                'images/bloodplasma.png',
+                fit: BoxFit.fill,
+              ),
+              onPressed: () {
+                // Navigator.pushNamed(context, '/BloodPlasma');
+                Fluttertoast.showToast(
+                    msg: "Coming Soon!!!",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+              },
+            ),
+          ],
+          bottom: PreferredSize(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "/GlobalSearch");
+                },
+                child: Container(
+                  margin:
+                  EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 10),
+                  height: 40,
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  //width: MediaQuery.of(context).size.width - 50,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(4.0))),
+                  child: Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.search,
+                        size: 15,
+                      ),
+                      Padding(padding: EdgeInsets.only(left: 4)),
+                      Expanded(
+                        child: Text(
+                          "Search Member or Services..",
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ),
+                      /*IconButton(
+                                icon: Icon(
+                                  Icons.keyboard_voice,
+                                  color: constant.appPrimaryMaterialColor,
+                                ),
+                                onPressed: () {
+                                  requestPermission(PermissionGroup.microphone);
+                                })*/
+                    ],
+                  ),
+                ),
+              ),
+              preferredSize: Size.fromHeight(40.0)),
+        ),
+        drawer: Drawer(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: ListView(
                   children: <Widget>[
-                    Icon(
-                      Icons.search,
-                      size: 15,
-                    ),
-                    Padding(padding: EdgeInsets.only(left: 4)),
-                    Expanded(
-                      child: Text(
-                        "Search Member or Services..",
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                    DrawerHeader(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacementNamed(context, '/MyProfile');
+                        },
+                        child: Row(
+                          children: <Widget>[
+                            Stack(
+                              children: <Widget>[
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(100)),
+                                      border: Border.all(
+                                          color: Colors.grey, width: 0.4)),
+                                  width: 76,
+                                  height: 76,
+                                ),
+                                ClipOval(
+                                  child: Profile != "null" && Profile != ""
+                                      ? FadeInImage.assetNetwork(
+                                    placeholder:
+                                    "images/image_loading.gif",
+                                    image:
+                                    constant.Image_Url + '$Profile',
+                                    width: 70,
+                                    height: 70,
+                                    fit: BoxFit.cover,
+                                  )
+                                      : Image.asset(
+                                    "images/man.png",
+                                    width: 70,
+                                    height: 70,
+                                  ),
+                                ),
+                              ],
+                              alignment: Alignment.center,
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 40.0),
+                                      child: Text("$Name".toUpperCase(),
+                                          style: TextStyle(
+                                            //color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold)),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 2, left: 0),
+                                      child: Text("$Wing" " - " "$FlatNo"),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    /*IconButton(
-                              icon: Icon(
-                                Icons.keyboard_voice,
-                                color: constant.appPrimaryMaterialColor,
-                              ),
-                              onPressed: () {
-                                requestPermission(PermissionGroup.microphone);
-                              })*/
+                    ListTile(
+                      title: Text(
+                        'My Visitors',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.person_pin,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, "/MyGuestList");
+                      },
+                    ),
+                    // ListTile(
+                    //   title: Text(
+                    //     'Manage Promotions',
+                    //     style: TextStyle(fontWeight: FontWeight.w600),
+                    //   ),
+                    //   leading: Icon(
+                    //     Icons.assessment,
+                    //     color: constant.appPrimaryMaterialColor,
+                    //   ),
+                    //   onTap: () {
+                    //     Navigator.pop(context);
+                    //     Navigator.pushReplacementNamed(
+                    //         context, "/AdvertisementManage");
+                    //   },
+                    // ),
+                    // ListTile(
+                    //   title: Text(
+                    //     "Society Amenities",
+                    //     style: TextStyle(fontWeight: FontWeight.w600),
+                    //   ),
+                    //   leading: Icon(
+                    //     Icons.local_laundry_service,
+                    //     color: constant.appPrimaryMaterialColor,
+                    //   ),
+                    //   onTap: () {
+                    //     Navigator.pop(context);
+                    //     Navigator.pushNamed(context, "/Amenities");
+                    //   },
+                    // ),
+                    // ListTile(
+                    //   title: Text(
+                    //     'My WishList',
+                    //     style: TextStyle(fontWeight: FontWeight.w600),
+                    //   ),
+                    //   leading: Image.asset(
+                    //     "images/wishlist.png",
+                    //     width: 20,
+                    //     height: 20,
+                    //     color: constant.appPrimaryMaterialColor,
+                    //   ),
+                    //   onTap: () {
+                    //     Navigator.pop(context);
+                    //     Navigator.pushNamed(context, "/MyWishList");
+                    //   },
+                    // ),
+                    // ListTile(
+                    //   title: Text(
+                    //     'Terms & Conditions',
+                    //     style: TextStyle(fontWeight: FontWeight.w600),
+                    //   ),
+                    //   leading: Icon(
+                    //     Icons.priority_high,
+                    //     color: constant.appPrimaryMaterialColor,
+                    //   ),
+                    //   onTap: () {
+                    //     Navigator.pop(context);
+                    //     Navigator.pushNamed(context, "/TermsAndConditions");
+                    //   },
+                    // ),
+                    // ListTile(
+                    //   title: Text(
+                    //     'Privacy Policy',
+                    //     style: TextStyle(fontWeight: FontWeight.w600),
+                    //   ),
+                    //   leading: Icon(
+                    //     Icons.label,
+                    //     color: constant.appPrimaryMaterialColor,
+                    //   ),
+                    //   onTap: () {
+                    //     Navigator.pop(context);
+                    //     Navigator.pushNamed(context, "/PrivacyPolicy");
+                    //   },
+                    // ),
+                    ListTile(
+                      title: Text(
+                        'Share My Address',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.add_to_home_screen,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Share.share(
+                            "Hello, My Name is $Name\nI reside At $FlatNo - $Wing\nMap Link: $mapLink\nAddress: $Address\n");
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Contact Us',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.perm_contact_calendar,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, "/ContactUs");
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Logout',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.exit_to_app,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showConfirmDialog();
+                      },
+                    ),
+
+                    //========by rinki
+                    // ListTile(
+                    //   title: Text(
+                    //     'Building Maintenance',
+                    //     style: TextStyle(fontWeight: FontWeight.w600),
+                    //   ),
+                    //   leading: Icon(
+                    //     Icons.exit_to_app,
+                    //     color: constant.appPrimaryMaterialColor,
+                    //   ),
+                    //   onTap: () {
+                    //     Navigator.pop(context);
+                    //     Navigator.pushNamed(context, "/JoinCreateBuildingScreen");
+                    //   },
+                    // ),
                   ],
                 ),
               ),
-            ),
-            preferredSize: Size.fromHeight(40.0)),
-      ),
-      drawer: Drawer(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Expanded(
-              child: ListView(
-                children: <Widget>[
-                  DrawerHeader(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacementNamed(context, '/MyProfile');
-                      },
+              Align(
+                alignment: FractionalOffset.bottomCenter,
+                child: Column(
+                  children: <Widget>[
+                    Divider(),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Stack(
-                            children: <Widget>[
-                              Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(100)),
-                                    border: Border.all(
-                                        color: Colors.grey, width: 0.4)),
-                                width: 76,
-                                height: 76,
-                              ),
-                              ClipOval(
-                                child: Profile != "null" && Profile != ""
-                                    ? FadeInImage.assetNetwork(
-                                  placeholder:
-                                  "images/image_loading.gif",
-                                  image:
-                                  constant.Image_Url + '$Profile',
-                                  width: 70,
-                                  height: 70,
-                                  fit: BoxFit.cover,
+                          GestureDetector(
+                            onTap: () {
+                              launch("tel:9023803870");
+                            },
+                            child: Column(
+                              children: <Widget>[
+                                Image.asset("images/call.png",
+                                    height: 24, width: 24),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: Text("Call",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600)),
                                 )
-                                    : Image.asset(
-                                  "images/man.png",
-                                  width: 70,
-                                  height: 70,
-                                ),
-                              ),
-                            ],
-                            alignment: Alignment.center,
+                              ],
+                            ),
                           ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 12.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 40.0),
-                                    child: Text("$Name".toUpperCase(),
-                                        style: TextStyle(
-                                          //color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold)),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 2, left: 0),
-                                    child: Text("$Wing" " - " "$FlatNo"),
-                                  )
-                                ],
-                              ),
+                          GestureDetector(
+                            onTap: () {
+                              launch(
+                                  "https://www.facebook.com/myjinismartsociety/");
+                            },
+                            child: Column(
+                              children: <Widget>[
+                                Image.asset("images/facebook.png",
+                                    height: 24, width: 24),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: Text("Facebook",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600)),
+                                )
+                              ],
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              launch(
+                                  "https://www.instagram.com/myjinismartsociety/");
+                            },
+                            child: Column(
+                              children: <Widget>[
+                                Image.asset("images/instagram.png",
+                                    height: 24, width: 24),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: Text("Instagram",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600)),
+                                ),
+                              ],
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              launch("http://www.myjini.in/");
+                            },
+                            child: Column(
+                              children: <Widget>[
+                                Image.asset("images/applogo.png",
+                                    height: 24, width: 24),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 5),
+                                  child: Text("Website",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600)),
+                                )
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  ListTile(
-                    title: Text(
-                      'My Visitors',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    leading: Icon(
-                      Icons.person_pin,
-                      color: constant.appPrimaryMaterialColor,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/MyGuestList");
-                    },
-                  ),
-                  // ListTile(
-                  //   title: Text(
-                  //     'Manage Promotions',
-                  //     style: TextStyle(fontWeight: FontWeight.w600),
-                  //   ),
-                  //   leading: Icon(
-                  //     Icons.assessment,
-                  //     color: constant.appPrimaryMaterialColor,
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.pop(context);
-                  //     Navigator.pushReplacementNamed(
-                  //         context, "/AdvertisementManage");
-                  //   },
-                  // ),
-                  // ListTile(
-                  //   title: Text(
-                  //     "Society Amenities",
-                  //     style: TextStyle(fontWeight: FontWeight.w600),
-                  //   ),
-                  //   leading: Icon(
-                  //     Icons.local_laundry_service,
-                  //     color: constant.appPrimaryMaterialColor,
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.pop(context);
-                  //     Navigator.pushNamed(context, "/Amenities");
-                  //   },
-                  // ),
-                  // ListTile(
-                  //   title: Text(
-                  //     'My WishList',
-                  //     style: TextStyle(fontWeight: FontWeight.w600),
-                  //   ),
-                  //   leading: Image.asset(
-                  //     "images/wishlist.png",
-                  //     width: 20,
-                  //     height: 20,
-                  //     color: constant.appPrimaryMaterialColor,
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.pop(context);
-                  //     Navigator.pushNamed(context, "/MyWishList");
-                  //   },
-                  // ),
-                  // ListTile(
-                  //   title: Text(
-                  //     'Terms & Conditions',
-                  //     style: TextStyle(fontWeight: FontWeight.w600),
-                  //   ),
-                  //   leading: Icon(
-                  //     Icons.priority_high,
-                  //     color: constant.appPrimaryMaterialColor,
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.pop(context);
-                  //     Navigator.pushNamed(context, "/TermsAndConditions");
-                  //   },
-                  // ),
-                  // ListTile(
-                  //   title: Text(
-                  //     'Privacy Policy',
-                  //     style: TextStyle(fontWeight: FontWeight.w600),
-                  //   ),
-                  //   leading: Icon(
-                  //     Icons.label,
-                  //     color: constant.appPrimaryMaterialColor,
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.pop(context);
-                  //     Navigator.pushNamed(context, "/PrivacyPolicy");
-                  //   },
-                  // ),
-                  ListTile(
-                    title: Text(
-                      'Share My Address',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    leading: Icon(
-                      Icons.add_to_home_screen,
-                      color: constant.appPrimaryMaterialColor,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Share.share(
-                          "Hello, My Name is $Name\nI reside At $FlatNo - $Wing\nMap Link: $mapLink\nAddress: $Address\n");
-                    },
-                  ),
-                  ListTile(
-                    title: Text(
-                      'Contact Us',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    leading: Icon(
-                      Icons.perm_contact_calendar,
-                      color: constant.appPrimaryMaterialColor,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/ContactUs");
-                    },
-                  ),
-                  ListTile(
-                    title: Text(
-                      'Logout',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    leading: Icon(
-                      Icons.exit_to_app,
-                      color: constant.appPrimaryMaterialColor,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _showConfirmDialog();
-                    },
-                  ),
-
-                  //========by rinki
-                  // ListTile(
-                  //   title: Text(
-                  //     'Building Maintenance',
-                  //     style: TextStyle(fontWeight: FontWeight.w600),
-                  //   ),
-                  //   leading: Icon(
-                  //     Icons.exit_to_app,
-                  //     color: constant.appPrimaryMaterialColor,
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.pop(context);
-                  //     Navigator.pushNamed(context, "/JoinCreateBuildingScreen");
-                  //   },
-                  // ),
-                ],
-              ),
-            ),
-            Align(
-              alignment: FractionalOffset.bottomCenter,
-              child: Column(
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+        body: isLoading
+            ? Container(
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        )
+            : Column(
+          children: <Widget>[
+            _advertisementData.length > 0
+                ? GestureDetector(
+              // onTap: () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => AdDetailPage(
+              //         data:i,
+              //       ),
+              //     ),
+              //   );
+              // },
+              child: Stack(
+                alignment: Alignment.bottomCenter,
                 children: <Widget>[
-                  Divider(),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            launch("tel:9023803870");
-                          },
-                          child: Column(
-                            children: <Widget>[
-                              Image.asset("images/call.png",
-                                  height: 24, width: 24),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 5),
-                                child: Text("Call",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600)),
-                              )
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            launch(
-                                "https://www.facebook.com/myjinismartsociety/");
-                          },
-                          child: Column(
-                            children: <Widget>[
-                              Image.asset("images/facebook.png",
-                                  height: 24, width: 24),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 5),
-                                child: Text("Facebook",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600)),
-                              )
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            launch(
-                                "https://www.instagram.com/myjinismartsociety/");
-                          },
-                          child: Column(
-                            children: <Widget>[
-                              Image.asset("images/instagram.png",
-                                  height: 24, width: 24),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 5),
-                                child: Text("Instagram",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600)),
-                              ),
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            launch("http://www.myjini.in/");
-                          },
-                          child: Column(
-                            children: <Widget>[
-                              Image.asset("images/applogo.png",
-                                  height: 24, width: 24),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 5),
-                                child: Text("Website",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600)),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
+                  CarouselSlider(
+                    viewportFraction: 1.0,
+                    height:
+                    MediaQuery.of(context).size.height * 0.218,
+                    autoPlayAnimationDuration:
+                    Duration(milliseconds: 1000),
+                    reverse: false,
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    autoPlay: true,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _current = index;
+                      });
+                    },
+                    items: _advertisementData.map((i) {
+                      return Builder(
+                          builder: (BuildContext context) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AdDetailPage(
+                                        data: i,
+                                        index:_current
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                  width:
+                                  MediaQuery.of(context).size.width,
+                                  child: Image.network(
+                                      Image_Url + i["Image"][0],
+                                      fit: BoxFit.fill)),
+                            );
+                          });
+                    }).toList(),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: map<Widget>(
+                      _advertisementData,
+                          (index, url) {
+                        return Container(
+                          width: 7.0,
+                          height: 7.0,
+                          margin: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 2.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(5)),
+                              color: _current == index
+                                  ? Colors.white
+                                  : Colors.grey),
+                        );
+                      },
                     ),
-                  )
+                  ),
                 ],
               ),
             )
-          ],
-        ),
-      ),
-      body: isLoading
-          ? Container(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      )
-          : Column(
-        children: <Widget>[
-          _advertisementData.length > 0
-              ? GestureDetector(
-            // onTap: () {
-            //   Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => AdDetailPage(
-            //         data:i,
-            //       ),
-            //     ),
-            //   );
-            // },
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: <Widget>[
-                CarouselSlider(
-                  viewportFraction: 1.0,
-                  height:
-                  MediaQuery.of(context).size.height * 0.218,
-                  autoPlayAnimationDuration:
-                  Duration(milliseconds: 1000),
-                  reverse: false,
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  autoPlay: true,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _current = index;
-                    });
-                  },
-                  items: _advertisementData.map((i) {
-                    return Builder(
-                        builder: (BuildContext context) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AdDetailPage(
-                                      data: i,
-                                      index:_current
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                                width:
-                                MediaQuery.of(context).size.width,
-                                child: Image.network(
-                                    Image_Url + i["Image"][0],
-                                    fit: BoxFit.fill)),
-                          );
-                        });
-                  }).toList(),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: map<Widget>(
-                    _advertisementData,
-                        (index, url) {
-                      return Container(
-                        width: 7.0,
-                        height: 7.0,
-                        margin: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 2.0),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(5)),
-                            color: _current == index
-                                ? Colors.white
-                                : Colors.grey),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          )
-              : banners.length == 0
-              ? Center(
-            child: CircularProgressIndicator(),
-          )
-              : CarouselSlider(
-            height: 160,
-            viewportFraction: 1.0,
-            autoPlayAnimationDuration:
-            Duration(milliseconds: 1000),
-            reverse: false,
-            autoPlayCurve: Curves.fastOutSlowIn,
-            autoPlay: true,
-            onPageChanged: (index) {
-              setState(() {
-                _current = index;
-              });
-            },
-            items: banners.map((i) {
-              return Builder(builder: (BuildContext context) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AdDetailPage(
-                          data: i,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Container(
-                      width:
-                      MediaQuery.of(context).size.width,
-                      child: Image.network(
-                          Image_Url + i["image"],
-                          fit: BoxFit.fill)),
-                );
-              });
-            }).toList(),
-          ),
-          Padding(padding: EdgeInsets.all(0.0)),
-          Expanded(
-            child: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(
-                                color: Colors.grey[500], width: 0.3))),
-                    child: AnimationLimiter(
-                      child: GridView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: _getMenuItem,
-                        itemCount: _allMenuList.length,
-                        gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          childAspectRatio:
-                          MediaQuery.of(context).size.width /
-                              (MediaQuery.of(context).size.height /
-                                  2.3),
-                        ),
-                      ),
-                    ),
-                  ),
-                  _advertisementData.length > 0
-                      ? GestureDetector(
+                : banners.length == 0
+                ? Center(
+              child: CircularProgressIndicator(),
+            )
+                : CarouselSlider(
+              height: 160,
+              viewportFraction: 1.0,
+              autoPlayAnimationDuration:
+              Duration(milliseconds: 1000),
+              reverse: false,
+              autoPlayCurve: Curves.fastOutSlowIn,
+              autoPlay: true,
+              onPageChanged: (index) {
+                setState(() {
+                  _current = index;
+                });
+              },
+              items: banners.map((i) {
+                return Builder(builder: (BuildContext context) {
+                  return GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BannerScreen(
-                            bannerData: _advertisementData,
+                          builder: (context) => AdDetailPage(
+                            data: i,
                           ),
                         ),
                       );
                     },
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: <Widget>[
-                        _advertisementData.length == 0
-                            ? CircularProgressIndicator()
-                            : CarouselSlider(
-                          height: MediaQuery.of(context)
-                              .size
-                              .height *
-                              0.218,
-                          viewportFraction: 1.0,
-                          autoPlayAnimationDuration:
-                          Duration(milliseconds: 1000),
-                          reverse: false,
-                          autoPlayCurve:
-                          Curves.fastOutSlowIn,
-                          autoPlay: true,
-                          onPageChanged: (index) {
-                            setState(() {
-                              _current = index;
-                            });
-                          },
-                          items:
-                          _advertisementData.map((i) {
-                            return Builder(builder:
-                                (BuildContext context) {
+                    child: Container(
+                        width:
+                        MediaQuery.of(context).size.width,
+                        child: Image.network(
+                            Image_Url + i["image"],
+                            fit: BoxFit.fill)),
+                  );
+                });
+              }).toList(),
+            ),
+            Padding(padding: EdgeInsets.all(0.0)),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                                  color: Colors.grey[500], width: 0.3))),
+                      child: AnimationLimiter(
+                        child: GridView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: _getMenuItem,
+                          itemCount: _allMenuList.length,
+                          gridDelegate:
+                          SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            childAspectRatio:
+                            MediaQuery.of(context).size.width /
+                                (MediaQuery.of(context).size.height /
+                                    2.3),
+                          ),
+                        ),
+                      ),
+                    ),
+                    _advertisementData.length > 0
+                        ? GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BannerScreen(
+                              bannerData: _advertisementData,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: <Widget>[
+                          _advertisementData.length == 0
+                              ? CircularProgressIndicator()
+                              : CarouselSlider(
+                            height: MediaQuery.of(context)
+                                .size
+                                .height *
+                                0.218,
+                            viewportFraction: 1.0,
+                            autoPlayAnimationDuration:
+                            Duration(milliseconds: 1000),
+                            reverse: false,
+                            autoPlayCurve:
+                            Curves.fastOutSlowIn,
+                            autoPlay: true,
+                            onPageChanged: (index) {
+                              setState(() {
+                                _current = index;
+                              });
+                            },
+                            items:
+                            _advertisementData.map((i) {
+                              return Builder(builder:
+                                  (BuildContext context) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AdDetailPage(
+                                              data: i,
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                      width: MediaQuery.of(
+                                          context)
+                                          .size
+                                          .width,
+                                      child: Image.network(
+                                          Image_Url +
+                                              i["Image"][0],
+                                          fit: BoxFit.fill)),
+                                );
+                              });
+                            }).toList(),
+                          ),
+                          Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.center,
+                            children: map<Widget>(
+                              _advertisementData,
+                                  (index, url) {
+                                return Container(
+                                  width: 7.0,
+                                  height: 7.0,
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 10.0,
+                                      horizontal: 2.0),
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                      BorderRadius.all(
+                                          Radius.circular(5)),
+                                      color: _current == index
+                                          ? Colors.white
+                                          : Colors.grey),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                        : banners.length == 0
+                        ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                        : CarouselSlider(
+                      height: 180,
+                      viewportFraction: 1.0,
+                      autoPlayAnimationDuration:
+                      Duration(milliseconds: 1000),
+                      reverse: false,
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      autoPlay: true,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _current = index;
+                        });
+                      },
+                      items: banners.map((i) {
+                        return Builder(
+                            builder: (BuildContext context) {
                               return GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -2617,283 +2691,213 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   );
                                 },
                                 child: Container(
-                                    width: MediaQuery.of(
-                                        context)
+                                    width: MediaQuery.of(context)
                                         .size
                                         .width,
                                     child: Image.network(
-                                        Image_Url +
-                                            i["Image"][0],
+                                        Image_Url + i["image"],
                                         fit: BoxFit.fill)),
                               );
                             });
-                          }).toList(),
-                        ),
-                        Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.center,
-                          children: map<Widget>(
-                            _advertisementData,
-                                (index, url) {
-                              return Container(
-                                width: 7.0,
-                                height: 7.0,
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 10.0,
-                                    horizontal: 2.0),
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                    BorderRadius.all(
-                                        Radius.circular(5)),
-                                    color: _current == index
-                                        ? Colors.white
-                                        : Colors.grey),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
+                      }).toList(),
                     ),
-                  )
-                      : banners.length == 0
-                      ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                      : CarouselSlider(
-                    height: 180,
-                    viewportFraction: 1.0,
-                    autoPlayAnimationDuration:
-                    Duration(milliseconds: 1000),
-                    reverse: false,
-                    autoPlayCurve: Curves.fastOutSlowIn,
-                    autoPlay: true,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _current = index;
-                      });
-                    },
-                    items: banners.map((i) {
-                      return Builder(
-                          builder: (BuildContext context) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        AdDetailPage(
-                                          data: i,
-                                        ),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                  width: MediaQuery.of(context)
-                                      .size
-                                      .width,
-                                  child: Image.network(
-                                      Image_Url + i["image"],
-                                      fit: BoxFit.fill)),
-                            );
-                          });
-                    }).toList(),
-                  ),
-                ],
+                  ],
+                ),
               ),
+            )
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => SOSpage()));
+          },
+          child: Container(
+            height: 60,
+            width: 60,
+            child: Image.asset(
+              "images/SOS.png",
+              fit: BoxFit.fill,
             ),
-          )
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => SOSpage()));
-        },
-        child: Container(
-          height: 60,
-          width: 60,
-          child: Image.asset(
-            "images/SOS.png",
-            fit: BoxFit.fill,
           ),
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        elevation: 10,
-        notchMargin: 12,
-        shape: CircularNotchedRectangle(),
-        child: Padding(
-          padding: const EdgeInsets.only(top:10.0,bottom: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              GestureDetector(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: 30,
-                      width: 30,
-                      child: Image.asset(
-                        "images/home.png",
-                        fit: BoxFit.fill,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: BottomAppBar(
+          elevation: 10,
+          notchMargin: 12,
+          shape: CircularNotchedRectangle(),
+          child: Padding(
+            padding: const EdgeInsets.only(top:10.0,bottom: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                GestureDetector(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 30,
+                        width: 30,
+                        child: Image.asset(
+                          "images/home.png",
+                          fit: BoxFit.fill,
+                        ),
                       ),
-                    ),
-                    GradientText(
-                      text: 'HOME',
-                      colors: <Color>[ Color(0xff8921aa),Color(0xffDA44bb),],
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.w600,
+                      GradientText(
+                        text: 'HOME',
+                        colors: <Color>[ Color(0xff8921aa),Color(0xffDA44bb),],
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  onTap: () {},
                 ),
-                onTap: () {},
-              ),
-              GestureDetector(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: 30,
-                      width: 30,
-                      child: Image.asset(
-                        "images/visitors.png",
-                        fit: BoxFit.fill,
+                GestureDetector(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 30,
+                        width: 30,
+                        child: Image.asset(
+                          "images/visitors.png",
+                          fit: BoxFit.fill,
+                        ),
                       ),
-                    ),
-                    GradientText(
-                      text: 'VISITORS',
-                      colors: <Color>[ Color(0xff8921aa),Color(0xffDA44bb),],
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.w600,
+                      GradientText(
+                        text: 'VISITORS',
+                        colors: <Color>[ Color(0xff8921aa),Color(0xffDA44bb),],
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/MyGuestList");
+                  },
                 ),
-                onTap: () {
-                  Navigator.pushNamed(context, "/MyGuestList");
-                },
-              ),
-              SizedBox(
-                width: 50,
-              ),
-              GestureDetector(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: 30,
-                      width: 30,
-                      child: Image.asset(
-                        "images/maid.png",
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                    GradientText(
-                      text: 'IN-STAFF',
-                      colors: <Color>[ Color(0xff8921aa),Color(0xffDA44bb),],
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                SizedBox(
+                  width: 50,
                 ),
-                onTap: () {
-                  Navigator.pushNamed(context, '/MyStaffScreen');
-                  //  Navigator.pushNamed(context, '/Mall');
-                  // Navigator.pushReplacement(
-                  //     context, FadeRoute(page: home.HomeScreen()));
-                },
-              ),
-              GestureDetector(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: 30,
-                      width: 30,
-                      child: Image.asset(
-                        "images/homescreenprofile.png",
-                        fit: BoxFit.fill,
+                GestureDetector(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 30,
+                        width: 30,
+                        child: Image.asset(
+                          "images/maid.png",
+                          fit: BoxFit.fill,
+                        ),
                       ),
-                    ),
-                    GradientText(
-                      text: 'PROFILE',
-                      colors: <Color>[ Color(0xff8921aa),Color(0xffDA44bb),],
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.w600,
+                      GradientText(
+                        text: 'IN-STAFF',
+                        colors: <Color>[ Color(0xff8921aa),Color(0xffDA44bb),],
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/MyStaffScreen');
+                    //  Navigator.pushNamed(context, '/Mall');
+                    // Navigator.pushReplacement(
+                    //     context, FadeRoute(page: home.HomeScreen()));
+                  },
                 ),
-                onTap: () {
-                  // Navigator.pushReplacementNamed(context, '/MyProfile');
-                  // Navigator.pushNamed(context, '/CustomerProfile');
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CustomerProfile(
-                            isAdmin: isAdmin,
-                          )));
-                },
-              ),
-            ],
+                GestureDetector(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 30,
+                        width: 30,
+                        child: Image.asset(
+                          "images/homescreenprofile.png",
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                      GradientText(
+                        text: 'PROFILE',
+                        colors: <Color>[ Color(0xff8921aa),Color(0xffDA44bb),],
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    // Navigator.pushReplacementNamed(context, '/MyProfile');
+                    // Navigator.pushNamed(context, '/CustomerProfile');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CustomerProfile(
+                              isAdmin: isAdmin,
+                            )));
+                  },
+                ),
+              ],
+            ),
           ),
+          color: Colors.white,
         ),
-        color: Colors.white,
+        // Container(
+        //   height: MediaQuery.of(context).size.height * 0.085,
+        //   decoration: BoxDecoration(
+        //     color: Colors.grey[100],
+        //     border: Border(
+        //       top: BorderSide(
+        //         color: Colors.grey,
+        //         width: 0.3,
+        //       ),
+        //     ),
+        //   ),
+        //   child: Row(
+        //     children: <Widget>[
+        //
+        //     ],
+        //   ),
+        // ),
+        // floatingActionButton: DraggableFab(
+        //   child: SizedBox(
+        //     height: 50,
+        //     width: 50,
+        //     child: FloatingActionButton(
+        //       onPressed: () {
+        //         // Get.to(OverlayScreen({}));
+        //         // showDialog(builder: (context) => SOSDailog(), context: context);
+        //         Navigator.push(context,
+        //             MaterialPageRoute(builder: (context) => SOSpage()));
+        //       },
+        //       backgroundColor: Colors.red[200],
+        //       child: Container(
+        //           decoration: BoxDecoration(
+        //               color: Colors.red[400],
+        //               borderRadius: BorderRadius.circular(100.0)),
+        //           width: 40,
+        //           height: 40,
+        //           child: Center(
+        //               child: Text(
+        //             "SOS",
+        //             style: TextStyle(
+        //                 fontSize: 11,
+        //                 fontWeight: FontWeight.bold,
+        //                 color: Colors.white),
+        //           ))),
+        //     ),
+        //   ),
+        // ),
       ),
-      // Container(
-      //   height: MediaQuery.of(context).size.height * 0.085,
-      //   decoration: BoxDecoration(
-      //     color: Colors.grey[100],
-      //     border: Border(
-      //       top: BorderSide(
-      //         color: Colors.grey,
-      //         width: 0.3,
-      //       ),
-      //     ),
-      //   ),
-      //   child: Row(
-      //     children: <Widget>[
-      //
-      //     ],
-      //   ),
-      // ),
-      // floatingActionButton: DraggableFab(
-      //   child: SizedBox(
-      //     height: 50,
-      //     width: 50,
-      //     child: FloatingActionButton(
-      //       onPressed: () {
-      //         // Get.to(OverlayScreen({}));
-      //         // showDialog(builder: (context) => SOSDailog(), context: context);
-      //         Navigator.push(context,
-      //             MaterialPageRoute(builder: (context) => SOSpage()));
-      //       },
-      //       backgroundColor: Colors.red[200],
-      //       child: Container(
-      //           decoration: BoxDecoration(
-      //               color: Colors.red[400],
-      //               borderRadius: BorderRadius.circular(100.0)),
-      //           width: 40,
-      //           height: 40,
-      //           child: Center(
-      //               child: Text(
-      //             "SOS",
-      //             style: TextStyle(
-      //                 fontSize: 11,
-      //                 fontWeight: FontWeight.bold,
-      //                 color: Colors.white),
-      //           ))),
-      //     ),
-      //   ),
-      // ),
     );
   }
 

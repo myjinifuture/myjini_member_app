@@ -235,16 +235,16 @@ class _MaintainanceState extends State<Maintainance> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
-      },
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);      },
       child: Scaffold(
           appBar: AppBar(
             elevation: 0,
             leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, "/HomeScreen");
-                }),
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/HomeScreen', (route) => false);                }),
             centerTitle: true,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(

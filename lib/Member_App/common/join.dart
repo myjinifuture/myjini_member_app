@@ -1,10 +1,14 @@
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Member_App/common/settings.dart';
 import 'package:vibration/vibration.dart';
+import 'dart:ui' as ui;
 
 // import 'package:wakelock/wakelock.dart';
 
@@ -219,8 +223,8 @@ class _JoinPageState extends State<JoinPage> {
                 Navigator.of(context).pop();
                 ;
               } else {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              }
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              }
             },
             child: Icon(
               Icons.call_end,
@@ -260,6 +264,24 @@ class _JoinPageState extends State<JoinPage> {
     AgoraRtcEngine.switchCamera();
   }
 
+  ScreenshotController screenshotController = ScreenshotController();
+  GlobalKey _globalKey = new GlobalKey();
+
+  Future<void> _capturePng() async {
+    try {
+      RenderRepaintBoundary boundary =
+      _globalKey.currentContext.findRenderObject();
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData byteData =
+      await image.toByteData(format: ui.ImageByteFormat.png);
+      var pngBytes = byteData.buffer.asUint8List();
+      // final result = await ImageGallerySaver.saveImage(pngBytes);
+    } catch (e) {
+      print(e);
+    }  }
+
+  GlobalKey _containerKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     print("widget.memberdata");
@@ -278,15 +300,24 @@ class _JoinPageState extends State<JoinPage> {
         appBar: AppBar(
           title: Text('MYJINI'),
         ),
-        body: Center(
-          child: loading
-              ? CircularProgressIndicator()
-              : Stack(
-                  children: <Widget>[
-                    _viewRows(),
-                    _toolbar(),
-                  ],
-                ),
+        body: RepaintBoundary(
+          key: _containerKey,
+          child: GestureDetector(
+            onDoubleTap: () => _capturePng(),
+            child: Screenshot(
+              controller : screenshotController,
+              child: Center(
+                child: loading
+                    ? CircularProgressIndicator()
+                    : Stack(
+                        children: <Widget>[
+                          _viewRows(),
+                          _toolbar(),
+                        ],
+                      ),
+              ),
+            ),
+          ),
         ),
       ),
     );

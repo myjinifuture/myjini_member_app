@@ -543,8 +543,8 @@ class _SOSpageState extends State<SOSpage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushNamed(context, '/HomeScreen');
-      },
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);      },
       child: Scaffold(
         // resizeToAvoidBottomPadding: false,
         appBar: AppBar(

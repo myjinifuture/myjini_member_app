@@ -124,8 +124,8 @@ class _NotificationPopupState extends State<NotificationPopup> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              },
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              },
             ),
           ],
         );
@@ -235,8 +235,8 @@ class _NotificationPopupState extends State<NotificationPopup> {
                 ),
                 onPressed: () {
                   // Get.back();
-                  Navigator.pushReplacementNamed(context, '/HomeScreen');
-                },
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/HomeScreen', (route) => false);                },
               ),
             ),
           ),
@@ -621,8 +621,8 @@ class _NotificationPopupState extends State<NotificationPopup> {
                   onTap: () {
                     log("//=================#${_notifcationReplylist[0]}");
                     NotificationReply("1");
-                    Navigator.pushReplacementNamed(context, '/HomeScreen');
-                  },
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/HomeScreen', (route) => false);                  },
                   child: Column(
                     children: [
                       CircleAvatar(
@@ -686,8 +686,8 @@ class _NotificationPopupState extends State<NotificationPopup> {
                 child: GestureDetector(
                   onTap: () {
                     NotificationReply("2");
-                    Navigator.pushReplacementNamed(context, '/HomeScreen');
-                  },
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/HomeScreen', (route) => false);                  },
                   child: Column(
                     children: [
                       CircleAvatar(

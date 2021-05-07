@@ -233,8 +233,8 @@ class _AdvertisementManageState extends State<AdvertisementManage> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pushReplacementNamed(context, "/HomeScreen");
-            },
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/HomeScreen', (route) => false);            },
           ),
         ),
         body: isLoading

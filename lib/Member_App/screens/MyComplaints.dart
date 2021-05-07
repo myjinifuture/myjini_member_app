@@ -443,8 +443,8 @@ class _MyComplaintsState extends State<MyComplaints> {
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pushReplacementNamed(context, "/HomeScreen");
-            }),
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/HomeScreen', (route) => false);            }),
         centerTitle: true,
         title: Text("Complaints"),
         shape: RoundedRectangleBorder(
@@ -455,8 +455,8 @@ class _MyComplaintsState extends State<MyComplaints> {
       ),
       body: WillPopScope(
         onWillPop: () {
-          Navigator.pushReplacementNamed(context, '/HomeScreen');
-        },
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/HomeScreen', (route) => false);        },
         child: isLoading
             ? Container(
                 child: Center(child: CircularProgressIndicator()),

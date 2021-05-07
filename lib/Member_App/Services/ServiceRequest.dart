@@ -140,8 +140,8 @@ class _ServiceRequestState extends State<ServiceRequest> {
                 textColor: Colors.black,
                 toastLength: Toast.LENGTH_LONG);
 
-            Navigator.pushReplacementNamed(context, "/HomeScreen");
-
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/HomeScreen', (route) => false);
           /*  Navigator.pushNamedAndRemoveUntil(
                 context, "/Dashboard", (Route<dynamic> route) => false);*/
           } else {

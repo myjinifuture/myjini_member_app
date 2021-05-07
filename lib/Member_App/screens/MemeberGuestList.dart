@@ -307,8 +307,8 @@ class _MemberGuestListState extends State<MemberGuestList> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: (){
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
-      },
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);      },
       child: Scaffold(
         body:
         SingleChildScrollView(

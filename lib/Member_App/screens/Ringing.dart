@@ -114,8 +114,8 @@ class _RingingState extends State<Ringing> {
               ),
             );
           }else{
-            Navigator.pushReplacementNamed(context, '/HomeScreen');
-          }
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/HomeScreen', (route) => false);          }
         }, onError: (e) {
           // showMsg("$e");
           // setState(() {
@@ -164,8 +164,8 @@ class _RingingState extends State<Ringing> {
               ),
             );
           }else{
-            Navigator.pushReplacementNamed(context, '/HomeScreen');
-          }
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/HomeScreen', (route) => false);          }
         }, onError: (e) {
           // showMsg("$e");
           // setState(() {
@@ -201,8 +201,8 @@ class _RingingState extends State<Ringing> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: (){
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);      },
       child: Scaffold(
           body: Padding(
             padding: const EdgeInsets.only(top:50.0),
@@ -421,8 +421,8 @@ class _RingingState extends State<Ringing> {
                                 child: GestureDetector(
                                   onTap: () {
                                     _timer.cancel();
-                                    Navigator.pushReplacementNamed(context, '/HomeScreen');
-                                  } ,
+                                    Navigator.pushNamedAndRemoveUntil(
+                                        context, '/HomeScreen', (route) => false);                                  } ,
                                   child: Stack(
                                     children: [
                                       Container(

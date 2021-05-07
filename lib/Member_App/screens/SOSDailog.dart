@@ -234,8 +234,8 @@ class _SOSDailogState extends State<SOSDailog> {
                   backgroundColor: Colors.green,
                   gravity: ToastGravity.TOP,
                 );
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
-              });
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              });
             } else {
               setState(() {
                 isLoading = false;

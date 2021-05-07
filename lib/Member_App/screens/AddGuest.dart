@@ -322,7 +322,7 @@ class _AddGuestState extends State<AddGuest> {
   }
 
   checkValidation() {
-    if (txtVisitorName.text != "" && txtMobile.text != "" && purposeSelected!=null) {
+    if (txtVisitorName.text != "" && txtMobile.text != "" && purposeSelected!=null && selectedGuestCategory!=null) {
       _AddVisitor();
       // Navigator.push(
       //     context,

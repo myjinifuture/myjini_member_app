@@ -264,15 +264,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
-      },
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);      },
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
-              }),
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              }),
           actions: <Widget>[
             GestureDetector(
               onTap: () {

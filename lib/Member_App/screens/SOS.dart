@@ -88,8 +88,8 @@ class _SOSState extends State<SOS> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              },
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              },
             ),
           ],
         );
@@ -101,8 +101,8 @@ class _SOSState extends State<SOS> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);      },
       child: Scaffold(
         body: Stack(
           children: [
@@ -142,8 +142,8 @@ class _SOSState extends State<SOS> {
                     size: 30,
                   ),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/HomeScreen');
-},
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/HomeScreen', (route) => false);},
                 ),
               ),
             ),

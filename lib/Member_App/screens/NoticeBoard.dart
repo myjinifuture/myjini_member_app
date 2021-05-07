@@ -53,8 +53,8 @@ class _NoticeBoardState extends State<NoticeBoard> {
               actions: <Widget>[
                 FlatButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/HomeScreen');
-                  },
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/HomeScreen', (route) => false);                  },
                   child: Text("okay"),
                 ),
               ],

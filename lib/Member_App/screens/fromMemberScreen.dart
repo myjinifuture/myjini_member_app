@@ -68,8 +68,8 @@ class _FromMemberScreenState extends State<FromMemberScreen> {
     return WillPopScope(
       onWillPop: () {
         // Navigator.of(context).pop();;
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);      },
       child: Scaffold(
           body: Padding(
             padding: const EdgeInsets.only(top:50.0),
@@ -176,8 +176,8 @@ class _FromMemberScreenState extends State<FromMemberScreen> {
                           child: GestureDetector(
                             onTap: () {
                               // _timer.cancel();
-                              Navigator.pushReplacementNamed(context, '/HomeScreen');
-                            },
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context, '/HomeScreen', (route) => false);                            },
                             child: Stack(
                               children: [
                                 Center(
