@@ -190,22 +190,26 @@ class _SpeechToTextState extends State<SpeechToText> {
             _text = val.recognizedWords;
             if (val.hasConfidenceRating && val.confidence > 0) {
               // _confidence = val.confidence;
-              print("_text");
-              print(_text);
               // if(val.recognizedWords.contains("video call To Arpit Shah")){
               //   memberToMemberCalling(true);
               //
               // }
               String rubi = val.recognizedWords;
               String ore = "video call To Arpit Shah";
-              if(identical(val.recognizedWords,ore)){
-                print("true called");
-              }
-              if(rubi.compareTo(ore) == 0){
+              print(_text.length);
+              print(ore.length);
+              if(_text.toUpperCase().trim().contains(ore.toUpperCase().trim())){
                 memberToMemberCalling(true);
               }
-              print(rubi);
-              print(rubi.compareTo(ore));
+              // if(val.recognizedWords == "Arpit Shah"){
+              //   memberToMemberCalling(true);
+              // }
+              // if(identical(val.recognizedWords,ore)){
+              //   print("true called");
+              // }
+              // if(rubi.compareTo(ore).toString() == "1"){
+              //   memberToMemberCalling(true);
+              // }
             }
           }),
         );

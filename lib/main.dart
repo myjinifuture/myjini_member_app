@@ -26,8 +26,6 @@ import 'package:smart_society_new/Admin_App/Screens/Document.dart';
 import 'package:smart_society_new/Admin_App/Screens/EditDocument.dart';
 import 'package:smart_society_new/Admin_App/Screens/EventsAdmin.dart';
 import 'package:smart_society_new/Admin_App/Screens/Expense.dart';
-import 'package:smart_society_new/Admin_App/Screens/SocietyVendorsAdminScreen.dart';
-import 'package:smart_society_new/Admin_App/Screens/AddSocietyVendor.dart';
 import 'package:smart_society_new/Admin_App/Screens/ViewGalleryPhotos.dart';
 import 'package:smart_society_new/Admin_App/Screens/ExpenseByMonth.dart';
 import 'package:smart_society_new/Admin_App/Screens/Gallary.dart';
@@ -77,8 +75,6 @@ import 'package:smart_society_new/Member_App/screens/Bills.dart';
 import 'package:smart_society_new/Member_App/screens/BuildingInfo.dart';
 import 'package:smart_society_new/Member_App/screens/Committees.dart';
 import 'package:smart_society_new/Member_App/screens/ComplaintScreen.dart';
-import 'package:smart_society_new/Member_App/screens/MyStaffOthersListing.dart';
-import 'package:smart_society_new/Member_App/screens/MyStaffMaidListing.dart';
 import 'package:smart_society_new/Member_App/screens/ContactList.dart';
 import 'package:smart_society_new/Member_App/screens/ContactUs.dart';
 import 'package:smart_society_new/Member_App/screens/CreateBuildingScreen.dart';
@@ -93,6 +89,7 @@ import 'package:smart_society_new/Member_App/screens/EventDetail.dart';
 import 'package:smart_society_new/Member_App/screens/Events.dart';
 import 'package:smart_society_new/Member_App/screens/FamilyMemberDetail.dart';
 import 'package:smart_society_new/Member_App/screens/GalleryScreen.dart';
+import 'package:smart_society_new/Member_App/screens/MyStaffScreen.dart';
 import 'package:smart_society_new/Member_App/screens/Reminders.dart';
 import 'package:smart_society_new/Member_App/screens/AllRemindersScreen.dart';
 import 'package:smart_society_new/Member_App/screens/AddReminderScreen.dart';
@@ -101,7 +98,6 @@ import 'package:smart_society_new/Member_App/screens/GlobalSearchMembers.dart';
 import 'package:smart_society_new/Member_App/screens/HomeScreen.dart';
 import 'package:smart_society_new/Member_App/screens/JoinCreateBuildingScreen.dart';
 import 'package:smart_society_new/Member_App/screens/LoginScreen.dart';
-import 'package:smart_society_new/Member_App/screens/MyStaffScreen.dart';
 import 'package:smart_society_new/Member_App/screens/MaintainanceScreen.dart';
 import 'package:smart_society_new/Member_App/screens/MemberVehicleDetail.dart';
 import 'package:smart_society_new/Member_App/screens/MyComplaints.dart';
@@ -151,6 +147,7 @@ import 'Member_App/screens/NoticeBoard.dart';
 import 'Member_App/screens/VerifiedOrNot.dart';
 import 'Member_App/screens/addEmergencyNumberSocietyWise.dart';
 import 'Member_App/screens/fromMemberScreen.dart';
+import 'Member_App/src/global_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -216,9 +213,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
   //   audioCache = new AudioCache(fixedPlayer: advancedPlayer);
   // }
 
+  GlobalBloc globalBloc;
+
 
   @override
   void initState() {
+    globalBloc = GlobalBloc();
     WidgetsBinding.instance.addObserver(this);
     // this.initState();
     // initPlayer();
@@ -243,7 +243,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
   void _handleSendNotification() async {
     var status = await OneSignal.shared.getPermissionSubscriptionState();
 
-     playerId = status.subscriptionStatus.userId;
+    playerId = status.subscriptionStatus.userId;
     print("playerid");
     print(playerId);
   }
@@ -280,14 +280,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
       if (data["notificationType"].toString() == "AddEvent") {
         Get.to(() => Events());
       }
-      else if (data["notificationType"].toString() == "JoinSociety") {
+      if (data["notificationType"].toString() == "JoinSociety") {
         Get.to(() => getPendingApprovals());
-      }
-      else if (data["notificationType"].toString() == "RevokeAdminRole") {
-        Get.to(() => LoginScreen());
-      }
-      else if (data["notificationType"].toString() == "AssignAdminRole") {
-        Get.to(() => LoginScreen());
       }
       else if (data["notificationType"].toString() == "AddDocument") {
         Get.to(() => DocumentScreen());
@@ -304,11 +298,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
         Get.to(() => NotificationPopup(data,unknownEntry : true));
       }
       else if (data["notificationType"] == 'SendComplainToAdmin') {
-      Get.to(() => NotificationPopup(data,unknownEntry : false));
+        Get.to(() => NotificationPopup(data,unknownEntry : false));
       }
       else if (data["NotificationType"] == "SOS") {
         Get.to(() => SOS(data,
-                        body: notification.payload.body,));
+          body: notification.payload.body,));
         //for vibration
       } else if (data["CallResponseIs"] == "Accepted" &&
           data["NotificationType"] == "VideoCalling") {
@@ -322,7 +316,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
           data["NotificationType"] == "VoiceCall") {
         print('data');
         print(data);
-        Get.to(() => JoinPage(isAudioCallAccepted: true,
+        Get.to(() => JoinPage(
             unknownEntry: false,
             fromMemberData:
             notification.payload.additionalData));
@@ -1070,156 +1064,155 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: Get.key,
-      // navigatorKey: navigatorKey,
-      debugShowCheckedModeBanner: false,
-      title: "MYJINI",
+    return Provider<GlobalBloc>.value(
+      value: globalBloc,
+      child: MaterialApp(
+        navigatorKey: Get.key,
+        // navigatorKey: navigatorKey,
+        debugShowCheckedModeBanner: false,
+        title: "MYJINI",
 
-      initialRoute: '/',
-      routes: {
-        '/': (context) => Splashscreen(isAppOpenedAfterNotification:isAppOpenedAfterNotification,navigatorKey: navigatorKey,),
-        '/LoginScreen': (context) => LoginScreen(playerId:playerId),
-        '/GetPass': (context) => GetPass(),
-        '/HomeScreen': (context) => HomeScreen(navigatorKey:navigatorKey),
-        '/getEmergencyNumberSocietyWise': (context) => getEmergencyNumberSocietyWise(),
-        '/Notice': (context) => NoticeScreen(),
-        '/WaitingScreen': (context) => Approval_admin(),
-        '/Complaints': (context) => MyComplaints(),
-        '/AllAdvertisements': (context) => AllAdvertisementData(),
-        '/AddComplaints': (context) => ComplaintScreen(),
-        '/Directory': (context) => DirecotryScreen(),
-        '/RegisterScreen': (context) => RegisterScreen(),
-        '/MyProfile': (context) => MyProfileScreen(),
-        '/Documents': (context) => DocumentScreen(),
-        '/Emergency': (context) => EmergencyNumber(),
-        '/Gallery': (context) => GalleryScreen(),
-        '/Reminders': (context) => Reminders(),
-        '/EditDocument': (context) => EditDocument(),
-        '/AllRemindersScreen': (context) => AllRemindersScreen(),
-        '/AddReminderScreen': (context) => AddReminderScreen(),
-        '/UpdateProfile': (context) => UpdateProfile(),
-        '/AddGuest': (context) => AddGuest(),
-        '/AddStaff': (context) => AddStaff(),
-        '/MyGuestList': (context) => MyGuestList(),
-        '/EditGallery': (context) => EditGallery(),
-        '/Rules': (context) => SocietyRules(),
-        '/FamilyMemberDetail': (context) => FamilyMemberDetail(),
-        '/AddFamily': (context) => AddFamilyMember(),
-        '/GetMyVehicle': (context) => GetMyvehicle(),
-        '/DirectoryProfileVehicle': (context) => DirectoryProfileVehicle(),
-        '/DirectoryProfileFamily': (context) => DirectoryProfileFamily(),
-        '/Polling': (context) => PollingScreen(),
-        '/ViewGalleryPhotos': (context) => ViewGalleryPhotos(),
-        '/Maintainence': (context) => Maintainance(),
-        '/GlobalSearch': (context) => GlobalSearchMembers(),
-        '/AdvertisementCreate': (context) => AdvertisementCreate(),
-        '/NoticeBoard': (context) => NoticeBoard(),
-        '/Vendors': (context) => ServicesScreen(),
-        '/MyStaffScreen': (context) => MyStaffScreen(),
-        '/MyStaffMaidListing': (context) => MyStaffMaidListing(),
-        '/MyStaffOthersListing': (context) => MyStaffOthersListing(),
-        '/MyServiceRequests': (context) => MyServiceRequests(),
-        '/AdvertisementList': (context) => AdvertisementList(),
-        '/MyWishList': (context) => MyWishList(),
-        '/IntroScreen': (context) => IntroScreen(),
-        '/VisitorSuccess': (context) => VisitorSuccess(),
-        '/CreateSociety': (context) => CreateSociety(),
-        '/SetupWings': (context) => SetupWings(),
-        '/WingDetail': (context) => WingDetail(),
-        '/ViewVisitorPopUpImage': (context) => ViewVisitorPopUpImage(),
-        '/WingFlat': (context) => WingFlat(),
-        '/CustomerProfile': (context) => CustomerProfile(),
-        '/AddDailyResource': (context) => AddDailyResource(),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => Splashscreen(isAppOpenedAfterNotification:isAppOpenedAfterNotification,navigatorKey: navigatorKey,),
+          '/LoginScreen': (context) => LoginScreen(playerId:playerId),
+          '/GetPass': (context) => GetPass(),
+          '/HomeScreen': (context) => HomeScreen(navigatorKey:navigatorKey),
+          '/getEmergencyNumberSocietyWise': (context) => getEmergencyNumberSocietyWise(),
+          '/Notice': (context) => NoticeScreen(),
+          '/WaitingScreen': (context) => Approval_admin(),
+          '/Complaints': (context) => MyComplaints(),
+          '/AllAdvertisements': (context) => AllAdvertisementData(),
+          '/AddComplaints': (context) => ComplaintScreen(),
+          '/Directory': (context) => DirecotryScreen(),
+          '/RegisterScreen': (context) => RegisterScreen(),
+          '/MyProfile': (context) => MyProfileScreen(),
+          '/Documents': (context) => DocumentScreen(),
+          '/Emergency': (context) => EmergencyNumber(),
+          '/Gallery': (context) => GalleryScreen(),
+          '/Reminders': (context) => Reminders(),
+          '/EditDocument': (context) => EditDocument(),
+          '/AllRemindersScreen': (context) => AllRemindersScreen(),
+          '/AddReminderScreen': (context) => AddReminderScreen(),
+          '/UpdateProfile': (context) => UpdateProfile(),
+          '/AddGuest': (context) => AddGuest(),
+          '/AddStaff': (context) => AddStaff(),
+          '/MyGuestList': (context) => MyGuestList(),
+          '/EditGallery': (context) => EditGallery(),
+          '/Rules': (context) => SocietyRules(),
+          '/FamilyMemberDetail': (context) => FamilyMemberDetail(),
+          '/AddFamily': (context) => AddFamilyMember(),
+          '/GetMyVehicle': (context) => GetMyvehicle(),
+          '/DirectoryProfileVehicle': (context) => DirectoryProfileVehicle(),
+          '/DirectoryProfileFamily': (context) => DirectoryProfileFamily(),
+          '/Polling': (context) => PollingScreen(),
+          '/ViewGalleryPhotos': (context) => ViewGalleryPhotos(),
+          '/Maintainence': (context) => Maintainance(),
+          '/GlobalSearch': (context) => GlobalSearchMembers(),
+          '/AdvertisementCreate': (context) => AdvertisementCreate(),
+          '/NoticeBoard': (context) => NoticeBoard(),
+          '/Vendors': (context) => ServicesScreen(),
+          '/MyServiceRequests': (context) => MyServiceRequests(),
+          '/AdvertisementList': (context) => AdvertisementList(),
+          '/MyWishList': (context) => MyWishList(),
+          '/IntroScreen': (context) => IntroScreen(),
+          '/VisitorSuccess': (context) => VisitorSuccess(),
+          '/CreateSociety': (context) => CreateSociety(),
+          '/SetupWings': (context) => SetupWings(),
+          '/WingDetail': (context) => WingDetail(),
+          '/ViewVisitorPopUpImage': (context) => ViewVisitorPopUpImage(),
+          '/WingFlat': (context) => WingFlat(),
+          '/CustomerProfile': (context) => CustomerProfile(),
+          '/AddDailyResource': (context) => AddDailyResource(),
 
-        '/AdvertisementManage': (context) => AdvertisementManage(),
-        '/ContactList': (context) => ContactList(),
-        '/Committee': (context) => Committees(),
-        '/Amenities': (context) => Amenities(),
-        '/DailyHelp': (context) => DailyHelp(),
-        '/Mall': (context) => Mall(),
-        '/Cart': (context) => Cart(),
-        '/Bills': (context) => Bills(),
-        '/TermsAndConditions': (context) => TermsAndConditions(),
-        '/PrivacyPolicy': (context) => PrivacyPolicy(),
-        '/Statistics': (context) => Statistics(),
-        '/ContactUs': (context) => ContactUs(),
-        '/MySociety': (context) => MySociety(),
-        '/BankDetails': (context) => BankDetails(),
-        '/BuildingInfo': (context) => BuildingInfo(),
-        '/Events': (context) => Events(),
-        '/EventDetail': (context) => EventDetail(),
-        //---------------- Digital Card  -------------------------------
-        '/RegistrationDC': (context) => RegistrationDC(),
+          '/AdvertisementManage': (context) => AdvertisementManage(),
+          '/ContactList': (context) => ContactList(),
+          '/Committee': (context) => Committees(),
+          '/Amenities': (context) => Amenities(),
+          '/DailyHelp': (context) => DailyHelp(),
+          '/Mall': (context) => Mall(),
+          '/Cart': (context) => Cart(),
+          '/Bills': (context) => Bills(),
+          '/TermsAndConditions': (context) => TermsAndConditions(),
+          '/PrivacyPolicy': (context) => PrivacyPolicy(),
+          '/Statistics': (context) => Statistics(),
+          '/ContactUs': (context) => ContactUs(),
+          '/MySociety': (context) => MySociety(),
+          '/BankDetails': (context) => BankDetails(),
+          '/BuildingInfo': (context) => BuildingInfo(),
+          '/Events': (context) => Events(),
+          '/EventDetail': (context) => EventDetail(),
+          //---------------- Digital Card  -------------------------------
+          '/RegistrationDC': (context) => RegistrationDC(),
 
-        //----------------  Admin App    -----------------------------
-        '/Dashboard': (context) => Dashboard(),
-        '/AddNotice': (context) => AddNotice(),
-        '/AddDocument': (context) => AddDocument(),
-        '/DirectoryMember': (context) => DirectoryMember(),
-        '/AllNotice': (context) => Notice(),
-        '/Document': (context) => Document(),
-        '/Visitor': (context) => VisitorByWing(),
-        '/Staff': (context) => StaffInOut(),
-        '/RulesAndRegulations': (context) => RulesAndRegulations(),
-        '/AddRules': (context) => AddRules(),
-        '/AllComplaints': (context) => Complaints(),
-        '/MemberProfile': (context) => MemberProfile(),
-        '/Gallary': (context) => Gallary(),
-        '/AddGallary': (context) => AddGallary(),
-        '/Income': (context) => Income(),
-        '/Expense': (context) => Expense(),
-        '/BalanceSheet': (context) => BalanceSheet(),
-        '/ExpenseByMonth': (context) => ExpenseByMonth(),
-        '/IncomeByMonth': (context) => IncomeByMonth(),
-        '/AddIncome': (context) => AddIncome(),
-        '/AddExpense': (context) => AddExpense(),
-        '/AllPolling': (context) => Polling(),
-        '/AddPolling': (context) => AddPolling(),
-        '/amcList': (context) => amcList(),
-        '/AddAMC': (context) => AddAMC(),
-        '/StaffInOut': (context) => StaffInOut(),
-        '/EventsAdmin': (context) => EventsAdmin(),
-        '/AddEvent': (context) => AddEvent(),
-        '/AddMemberSOSContacts': (context) => AddMemberSOSContacts(),
-        '/AddAmenitiesScreen': (context) => AddAmenitiesScreen(),
-        '/getAmenitiesScreen': (context) => getAmenitiesScreen(),
-        '/JoinCreateBuildingScreen': (context) => JoinCreateBuildingScreen(),
-        '/CreateBuildingScreen': (context) => CreateBuildingScreen(),
-        '/CreateBuildingSlider': (context) => CreateBuildingSlider(),
-        '/SetupWingScreen': (context) => SetupWingScreen(),
-        '/BannerScreen': (context) => BannerScreen(),
-        '/SocietyVendorsAdminScreen': (context) => SocietyVendorsAdminScreen(),
-        '/AddSocietyVendor': (context) => AddSocietyVendor(),
-        //===============digital card screen=============
-        '/AddCard': (context) => AddCard(),
-        '/ChangeTheme': (context) => ChangeTheme(),
-        '/DashBoard1': (context) => DashBoard1(),
-        '/EditOffer': (context) => EditOffer(),
-        '/EditService': (context) => EditService(),
-        '/Home': (context) => Home(),
-        '/getPendingApprovals': (context) => getPendingApprovals(),
-        '/More': (context) => More(),
-        '/OfferDetail': (context) => OfferDetail(),
-        '/Offers': (context) => Offers(),
-        '/MemberServices': (context) => MemberServices(),
-        '/ShareHistory': (context) => ShareHistory(),
-        '/ProfileDetail': (context) => ProfileDetail(),
-        '/AddService': (context) => AddService(),
-        '/AddOffer': (context) => AddOffer(),
-        '/AddEmergencySocietyWise': (context) => AddEmergencySocietyWise(),
-        '/Ringing': (context) => Ringing(),
-        '/SOSPage': (context) => SOSpage(),
-        '/BloodPlasma': (context) => BloodPlasma(),
-        '/AddPlasmaDonor': (context) => AddPlasmaDonor(),
-      },
-      onUnknownRoute: (settings) => MaterialPageRoute(
-          builder: (context) => NoRouteScreen(
-                routeName: settings.name,
-              )),
-      theme: ThemeData(
-        fontFamily: 'OpenSans',
-        primarySwatch: constant.appPrimaryMaterialColor,
+          //----------------  Admin App    -----------------------------
+          '/Dashboard': (context) => Dashboard(),
+          '/AddNotice': (context) => AddNotice(),
+          '/AddDocument': (context) => AddDocument(),
+          '/DirectoryMember': (context) => DirectoryMember(),
+          '/AllNotice': (context) => Notice(),
+          '/Document': (context) => Document(),
+          '/Visitor': (context) => VisitorByWing(),
+          '/Staff': (context) => StaffInOut(),
+          '/RulesAndRegulations': (context) => RulesAndRegulations(),
+          '/AddRules': (context) => AddRules(),
+          '/AllComplaints': (context) => Complaints(),
+          '/MemberProfile': (context) => MemberProfile(),
+          '/Gallary': (context) => Gallary(),
+          '/AddGallary': (context) => AddGallary(),
+          '/Income': (context) => Income(),
+          '/Expense': (context) => Expense(),
+          '/BalanceSheet': (context) => BalanceSheet(),
+          '/ExpenseByMonth': (context) => ExpenseByMonth(),
+          '/IncomeByMonth': (context) => IncomeByMonth(),
+          '/AddIncome': (context) => AddIncome(),
+          '/AddExpense': (context) => AddExpense(),
+          '/AllPolling': (context) => Polling(),
+          '/AddPolling': (context) => AddPolling(),
+          '/MyStaffScreen' : (context) => MyStaffScreen(),
+          '/amcList': (context) => amcList(),
+          '/AddAMC': (context) => AddAMC(),
+          '/StaffInOut': (context) => StaffInOut(),
+          '/EventsAdmin': (context) => EventsAdmin(),
+          '/AddEvent': (context) => AddEvent(),
+          '/AddMemberSOSContacts': (context) => AddMemberSOSContacts(),
+          '/AddAmenitiesScreen': (context) => AddAmenitiesScreen(),
+          '/getAmenitiesScreen': (context) => getAmenitiesScreen(),
+          '/JoinCreateBuildingScreen': (context) => JoinCreateBuildingScreen(),
+          '/CreateBuildingScreen': (context) => CreateBuildingScreen(),
+          '/CreateBuildingSlider': (context) => CreateBuildingSlider(),
+          '/SetupWingScreen': (context) => SetupWingScreen(),
+          '/BannerScreen': (context) => BannerScreen(),
+          //===============digital card screen=============
+          '/AddCard': (context) => AddCard(),
+          '/ChangeTheme': (context) => ChangeTheme(),
+          '/DashBoard1': (context) => DashBoard1(),
+          '/EditOffer': (context) => EditOffer(),
+          '/EditService': (context) => EditService(),
+          '/Home': (context) => Home(),
+          '/getPendingApprovals': (context) => getPendingApprovals(),
+          '/More': (context) => More(),
+          '/OfferDetail': (context) => OfferDetail(),
+          '/Offers': (context) => Offers(),
+          '/MemberServices': (context) => MemberServices(),
+          '/ShareHistory': (context) => ShareHistory(),
+          '/ProfileDetail': (context) => ProfileDetail(),
+          '/AddService': (context) => AddService(),
+          '/AddOffer': (context) => AddOffer(),
+          '/AddEmergencySocietyWise': (context) => AddEmergencySocietyWise(),
+          '/Ringing': (context) => Ringing(),
+          '/SOSPage': (context) => SOSpage(),
+          '/BloodPlasma': (context) => BloodPlasma(),
+          '/AddPlasmaDonor': (context) => AddPlasmaDonor(),
+        },
+        onUnknownRoute: (settings) => MaterialPageRoute(
+            builder: (context) => NoRouteScreen(
+              routeName: settings.name,
+            )),
+        theme: ThemeData(
+          fontFamily: 'OpenSans',
+          primarySwatch: constant.appPrimaryMaterialColor,
+        ),
       ),
     );
   }
@@ -1262,111 +1255,111 @@ class _OverlayScreenState extends State<OverlayScreen> {
             Card(
               child: Container(
                   child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      child: Center(
-                          child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Delivery Boy Waiting At Gate",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600),
-                        ),
-                      )),
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.all(Radius.circular(8.0))),
-                    ),
-                  ),
-                  widget.data["data"]["Image"] == null &&
-                          widget.data["data"]["Image"] == ""
-                      ? Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CircleAvatar(
-                            radius: 45.0,
-                            backgroundImage: NetworkImage(constant.Image_Url +
-                                "${widget.data["data"]["Image"]}"),
-                            backgroundColor: Colors.transparent,
-                          ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            'images/user.png',
-                            width: 100,
-                            height: 100,
-                          ),
-                        ),
-                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(
-                        "${widget.data["data"]["Name"]}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                            color: Colors.grey[800]),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "Delivery Boy Waiting At Gate",
+                                  style: TextStyle(
+                                      fontSize: 16, fontWeight: FontWeight.w600),
+                                ),
+                              )),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                        ),
                       ),
-                      Image.network(
-                        constant.Image_Url +
-                            '${widget.data["data"]["CompanyImage"]}',
-                        width: 90,
-                        height: 40,
+                      widget.data["data"]["Image"] == null &&
+                          widget.data["data"]["Image"] == ""
+                          ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircleAvatar(
+                          radius: 45.0,
+                          backgroundImage: NetworkImage(constant.Image_Url +
+                              "${widget.data["data"]["Image"]}"),
+                          backgroundColor: Colors.transparent,
+                        ),
+                      )
+                          : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset(
+                          'images/user.png',
+                          width: 100,
+                          height: 100,
+                        ),
+                      ),
+                      Column(
+                        children: <Widget>[
+                          Text(
+                            "${widget.data["data"]["Name"]}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                                color: Colors.grey[800]),
+                          ),
+                          Image.network(
+                            constant.Image_Url +
+                                '${widget.data["data"]["CompanyImage"]}',
+                            width: 90,
+                            height: 40,
+                          )
+                        ],
+                      ),
+                      Text(
+                        "${widget.data["data"]["CompanyName"]}",
+                        style: TextStyle(fontSize: 15, color: Colors.grey[800]),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 25.0, bottom: 10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {},
+                              child: Column(
+                                children: <Widget>[
+                                  Image.asset('images/success.png',
+                                      width: 45, height: 45),
+                                  Text(
+                                    "APPROVE",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600, fontSize: 12),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Column(
+                              children: <Widget>[
+                                Image.asset('images/callvisitor.png',
+                                    width: 45,
+                                    height: 45,
+                                    color: constant.appPrimaryMaterialColor),
+                                Text("CALL",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600, fontSize: 12))
+                              ],
+                            ),
+                            Column(
+                              children: <Widget>[
+                                Image.asset('images/deny.png',
+                                    width: 45, height: 45),
+                                Text("DENY",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600, fontSize: 12))
+                              ],
+                            ),
+                          ],
+                        ),
                       )
                     ],
-                  ),
-                  Text(
-                    "${widget.data["data"]["CompanyName"]}",
-                    style: TextStyle(fontSize: 15, color: Colors.grey[800]),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 25.0, bottom: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {},
-                          child: Column(
-                            children: <Widget>[
-                              Image.asset('images/success.png',
-                                  width: 45, height: 45),
-                              Text(
-                                "APPROVE",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 12),
-                              )
-                            ],
-                          ),
-                        ),
-                        Column(
-                          children: <Widget>[
-                            Image.asset('images/callvisitor.png',
-                                width: 45,
-                                height: 45,
-                                color: constant.appPrimaryMaterialColor),
-                            Text("CALL",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 12))
-                          ],
-                        ),
-                        Column(
-                          children: <Widget>[
-                            Image.asset('images/deny.png',
-                                width: 45, height: 45),
-                            Text("DENY",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 12))
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              )),
+                  )),
             ),
             IconButton(
               icon: Icon(

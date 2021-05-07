@@ -284,22 +284,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   }
                   else {
                     // await mallLocalData();
-                    // Navigator.pushAndRemoveUntil(context,
-                    //     SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (
-                              context) =>
-                              OTP(
-                                mobileNo: _MobileNumber
-                                    .text
-                                    .toString(),
-                                onSuccess: () {
-                                  Navigator.pushAndRemoveUntil(context,
-                                      SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);                                },
-                              ),
-                        ));
+                    Navigator.pushAndRemoveUntil(context,
+                        SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (
+                    //           context) =>
+                    //           OTP(
+                    //             mobileNo: _MobileNumber
+                    //                 .text
+                    //                 .toString(),
+                    //             onSuccess: () {
+                    //               Navigator.pushAndRemoveUntil(context,
+                    //                   SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);                                },
+                    //           ),
+                    //     ));
 
                   }
                   // _MallLoginApi();
