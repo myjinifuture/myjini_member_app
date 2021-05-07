@@ -45,6 +45,7 @@ import 'package:vibration/vibration.dart';
 import '../screens/SOSpage.dart';
 import '../screens/AdDetailPage.dart';
 import 'NoticeBoard.dart';
+import 'Reminders.dart';
 import 'Ringing.dart';
 import 'SOS.dart';
 import 'VerifiedOrNot.dart';
@@ -1631,8 +1632,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         child: ScaleAnimation(
           child: GestureDetector(
             onTap: () {
-              if (_allMenuList[index].IconName == "Bills" ||
-                  _allMenuList[index].IconName == "Reminders") {
+              if (_allMenuList[index].IconName == "Bills") {
                 Fluttertoast.showToast(
                     msg: "Coming Soon!!!",
                     toastLength: Toast.LENGTH_SHORT,
@@ -1641,15 +1641,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     textColor: Colors.white,
                     fontSize: 16.0);
               }
-              // else if (_allMenuList[index].IconName == "Polling") {
-              //   Fluttertoast.showToast(
-              //       msg: "Coming Soon!!!",
-              //       toastLength: Toast.LENGTH_SHORT,
-              //       gravity: ToastGravity.BOTTOM,
-              //       backgroundColor: Colors.red,
-              //       textColor: Colors.white,
-              //       fontSize: 16.0);
-              // }
+              else if (_allMenuList[index].IconName == "Reminders") {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Reminders(),
+                    ),
+                );
+              }
               else {
                 Navigator.pushNamed(
                     context, '/${_allMenuList[index].IconName}');

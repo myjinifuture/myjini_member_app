@@ -146,6 +146,7 @@ import 'Member_App/screens/NoticeBoard.dart';
 import 'Member_App/screens/VerifiedOrNot.dart';
 import 'Member_App/screens/addEmergencyNumberSocietyWise.dart';
 import 'Member_App/screens/fromMemberScreen.dart';
+import 'Member_App/src/global_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -211,9 +212,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
   //   audioCache = new AudioCache(fixedPlayer: advancedPlayer);
   // }
 
+  GlobalBloc globalBloc;
+
 
   @override
   void initState() {
+    globalBloc = GlobalBloc();
     WidgetsBinding.instance.addObserver(this);
     // this.initState();
     // initPlayer();
@@ -1059,7 +1063,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return Provider<GlobalBloc>.value(
+    value: globalBloc,
+    child: MaterialApp(
       navigatorKey: Get.key,
       // navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
@@ -1205,6 +1211,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
         fontFamily: 'OpenSans',
         primarySwatch: constant.appPrimaryMaterialColor,
       ),
+    ),
     );
   }
 

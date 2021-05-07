@@ -71,7 +71,6 @@ dependencies:
   firebase_messaging: any
   draggable_fab: ^0.1.1
   onesignal_flutter: ^2.6.3
-  flutter_local_notifications: any
   google_maps_flutter: ^1.2.0
   location: ^2.3.5
   google_maps_webservice: ^0.0.19
@@ -107,7 +106,7 @@ dependencies:
   intl: ^0.16.1
   pull_to_refresh: any
   unique_identifier: any
-  provider: ^2.0.0
+  provider: ^3.0.0+1
   clipboard: ^0.1.2+8
   convex_bottom_bar: any
   flutter_statusbarcolor: ^0.2.3
@@ -124,7 +123,10 @@ dependencies:
   flutter_masked_text: ^0.8.0
   vibration: ^1.7.3
   agora_rtc_engine: ^1.0.13
+  flare_flutter: any
   easy_gradient_text: ^1.0.0
+  flutter_local_notifications: any
+  rxdart: any
 
 
 dev_dependencies:
