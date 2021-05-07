@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_text_to_speech/flutter_text_to_speech.dart';
 import 'package:highlight_text/highlight_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
@@ -58,11 +59,64 @@ class _SpeechToTextState extends State<SpeechToText> {
   bool _isListening = false;
   String _text = 'Tap the button and start speaking';
   // double _confidence = 1.0;
+  VoiceController controller = FlutterTextToSpeech.instance.voiceController();
+  TextEditingController textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _speech = stt.SpeechToText();
+    controller.init();
+    getLocaldata();
+  }
+
+  String SocietyId,MobileNo;
+
+  getLocaldata() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      SocietyId = prefs.getString(Session.SocietyId);
+    });
+    _getDirectoryListing(SocietyId);
+  }
+
+  List memberData= [];
+  _getDirectoryListing(String SocietyId) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {
+          "societyId" : SocietyId
+        };
+        // setState(() {
+        //   isLoading = true;
+        // });
+        Services.responseHandler(apiName: "admin/directoryListing",body: data).then((data) async {
+          memberData.clear();
+          if (data.Data != null && data.Data.length > 0) {
+            setState(() {
+              memberData = data.Data;
+              // for(int i=0;i<data.Data.length;i++){
+              //   if(data.Data[i]["society"]["wingId"] == selectedWing){
+              //     memberData.add(data.Data[i]);
+              //   }
+              // }
+              // isLoading = false;
+            });
+            print("memberData");
+            print(memberData);
+          } else {
+            // setState(() {
+            //   isLoading = false;
+            // });
+          }
+        }, onError: (e) {
+          showHHMsg("Something Went Wrong Please Try Again","");
+        });
+      }
+    } on SocketException catch (_) {
+      showHHMsg("No Internet Connection.","");
+    }
   }
 
   String selectedWing = "";
@@ -87,31 +141,46 @@ class _SpeechToTextState extends State<SpeechToText> {
     );
   }
 
-  memberToMemberCalling(bool isVideoCall) async {
+  bool spoke = false;
+  speak(String name){
+    spoke = true;
+    controller.speak("MYJINI"+ "please call to " + "${name}");
+  }
+  memberToMemberCalling(bool isVideoCall,var dataofMember) async {
     try {
+      speak(dataofMember["Name"]);
       print("tapped");
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
 
-        var data ={
-          "societyId": "608fdf9db4cede3cf7558877",
-          "callerMemberId": "608fdfcdb4cede3cf75588a3",
-          "callerWingId":"608fdf9db4cede3cf7558878", "callerFlatId": "608fdfc1b4cede3cf755889f", "receiverMemberId": "608fe1e9b4cede3cf75588b4", "receiverWingId": "608fdf9db4cede3cf755887a", "receiverFlatId": "608fdfc1b4cede3cf755889f", "contactNo": "9879208321", "AddedBy": "Member", "isVideoCall": true, "callFor": 0, "deviceType": "Android"};
-
-        print("memberToMemberCalling Data = ${data}");
-        Services.responseHandler(apiName: "member/memberCalling",body: data).then((data) async {
-          if (data.Data.length > 0 && data.IsSuccess == true) {
+        var body ={
+          "societyId" : prefs.getString(Session.SocietyId),
+          "callerMemberId" : prefs.getString(Session.Member_Id),
+          "callerWingId" : prefs.getString(Session.WingId),
+          "callerFlatId" : prefs.getString(Session.FlatId),
+          "receiverMemberId" : dataofMember["_id"].toString(),
+          "receiverWingId" : dataofMember["WingData"][0]["_id"].toString(),
+          "receiverFlatId" : dataofMember["FlatData"][0]["_id"].toString(),
+          "contactNo" : dataofMember["ContactNo"].toString(),
+          "AddedBy" : "Member",
+          "isVideoCall" : isVideoCall,
+          "callFor" : 0,
+          "deviceType" : Platform.isAndroid ? "Android" : "IOS"
+        };
+        print("memberToMemberCalling Data = ${body}");
+        Services.responseHandler(apiName: "member/memberCalling",body: body).then((data) async {
+          if (data.Data.length > 0 && data.IsSuccess == true && spoke) {
             SharedPreferences preferences =
             await SharedPreferences.getInstance();
             // await preferences.setString('data', data.Data);
             // await for camera and mic permissions before pushing video page
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => FromMemberScreen(fromMemberData: widget.MemberData,isVideoCall:isVideoCall.toString()),
-            //   ),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FromMemberScreen(fromMemberData: dataofMember,isVideoCall:isVideoCall.toString()),
+              ),
+            );
             /*Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -188,19 +257,27 @@ class _SpeechToTextState extends State<SpeechToText> {
         _speech.listen(
           onResult: (val) => setState(() {
             _text = val.recognizedWords;
+            textController.text = _text;
             if (val.hasConfidenceRating && val.confidence > 0) {
               // _confidence = val.confidence;
               // if(val.recognizedWords.contains("video call To Arpit Shah")){
               //   memberToMemberCalling(true);
               //
               // }
-              String rubi = val.recognizedWords;
-              String ore = "video call To Arpit Shah";
               print(_text.length);
-              print(ore.length);
-              if(_text.toUpperCase().trim().contains(ore.toUpperCase().trim())){
-                memberToMemberCalling(true);
-              }
+              for(int i=0;i<memberData.length;i++){
+                print(_text.toUpperCase().trim().replaceAll(" ", ""));
+                print(memberData[i]["ContactNo"].toString().toUpperCase());
+                if(_text.toUpperCase().
+                contains(memberData[i]["Name"].toString().toUpperCase()) ||
+                    _text.toUpperCase().trim().replaceAll(" ", "").
+                    contains(memberData[i]["ContactNo"].toString().toUpperCase())
+                ){
+                  print("successfully called");
+                  memberToMemberCalling(true,memberData[i]);
+                }
+                }
+
               // if(val.recognizedWords == "Arpit Shah"){
               //   memberToMemberCalling(true);
               // }

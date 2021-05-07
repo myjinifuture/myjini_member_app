@@ -324,48 +324,48 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Notifications",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600
-                                      //fontWeight: FontWeight.bold
-                                      ),
-                                ),
-                                Text(
-                                  "Choose to Mute Notifications",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Transform.scale(
-                              scale: 1.3,
-                              child: Switch(
-                                onChanged: toggleMuteNotificationSwitch,
-                                value: isMuteNotificationsSwitched,
-
-                                activeColor: appPrimaryMaterialColor,
-                                activeTrackColor: appPrimaryMaterialColor[200],
-
-                                // inactiveThumbColor: Colors.redAccent,
-                                // inactiveTrackColor: Colors.orange,
-                              )),
-                        ],
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(top: 10.0),
+                    //   child: Row(
+                    //     children: [
+                    //       Expanded(
+                    //         child: Column(
+                    //           crossAxisAlignment: CrossAxisAlignment.start,
+                    //           children: [
+                    //             Text(
+                    //               "Notifications",
+                    //               style: TextStyle(
+                    //                   fontSize: 18,
+                    //                   color: Colors.black,
+                    //                   fontWeight: FontWeight.w600
+                    //                   //fontWeight: FontWeight.bold
+                    //                   ),
+                    //             ),
+                    //             Text(
+                    //               "Choose to Mute Notifications",
+                    //               style: TextStyle(
+                    //                 fontSize: 15,
+                    //                 color: Colors.black,
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //       Transform.scale(
+                    //           scale: 1.3,
+                    //           child: Switch(
+                    //             onChanged: toggleMuteNotificationSwitch,
+                    //             value: isMuteNotificationsSwitched,
+                    //
+                    //             activeColor: appPrimaryMaterialColor,
+                    //             activeTrackColor: appPrimaryMaterialColor[200],
+                    //
+                    //             // inactiveThumbColor: Colors.redAccent,
+                    //             // inactiveTrackColor: Colors.orange,
+                    //           )),
+                    //     ],
+                    //   ),
+                    // ),
 /*              Padding(
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Row(

@@ -330,17 +330,17 @@ class AddFamilyMemberState extends State<AddFamilyMember> {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w600)),
                     onPressed: () {
-                      _SaveFamilymember();
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //       builder: (context) => OTP(
-                      //         mobileNo: txtmobile.text.toString(),
-                      //         onSuccess: () {
-                      //           _SaveFamilymember();
-                      //         },
-                      //       ),
-                      //     ));
+                      // _SaveFamilymember();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => OTP(
+                              mobileNo: txtmobile.text.toString(),
+                              onSuccess: () {
+                                _SaveFamilymember();
+                              },
+                            ),
+                          ));
                     },
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_text_to_speech/flutter_text_to_speech.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smart_society_new/widget/speech_to_text.dart';
 import 'package:smart_society_new/widget/text_to_speech.dart';
@@ -11,11 +12,14 @@ class BottomNavigationScreen extends StatefulWidget {
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
 
   int _currentTab = 0;
+  VoiceController controller = FlutterTextToSpeech.instance.voiceController();
+  TextEditingController textController = TextEditingController();
 
   void _onTapNavBar(int index){
     setState(() {
       _currentTab = index;
     });
+    controller.init();
   }
 
   @override

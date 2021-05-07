@@ -5,7 +5,7 @@ import 'dart:async';
 
 class FromMemberScreen extends StatefulWidget {
 
-  Map fromMemberData = {};
+  var fromMemberData ;
   String rejected="",isVideoCall="";
 
 
@@ -28,16 +28,6 @@ class _FromMemberScreenState extends State<FromMemberScreen> {
     super.initState();
     Vibration.cancel();
     print("memberdata");
-   /* audioPlayer.durationHandler = (d) => setState(() {
-      _duration = d;
-    });
-
-    audioPlayer.positionHandler = (p) => setState(() {
-      _position = p;
-    });*/
-    // audioCache.loop('ringing.mp3');   // 2nd tone
-    // widget.fromMemberData["Type"] != "Rejected" ?
-    // audioCache.loop('ringing.mp3'):null;
   }
 
   String _printDuration(Duration duration) {

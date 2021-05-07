@@ -53,6 +53,7 @@ import 'SOS.dart';
 import 'VerifiedOrNot.dart';
 import 'fromMemberScreen.dart';
 import 'package:easy_gradient_text/easy_gradient_text.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 const APP_STORE_URL = 'http://tinyurl.com/wz2aeao';
 const PLAY_STORE_URL = 'http://tinyurl.com/wz2aeao';
@@ -258,9 +259,69 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
   }
 
+  stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _text = 'Tap the button and start speaking';
+
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => print('onStatus: $val'),
+        onError: (val) => print('onError: $val'),
+      );
+      print("available");
+      print(available);
+      if (available) {
+        // setState(() => _isListening = true);
+        _speech.listen(
+          listenFor: Duration(hours: 1),
+          onSoundLevelChange: null,
+          cancelOnError: true,
+          onResult: (val) => setState(() {
+            _text = val.recognizedWords;
+            if (val.hasConfidenceRating && val.confidence > 0) {
+              // _confidence = val.confidence;
+              // if(val.recognizedWords.contains("video call To Arpit Shah")){
+              //   memberToMemberCalling(true);
+              //
+              // }
+              print(_text);
+              // for(int i=0;i<memberData.length;i++){
+              //   print(_text.toUpperCase().trim().replaceAll(" ", ""));
+              //   print(memberData[i]["ContactNo"].toString().toUpperCase());
+              //   if(_text.toUpperCase().
+              //   contains(memberData[i]["Name"].toString().toUpperCase()) ||
+              //       _text.toUpperCase().trim().replaceAll(" ", "").
+              //       contains(memberData[i]["ContactNo"].toString().toUpperCase())
+              //   ){
+              //     print("successfully called");
+              //     memberToMemberCalling(true,memberData[i]);
+              //   }
+              // }
+
+              // if(val.recognizedWords == "Arpit Shah"){
+              //   memberToMemberCalling(true);
+              // }
+              // if(identical(val.recognizedWords,ore)){
+              //   print("true called");
+              // }
+              // if(rubi.compareTo(ore).toString() == "1"){
+              //   memberToMemberCalling(true);
+              // }
+            }
+          }),
+        );
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+    }
+  }
+
   @override
   Future<void> initState() {
     super.initState();
+    _speech = stt.SpeechToText();
     getAdvertisementData();
     AppLifecycleState state;
     didChangeAppLifecycleState(state);
@@ -951,12 +1012,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     fontSize: 16.0);
               }
               else if (_allMenuList[index].IconName == "Reminders") {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Reminders(),
-                  ),
-                );
+                Fluttertoast.showToast(
+                    msg: "Coming Soon!!!",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => Reminders(),
+                //   ),
+                // );
               }
               // else if (_allMenuList[index].IconName == "Polling") {
               //   Fluttertoast.showToast(
@@ -1305,6 +1373,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             //   child: Text("event"),
             // ),
             // Text(_isInForeground.toString()),
+            // Padding(
+            //   padding: const EdgeInsets.only(left: 4.0),
+            //   child: GestureDetector(
+            //     onTap: (){
+            //       Navigator.push(
+            //           context, MaterialPageRoute(builder: (context) => BottomNavigationScreen()));
+            //
+            //     },
+            //     child: Icon(
+            //       Icons.mic,
+            //     ),
+            //   ),
+            // ),
             IconButton(
               icon: isAdmin
                   ? Padding(
@@ -2019,7 +2100,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => BottomNavigationScreen()));
+                context, MaterialPageRoute(builder: (context) => SOSpage()));
           },
           child: Container(
             height: 60,
