@@ -43,6 +43,11 @@ class _MySocietyState extends State<MySociety> {
       "title": "Documents",
       "screen": "Documents",
     },
+    {
+      "image": "images/document.png",
+      "title": "Daily Services",
+      "screen": "DailyServicesScreen",
+    },
     // {
     //   "image": "images/Helpdesk.png",
     //   "title": "Committee Member",

@@ -184,6 +184,8 @@ class _VisitorByWingState extends State<VisitorByWing> {
 
   @override
   Widget build(BuildContext context) {
+    print("_visitorData");
+    print(_visitorData);
     return WillPopScope(
       onWillPop: () {
         Navigator.pushReplacementNamed(context, "/Dashboard");
