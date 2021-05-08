@@ -344,7 +344,7 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
     print(vendorCategoryList);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Society Vendor'),
+        title: Text('Add Vendor'),
       ),
       body: isLoading == false
           ? SingleChildScrollView(
@@ -705,8 +705,17 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                             ),
                           ),
                           onPressed: () {
-                            print('Add vendor cicked');
-                            addVendor();
+                            if(selectedVendorCategory==''||contactNumberController.text==''||selectedState==''||selectedCity==''){
+                              Fluttertoast.showToast(
+                                  msg: "Please Fill All Mandatory Details",
+                                  backgroundColor: Colors.red,
+                                  gravity: ToastGravity.TOP,
+                                  textColor: Colors.white);
+                            }
+                            else{
+                              print('Add vendor cicked');
+                              addVendor();
+                            }
                           },
                         ),
                       ),

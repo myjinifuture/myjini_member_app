@@ -12,6 +12,7 @@ import 'package:smart_society_new/Admin_App/Component/SocietyStaffComponent.dart
 import 'package:smart_society_new/Admin_App/Common/Constants.dart' as cnst;
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
+import 'package:smart_society_new/Member_App/screens/AddStaff.dart';
 
 class StaffInOut extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class StaffInOut extends StatefulWidget {
 }
 
 class _StaffInOutState extends State<StaffInOut> with TickerProviderStateMixin {
-  bool isLoading = false, isStaffLoading = false;
+  bool isLoading = false, isStaffLoading = false,isSocietyStaffLoading = false;
   List _StaffData = [];
   List societyStaffData = [];
   List _wingList = [];
@@ -39,7 +40,7 @@ class _StaffInOutState extends State<StaffInOut> with TickerProviderStateMixin {
     _fromDate = DateTime.now();
     _toDate = DateTime.now();
     _getLocaldata();
-    _getotherListing(SocietyId, _fromDate.toString(), _toDate.toString());
+
     getSocietyStaff();
   }
 
@@ -160,6 +161,7 @@ class _StaffInOutState extends State<StaffInOut> with TickerProviderStateMixin {
   }
 
   getSocietyStaff() async {
+    _getotherListing(SocietyId, _fromDate.toString(), _toDate.toString());
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -167,31 +169,31 @@ class _StaffInOutState extends State<StaffInOut> with TickerProviderStateMixin {
           "societyId": SocietyId,
         };
         setState(() {
-          isLoading = true;
+          isSocietyStaffLoading = true;
         });
         Services.responseHandler(apiName: "member/getSocietyStaff", body: data)
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               societyStaffData = data.Data;
-              isLoading = false;
+              isSocietyStaffLoading = false;
             });
           } else {
             setState(() {
-              isLoading = false;
+              isSocietyStaffLoading = false;
               societyStaffData = data.Data;
             });
           }
         }, onError: (e) {
           showMsg("Something Went Wrong.\nPlease Try Again");
           setState(() {
-            isLoading = false;
+            isSocietyStaffLoading = false;
           });
         });
       } else {
         showMsg("Something went worng!!!");
         setState(() {
-          isLoading = false;
+          isSocietyStaffLoading = false;
         });
       }
     } on SocketException catch (_) {
@@ -249,291 +251,290 @@ class _StaffInOutState extends State<StaffInOut> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/Dashboard");
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Staffs",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/Dashboard");
-            },
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Staffs",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        body: isLoading
-            ? LoadingComponent()
-            : Column(
-                children: <Widget>[
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: <Widget>[
-                  //     for (int i = 0; i < _wingList.length; i++) ...[
-                  //       GestureDetector(
-                  //         onTap: () {
-                  //           if (selectedWing != _wingList[i]["_id"].toString()) {
-                  //             setState(() {
-                  //               selectedWing = _wingList[i]["_id"].toString();
-                  //             });
-                  //             // setState(() {
-                  //             //   _StaffData = [];
-                  //             // });
-                  //             // getStaffData(
-                  //             //   _fromDate.toString(),
-                  //             //   _toDate.toString(),
-                  //             //   _wingList[i]["Id"].toString(),
-                  //             // );
-                  //           }
-                  //         },
-                  //         child: Container(
-                  //           width: selectedWing == _wingList[i]["_id"].toString()
-                  //               ? 60
-                  //               : 45,
-                  //           height:
-                  //               selectedWing == _wingList[i]["_id"].toString()
-                  //                   ? 60
-                  //                   : 45,
-                  //           margin: EdgeInsets.only(top: 10, left: 5, right: 5),
-                  //           decoration: BoxDecoration(
-                  //               color: selectedWing ==
-                  //                       _wingList[i]["_id"].toString()
-                  //                   ? cnst.appPrimaryMaterialColor
-                  //                   : Colors.white,
-                  //               border: Border.all(
-                  //                   color: cnst.appPrimaryMaterialColor),
-                  //               borderRadius:
-                  //                   BorderRadius.all(Radius.circular(4))),
-                  //           alignment: Alignment.center,
-                  //           child: Text(
-                  //             "${_wingList[i]["wingName"]}",
-                  //             style: TextStyle(
-                  //                 color: selectedWing ==
-                  //                         _wingList[i]["_id"].toString()
-                  //                     ? Colors.white
-                  //                     : cnst.appPrimaryMaterialColor,
-                  //                 fontSize: 19),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ],
-                  // ),
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //     children: <Widget>[
-                  //       Row(
-                  //         children: <Widget>[
-                  //           GestureDetector(
-                  //             onTap: () {
-                  //               _showFromDatePicker();
-                  //             },
-                  //             child: Container(
-                  //               height: 37,
-                  //               decoration: BoxDecoration(
-                  //                   color: Colors.grey[200],
-                  //                   borderRadius:
-                  //                       BorderRadius.all(Radius.circular(5))),
-                  //               child: Row(
-                  //                 mainAxisAlignment:
-                  //                     MainAxisAlignment.spaceBetween,
-                  //                 children: <Widget>[
-                  //                   Padding(padding: EdgeInsets.only(left: 5)),
-                  //                   Text(
-                  //                     "${_fromDate.toString().substring(8, 10)}-${_fromDate.toString().substring(5, 7)}-${_fromDate.toString().substring(0, 4)}",
-                  //                     style: TextStyle(fontSize: 13),
-                  //                   ),
-                  //                   Padding(padding: EdgeInsets.only(left: 5)),
-                  //                   Container(
-                  //                     width: 50,
-                  //                     height: 55,
-                  //                     decoration: BoxDecoration(
-                  //                         color: cnst.appPrimaryMaterialColor,
-                  //                         borderRadius: BorderRadius.only(
-                  //                             topRight: Radius.circular(5),
-                  //                             bottomRight: Radius.circular(5))),
-                  //                     child: Icon(
-                  //                       Icons.date_range,
-                  //                       color: Colors.white,
-                  //                     ),
-                  //                   )
-                  //                 ],
-                  //               ),
-                  //             ),
-                  //           ),
-                  //           Padding(
-                  //             padding: EdgeInsets.only(left: 5, right: 5),
-                  //             child: Text("To ",
-                  //                 style: TextStyle(
-                  //                     fontSize: 13,
-                  //                     fontWeight: FontWeight.w600)),
-                  //           ),
-                  //           Container(
-                  //             height: 37,
-                  //             decoration: BoxDecoration(
-                  //                 color: Colors.grey[200],
-                  //                 borderRadius:
-                  //                     BorderRadius.all(Radius.circular(5))),
-                  //             child: Row(
-                  //               mainAxisAlignment:
-                  //                   MainAxisAlignment.spaceBetween,
-                  //               children: <Widget>[
-                  //                 Padding(padding: EdgeInsets.only(left: 5)),
-                  //                 Text(
-                  //                   "${_toDate.toString().substring(8, 10)}-${_toDate.toString().substring(5, 7)}-${_toDate.toString().substring(0, 4)}",
-                  //                   style: TextStyle(fontSize: 13),
-                  //                 ),
-                  //                 Padding(padding: EdgeInsets.only(left: 5)),
-                  //                 GestureDetector(
-                  //                   onTap: () {
-                  //                     _showToDatePicker();
-                  //                   },
-                  //                   child: Container(
-                  //                     width: 50,
-                  //                     height: 55,
-                  //                     decoration: BoxDecoration(
-                  //                         color: cnst.appPrimaryMaterialColor,
-                  //                         borderRadius: BorderRadius.only(
-                  //                             topRight: Radius.circular(5),
-                  //                             bottomRight: Radius.circular(5))),
-                  //                     child: Icon(
-                  //                       Icons.date_range,
-                  //                       color: Colors.white,
-                  //                     ),
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //       Padding(padding: EdgeInsets.only(left: 4)),
-                  //       Expanded(
-                  //         child: RaisedButton(
-                  //             color: cnst.appPrimaryMaterialColor,
-                  //             child: Icon(
-                  //               Icons.search,
-                  //               color: Colors.white,
-                  //             ),
-                  //             onPressed: () {
-                  //               // getStaffData(_fromDate.toString(),
-                  //               //     _toDate.toString(), selectedWing
-                  //             }),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  // Divider(),
-                  TabBar(
-                    unselectedLabelColor: Colors.grey[500],
-                    indicatorColor: Colors.black,
-                    labelColor: Colors.black,
+        // leading: IconButton(
+        //   icon: Icon(
+        //     Icons.arrow_back,
+        //     color: Colors.white,
+        //   ),
+        //   onPressed: () {
+        //     Navigator.pushReplacementNamed(context, "/Dashboard");
+        //   },
+        // ),
+      ),
+      body: Column(
+              children: <Widget>[
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: <Widget>[
+                //     for (int i = 0; i < _wingList.length; i++) ...[
+                //       GestureDetector(
+                //         onTap: () {
+                //           if (selectedWing != _wingList[i]["_id"].toString()) {
+                //             setState(() {
+                //               selectedWing = _wingList[i]["_id"].toString();
+                //             });
+                //             // setState(() {
+                //             //   _StaffData = [];
+                //             // });
+                //             // getStaffData(
+                //             //   _fromDate.toString(),
+                //             //   _toDate.toString(),
+                //             //   _wingList[i]["Id"].toString(),
+                //             // );
+                //           }
+                //         },
+                //         child: Container(
+                //           width: selectedWing == _wingList[i]["_id"].toString()
+                //               ? 60
+                //               : 45,
+                //           height:
+                //               selectedWing == _wingList[i]["_id"].toString()
+                //                   ? 60
+                //                   : 45,
+                //           margin: EdgeInsets.only(top: 10, left: 5, right: 5),
+                //           decoration: BoxDecoration(
+                //               color: selectedWing ==
+                //                       _wingList[i]["_id"].toString()
+                //                   ? cnst.appPrimaryMaterialColor
+                //                   : Colors.white,
+                //               border: Border.all(
+                //                   color: cnst.appPrimaryMaterialColor),
+                //               borderRadius:
+                //                   BorderRadius.all(Radius.circular(4))),
+                //           alignment: Alignment.center,
+                //           child: Text(
+                //             "${_wingList[i]["wingName"]}",
+                //             style: TextStyle(
+                //                 color: selectedWing ==
+                //                         _wingList[i]["_id"].toString()
+                //                     ? Colors.white
+                //                     : cnst.appPrimaryMaterialColor,
+                //                 fontSize: 19),
+                //           ),
+                //         ),
+                //       ),
+                //     ],
+                //   ],
+                // ),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: <Widget>[
+                //       Row(
+                //         children: <Widget>[
+                //           GestureDetector(
+                //             onTap: () {
+                //               _showFromDatePicker();
+                //             },
+                //             child: Container(
+                //               height: 37,
+                //               decoration: BoxDecoration(
+                //                   color: Colors.grey[200],
+                //                   borderRadius:
+                //                       BorderRadius.all(Radius.circular(5))),
+                //               child: Row(
+                //                 mainAxisAlignment:
+                //                     MainAxisAlignment.spaceBetween,
+                //                 children: <Widget>[
+                //                   Padding(padding: EdgeInsets.only(left: 5)),
+                //                   Text(
+                //                     "${_fromDate.toString().substring(8, 10)}-${_fromDate.toString().substring(5, 7)}-${_fromDate.toString().substring(0, 4)}",
+                //                     style: TextStyle(fontSize: 13),
+                //                   ),
+                //                   Padding(padding: EdgeInsets.only(left: 5)),
+                //                   Container(
+                //                     width: 50,
+                //                     height: 55,
+                //                     decoration: BoxDecoration(
+                //                         color: cnst.appPrimaryMaterialColor,
+                //                         borderRadius: BorderRadius.only(
+                //                             topRight: Radius.circular(5),
+                //                             bottomRight: Radius.circular(5))),
+                //                     child: Icon(
+                //                       Icons.date_range,
+                //                       color: Colors.white,
+                //                     ),
+                //                   )
+                //                 ],
+                //               ),
+                //             ),
+                //           ),
+                //           Padding(
+                //             padding: EdgeInsets.only(left: 5, right: 5),
+                //             child: Text("To ",
+                //                 style: TextStyle(
+                //                     fontSize: 13,
+                //                     fontWeight: FontWeight.w600)),
+                //           ),
+                //           Container(
+                //             height: 37,
+                //             decoration: BoxDecoration(
+                //                 color: Colors.grey[200],
+                //                 borderRadius:
+                //                     BorderRadius.all(Radius.circular(5))),
+                //             child: Row(
+                //               mainAxisAlignment:
+                //                   MainAxisAlignment.spaceBetween,
+                //               children: <Widget>[
+                //                 Padding(padding: EdgeInsets.only(left: 5)),
+                //                 Text(
+                //                   "${_toDate.toString().substring(8, 10)}-${_toDate.toString().substring(5, 7)}-${_toDate.toString().substring(0, 4)}",
+                //                   style: TextStyle(fontSize: 13),
+                //                 ),
+                //                 Padding(padding: EdgeInsets.only(left: 5)),
+                //                 GestureDetector(
+                //                   onTap: () {
+                //                     _showToDatePicker();
+                //                   },
+                //                   child: Container(
+                //                     width: 50,
+                //                     height: 55,
+                //                     decoration: BoxDecoration(
+                //                         color: cnst.appPrimaryMaterialColor,
+                //                         borderRadius: BorderRadius.only(
+                //                             topRight: Radius.circular(5),
+                //                             bottomRight: Radius.circular(5))),
+                //                     child: Icon(
+                //                       Icons.date_range,
+                //                       color: Colors.white,
+                //                     ),
+                //                   ),
+                //                 )
+                //               ],
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //       Padding(padding: EdgeInsets.only(left: 4)),
+                //       Expanded(
+                //         child: RaisedButton(
+                //             color: cnst.appPrimaryMaterialColor,
+                //             child: Icon(
+                //               Icons.search,
+                //               color: Colors.white,
+                //             ),
+                //             onPressed: () {
+                //               // getStaffData(_fromDate.toString(),
+                //               //     _toDate.toString(), selectedWing
+                //             }),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // Divider(),
+                TabBar(
+                  unselectedLabelColor: Colors.grey[500],
+                  indicatorColor: Colors.black,
+                  labelColor: Colors.black,
+                  controller: _tabController,
+                  tabs: [
+                    Tab(
+                      child: Text(
+                        "Society Staffs",
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        "Flat Staffs",
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
                     controller: _tabController,
-                    tabs: [
-                      Tab(
-                        child: Text(
-                          "Society Staffs",
-                        ),
-                      ),
-                      Tab(
-                        child: Text(
-                          "Flat Staffs",
-                        ),
-                      ),
+                    children: <Widget>[
+                      isSocietyStaffLoading
+                          ? Container(
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          : societyStaffData.length > 0
+                              ? Container(
+                                  child: AnimationLimiter(
+                                    child: ListView.builder(
+                                      itemCount: societyStaffData.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return SocietyStaffComponent(
+                                          visitorData:
+                                              societyStaffData[index],
+                                          index: index,
+                                          onMap: getSocietyStaff,
+                                          onUnMap: getSocietyStaff,
+                                          onDelete: getSocietyStaff,
+                                          // onDelete: () {
+                                          //   setState(() {
+                                          //     _getotherListing(
+                                          //         SocietyId,
+                                          //         _fromDate.toString(),
+                                          //         _toDate.toString());
+                                          //                                           });
+                                          // },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                )
+                              : Center(
+                                  child: Text('No Data Found'),
+                                ),
+                      isStaffLoading
+                          ? Container(
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          : _StaffData.length > 0
+                              ? Container(
+                                  child: AnimationLimiter(
+                                    child: ListView.builder(
+                                      itemCount: _StaffData.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return StaffComponentBywing(
+                                          visitorData: _StaffData[index],
+                                          index: index,
+                                          // onDelete: () {
+                                          //   setState(() {
+                                          //     _getotherListing(
+                                          //         SocietyId,
+                                          //         _fromDate.toString(),
+                                          //         _toDate.toString());
+                                          //                                           });
+                                          // },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                )
+                              : Center(
+                                  child: Text('No Data Found'),
+                                ),
                     ],
                   ),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: <Widget>[
-                        isLoading
-                            ? Container(
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              )
-                            : societyStaffData.length > 0
-                                ? Container(
-                                    child: AnimationLimiter(
-                                      child: ListView.builder(
-                                        itemCount: societyStaffData.length,
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return SocietyStaffComponent(
-                                            visitorData:
-                                                societyStaffData[index],
-                                            index: index,
-                                            onMap: getSocietyStaff,
-                                            onUnMap: getSocietyStaff,
-                                            // onDelete: () {
-                                            //   setState(() {
-                                            //     _getotherListing(
-                                            //         SocietyId,
-                                            //         _fromDate.toString(),
-                                            //         _toDate.toString());
-                                            //                                           });
-                                            // },
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  )
-                                : Center(
-                                    child: Text('No Data Found'),
-                                  ),
-                        isStaffLoading
-                            ? Container(
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              )
-                            : _StaffData.length > 0
-                                ? Container(
-                                    child: AnimationLimiter(
-                                      child: ListView.builder(
-                                        itemCount: _StaffData.length,
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return StaffComponentBywing(
-                                            visitorData: _StaffData[index],
-                                            index: index,
-                                            // onDelete: () {
-                                            //   setState(() {
-                                            //     _getotherListing(
-                                            //         SocietyId,
-                                            //         _fromDate.toString(),
-                                            //         _toDate.toString());
-                                            //                                           });
-                                            // },
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  )
-                                : Center(
-                                    child: Text('No Data Found'),
-                                  ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/AddStaff');
-          },
-          child: Icon(Icons.add, color: Colors.white),
-          backgroundColor: cnst.appPrimaryMaterialColor,
-        ),
+                ),
+              ],
+            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddStaff(onAddStaff: getSocietyStaff,),
+            ),
+          );
+        },
+        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: cnst.appPrimaryMaterialColor,
       ),
     );
   }
