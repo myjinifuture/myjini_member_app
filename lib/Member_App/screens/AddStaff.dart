@@ -12,6 +12,8 @@ import 'package:smart_society_new/Member_App/common/constant.dart';
 import 'package:smart_society_new/Member_App/component/masktext.dart';
 
 class AddStaff extends StatefulWidget {
+  Function onAddStaff;
+  AddStaff({this.onAddStaff});
   @override
   _AddStaffState createState() => _AddStaffState();
 }
@@ -362,7 +364,7 @@ class _AddStaffState extends State<AddStaff> {
           Services.responseHandler(apiName: "member/addStaff", body: formData)
               .then((data) async {
             // pr.hide();
-            if (data.Data != "0" && data.IsSuccess == true) {
+            if (data.Data != null && data.IsSuccess == true) {
               print("data.Data");
               print(data.Data);
               Fluttertoast.showToast(
@@ -370,8 +372,8 @@ class _AddStaffState extends State<AddStaff> {
                   backgroundColor: Colors.green,
                   gravity: ToastGravity.TOP,
                   textColor: Colors.white);
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/Dashboard', (Route<dynamic> route) => false);
+             Navigator.pop(context);
+             widget.onAddStaff();
             } else {
               // pr.hide();
               showMsg(data.Message, title: "Error");

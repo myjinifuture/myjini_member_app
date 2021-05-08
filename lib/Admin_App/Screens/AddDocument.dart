@@ -145,7 +145,7 @@ class _AddDocumentState extends State<AddDocument> {
           });
           Services.responseHandler(apiName: "admin/addSocietyDocs",body: formData).then((data) async {
             // pr.hide();
-            if (data.Data != "0" && data.IsSuccess == true) {
+            if (data.Data != null && data.IsSuccess == true) {
               setState(() {
                 disableSaveDocument=true;
               });

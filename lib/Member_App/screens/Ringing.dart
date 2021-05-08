@@ -140,11 +140,16 @@ class _RingingState extends State<Ringing> {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        String flatId = preferences.getString(Session.FlatId);
+        String wingId = preferences.getString(Session.WingId);
         var data = {
           "entryId": widget.fromMemberData["EntryId"],
           "memberId": memberId,
           "societyId": societyId,
-          "response": Accepted
+          "response": Accepted,
+          "flatId":flatId,
+          "wingId":wingId,
         };
         print("success");
         print("data");

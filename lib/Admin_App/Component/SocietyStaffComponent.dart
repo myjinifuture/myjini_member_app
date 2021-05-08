@@ -52,8 +52,8 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
                 deleteStaff(widget.visitorData['_id'].toString());
-                Navigator.of(context).pop();;
-                // widget.onDelete();
+                Navigator.of(context).pop();
+
               },
             ),
           ],
@@ -75,14 +75,15 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
         var data = {"staffId": staffId};
         Services.responseHandler(apiName: "admin/deleteStaff", body: data).then(
                 (data) async {
-              if (data.Data != "0" && data.IsSuccess == true) {
+              if (data.Data != null && data.IsSuccess == true) {
                 print("data.Data");
                 print(data.Data);
                 Fluttertoast.showToast(
                     msg: "Staff deleted Successfully!!!",
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.red,
                     gravity: ToastGravity.TOP,
                     textColor: Colors.white);
+                widget.onDelete();
               } else {
                 showMsg(data.Message, title: "Error");
               }

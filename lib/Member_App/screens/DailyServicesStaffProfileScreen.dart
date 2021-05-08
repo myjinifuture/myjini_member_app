@@ -26,10 +26,14 @@ class _DailyServicesStaffProfileScreenState
   String flatId;
   String societyId;
   bool alreadyInFlat = false;
+  bool addToFlatCalled = false;
+  bool removeFromFlatCalled = false;
 
   @override
   void initState() {
-    checkFlat();
+    setState(() {
+      checkFlat();
+    });
   }
 
   checkFlat() async {
@@ -37,6 +41,8 @@ class _DailyServicesStaffProfileScreenState
     societyId = prefs.getString(constant.Session.SocietyId);
     wingId = prefs.getString(constant.Session.WingId);
     flatId = prefs.getString(constant.Session.FlatId);
+    print("flatid in initstate");
+    print(flatId);
     for (int i = 0; i < widget.staffProfileData["FlatData"].length; i++) {
       if (flatId == widget.staffProfileData["FlatData"][i]["_id"] &&
           wingId ==
@@ -61,12 +67,25 @@ class _DailyServicesStaffProfileScreenState
         Services.responseHandler(
                 apiName: "member/removeMemberStaff", body: data)
             .then((data) async {
-          if (data.Data == "1") {
-            Fluttertoast.showToast(
-                msg: "Removed from Flat Successfully",
-                backgroundColor: Colors.green,
-                gravity: ToastGravity.TOP,
-                textColor: Colors.white);
+          if (data.Data.toString() == "1"&&data.IsSuccess==true) {
+            print("data.Data");
+            print(data.Data.runtimeType);
+            print(data.Data);
+            setState(() {
+              Fluttertoast.showToast(
+                  msg: "Removed from Flat Successfully",
+                  backgroundColor: Colors.red,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.white);
+                Navigator.pop(context);
+
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(
+                    context,
+                    '/DailyServicesScreen');
+              // removeFromFlatCalled = true;
+            });
           } else {
             // showMsg("Complaint Is Not Added To Solved");
           }
@@ -95,12 +114,24 @@ class _DailyServicesStaffProfileScreenState
         Services.responseHandler(
                 apiName: "member/addStaffWorkLocation", body: data)
             .then((data) async {
-          if (data.Data == "1") {
-            Fluttertoast.showToast(
-                msg: "Added to Flat Successfully",
-                backgroundColor: Colors.green,
-                gravity: ToastGravity.TOP,
-                textColor: Colors.white);
+          if (data.Data.toString() == "1"&&data.IsSuccess==true) {
+            setState(() {
+
+              Fluttertoast.showToast(
+                  msg: "Added to Flat Successfully",
+                  backgroundColor: Colors.green,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.white);
+              setState(() {
+                Navigator.pop(context);
+
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(
+                    context,
+                    '/DailyServicesScreen');
+              });
+            });
           } else {
             // showMsg("Complaint Is Not Added To Solved");
           }
@@ -148,19 +179,16 @@ class _DailyServicesStaffProfileScreenState
               title: Text('${widget.categoryName} Profile'),
             ),
           ),
-          body: Column(
-            children: [],
-          ),
+
         ),
         Padding(
           padding: EdgeInsets.all(5.0),
           child: Column(
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.115,
+                height: MediaQuery.of(context).size.height * 0.12,
               ),
               Card(
-                elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(
                     10,
@@ -223,7 +251,8 @@ class _DailyServicesStaffProfileScreenState
                                   color: constant.appPrimaryMaterialColor,
                                 ),
                                 onPressed: () {
-                                  launch("tel:${widget.staffProfileData["ContactNo1"]}");
+                                  launch(
+                                      "tel:${widget.staffProfileData["ContactNo1"]}");
                                 },
                               ),
                               IconButton(
@@ -324,7 +353,9 @@ class _DailyServicesStaffProfileScreenState
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => StaffReviewListingScreen(ratingsData: widget.staffProfileData["Ratings"],),
+                              builder: (context) => StaffReviewListingScreen(
+                                ratingsData: widget.staffProfileData["Ratings"],
+                              ),
                             ),
                           );
                         },
@@ -485,13 +516,9 @@ class _DailyServicesStaffProfileScreenState
                                               BorderRadius.circular(5),
                                         ),
                                         color: constant.appPrimaryMaterialColor,
-                                        onPressed: () {addToFlat();
-                                          Navigator.pop(context);
+                                        onPressed: () {
+                                          addToFlat();
 
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                          Navigator.pushReplacementNamed(
-                                              context, '/DailyServicesScreen');
                                         },
                                         child: Text(
                                           'Yes',
@@ -578,13 +605,9 @@ class _DailyServicesStaffProfileScreenState
                                               BorderRadius.circular(5),
                                         ),
                                         color: constant.appPrimaryMaterialColor,
-                                        onPressed: () {removeFromFlat();
-                                          Navigator.pop(context);
+                                        onPressed: () {
+                                          removeFromFlat();
 
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                          Navigator.pushReplacementNamed(
-                                              context, '/DailyServicesScreen');
                                         },
                                         child: Text(
                                           'Yes',

@@ -23,6 +23,7 @@ import 'package:smart_society_new/Admin_App/Screens/Complaints.dart';
 import 'package:smart_society_new/Admin_App/Screens/Dashboard.dart';
 import 'package:smart_society_new/Admin_App/Screens/DirectoryMember.dart';
 import 'package:smart_society_new/Admin_App/Screens/Document.dart';
+import 'package:smart_society_new/Admin_App/Screens/SocietyVendorsAdminScreen.dart';
 import 'package:smart_society_new/Admin_App/Screens/EditDocument.dart';
 import 'package:smart_society_new/Admin_App/Screens/EventsAdmin.dart';
 import 'package:smart_society_new/Admin_App/Screens/Expense.dart';
@@ -81,6 +82,7 @@ import 'package:smart_society_new/Member_App/screens/ContactUs.dart';
 import 'package:smart_society_new/Member_App/screens/DailyServicesStaffListing.dart';
 import 'package:smart_society_new/Member_App/screens/DailyServicesStaffProfileScreen.dart';
 import 'package:smart_society_new/Member_App/screens/StaffReviewListingScreen.dart';
+import 'package:smart_society_new/Member_App/screens/RateNowScreen.dart';
 import 'package:smart_society_new/Member_App/screens/CreateBuildingScreen.dart';
 import 'package:smart_society_new/Member_App/screens/CreateBuildingSlider.dart';
 import 'package:smart_society_new/Member_App/screens/CreateSociety.dart';
@@ -130,10 +132,10 @@ import 'package:smart_society_new/Member_App/screens/VisitorSuccess.dart';
 import 'package:smart_society_new/Member_App/screens/WingDetail.dart';
 import 'package:smart_society_new/Member_App/screens/WingFlat.dart';
 import 'package:smart_society_new/Member_App/screens/getPendingApprovals.dart';
+import 'package:smart_society_new/Member_App/screens/AddStaff.dart';
 import 'package:vibration/vibration.dart';
 
 import './Member_App/./screens/Ringing.dart';
-import './Member_App/screens/AddStaff.dart';
 import './Member_App/screens/SOS.dart';
 import 'Admin_App/Screens/AddAMC.dart';
 import 'Admin_App/Screens/AddExpense.dart';
@@ -1099,6 +1101,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
           '/DailyServicesStaffListing': (context) => DailyServicesStaffListing(),
           '/DailyServicesStaffProfileScreen': (context) => DailyServicesStaffProfileScreen(),
           '/StaffReviewListingScreen': (context) => StaffReviewListingScreen(),
+          '/RateNowScreen': (context) => RateNowScreen(),
           '/EditDocument': (context) => EditDocument(),
           '/AllRemindersScreen': (context) => AllRemindersScreen(),
           '/AddReminderScreen': (context) => AddReminderScreen(),
@@ -1124,6 +1127,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
           '/AdvertisementList': (context) => AdvertisementList(),
           '/MyWishList': (context) => MyWishList(),
           '/IntroScreen': (context) => IntroScreen(),
+          '/SocietyVendorsAdminScreen': (context) => SocietyVendorsAdminScreen(),
           '/VisitorSuccess': (context) => VisitorSuccess(),
           '/CreateSociety': (context) => CreateSociety(),
           '/SetupWings': (context) => SetupWings(),

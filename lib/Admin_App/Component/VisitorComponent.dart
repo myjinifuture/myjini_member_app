@@ -31,6 +31,8 @@ class _VisitorComponentState extends State<VisitorComponent> {
 
   @override
   Widget build(BuildContext context) {
+    print("widget._visitorData");
+    print(widget._visitorData);
     return AnimationConfiguration.staggeredList(
       position: widget.index,
       duration: const Duration(milliseconds: 450),
