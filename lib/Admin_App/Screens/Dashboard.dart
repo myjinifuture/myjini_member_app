@@ -159,8 +159,8 @@ class _DashboardState extends State<Dashboard> {
     {
       "image": "images/user.png",
       "count": "0",
-      "title": "Society Vendors",
-      "screen": "SocietyVendorsAdminScreen"
+      "title": "All Vendors",
+      "screen": "VendorsAdminScreen"
     },
     /*  {
       "image": "images/Vendors.png",

@@ -40,11 +40,6 @@ class _OTPState extends State<OTP> {
     _onVerifyCode();
   }
 
-  // PinDecoration _pinDecoration = UnderlineDecoration(
-  //     color: Colors.grey,
-  //     enteredColor: cnst.appPrimaryMaterialColor1,
-  //     hintText: '000000');
-
   void _onVerifyCode() async {
     setState(() {
       isCodeSent = true;

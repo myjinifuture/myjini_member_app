@@ -90,7 +90,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
       _isSwitched = prefs.getString(constant.Session.isPrivate);
       if (prefs.getString(constant.Session.DOB) != "" &&
           prefs.getString(constant.Session.DOB) != "null")
-        _BirthDate = DateTime.parse(prefs.getString(constant.Session.DOB));
+          _BirthDate = DateTime.parse(prefs.getString(constant.Session.DOB));
 
       if (prefs.getString(constant.Session.ResidenceType) == "Rented")
         setState(() {
@@ -696,27 +696,6 @@ class _UpdateProfileState extends State<UpdateProfile> {
                 Text("Female", style: TextStyle(fontSize: 13)),
               ],
             ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Wrap(
-            //     spacing: 10,
-            //     children: List.generate(_residentTypeList.length, (index) {
-            //       return ChoiceChip(
-            //         backgroundColor: Colors.grey[200],
-            //         label: Text(_residentTypeList[index]),
-            //         selected: selected_Index == index,
-            //         onSelected: (selected) {
-            //           if (selected) {
-            //             setState(() {
-            //               selected_Index = index;
-            //               print(_residentTypeList[index]);
-            //             });
-            //           }
-            //         },
-            //       );
-            //     }),
-            //   ),
-            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[

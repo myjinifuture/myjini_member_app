@@ -454,7 +454,6 @@ class _SOSpageState extends State<SOSpage> {
               gravity: ToastGravity.TOP,
               textColor: Colors.white,
             );
-            Navigator.pop(context);
           }
           // else {
           //   Fluttertoast.showToast(
@@ -544,7 +543,8 @@ class _SOSpageState extends State<SOSpage> {
     return WillPopScope(
       onWillPop: () {
         Navigator.pushNamedAndRemoveUntil(
-            context, '/HomeScreen', (route) => false);      },
+            context, '/HomeScreen', (route) => false);
+        },
       child: Scaffold(
         // resizeToAvoidBottomPadding: false,
         appBar: AppBar(
@@ -555,8 +555,9 @@ class _SOSpageState extends State<SOSpage> {
           ),
           leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();;
-            },
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/HomeScreen', (route) => false);
+              },
             icon: Icon(
               Icons.arrow_back,
               color: Colors.white,

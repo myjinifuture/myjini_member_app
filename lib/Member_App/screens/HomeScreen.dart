@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:intl/intl.dart';
+import '../screens/AddFamilyMember.dart';
+import 'package:smart_society_new/Member_App/Services/SubServicesScreen.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:easy_permission_validator/easy_permission_validator.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_text_to_speech/flutter_text_to_speech.dart';
 import 'package:get/get.dart';
 import 'package:smart_society_new/Member_App/screens/Events.dart';
 import 'package:imei_plugin/imei_plugin.dart';
@@ -45,6 +50,7 @@ import 'package:smart_society_new/Member_App/screens/SOSDailog.dart';
 import 'package:vibration/vibration.dart';
 import '../screens/SOSpage.dart';
 import '../screens/AdDetailPage.dart';
+import 'DirectoryScreen.dart';
 import 'LoginScreen.dart';
 import 'NoticeBoard.dart';
 import 'Reminders.dart';
@@ -54,6 +60,7 @@ import 'VerifiedOrNot.dart';
 import 'fromMemberScreen.dart';
 import 'package:easy_gradient_text/easy_gradient_text.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:smart_society_new/Member_App/Services/ServicesScreen.dart';
 
 const APP_STORE_URL = 'http://tinyurl.com/wz2aeao';
 const PLAY_STORE_URL = 'http://tinyurl.com/wz2aeao';
@@ -107,6 +114,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   StreamSubscription iosSubscription;
   String fcmToken = "";
   String searchedText = "";
+  DateTime _BirthDate;
   String SocietyId,
       Name,
       Wing,
@@ -130,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List _advertisementData = [];
   bool isLoading = true;
   List _addData = [];
+  VoiceController controller = FlutterTextToSpeech.instance.voiceController();
   ProgressDialog pr;
 
   double serviceRating;
@@ -263,6 +272,66 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _isListening = false;
   String _text = 'Tap the button and start speaking';
 
+  bool spoke = false;
+  speak(String name){
+    spoke = true;
+    controller.speak("${name}");
+  }
+  memberToMemberCalling(bool isVideoCall,var dataofMember) async {
+    try {
+      print("dataofmember");
+      print(dataofMember["Name"]);
+      speak("Calling to " + dataofMember["Name"].toString().toLowerCase());
+      print("tapped");
+      final result = await InternetAddress.lookup('google.com');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var body ={
+          "societyId" : prefs.getString(Session.SocietyId),
+          "callerMemberId" : prefs.getString(Session.Member_Id),
+          "callerWingId" : prefs.getString(Session.WingId),
+          "callerFlatId" : prefs.getString(Session.FlatId),
+          "receiverMemberId" : dataofMember["_id"].toString(),
+          "receiverWingId" : dataofMember["WingData"][0]["_id"].toString(),
+          "receiverFlatId" : dataofMember["FlatData"][0]["_id"].toString(),
+          "contactNo" : dataofMember["ContactNo"].toString(),
+          "AddedBy" : "Member",
+          "isVideoCall" : isVideoCall,
+          "callFor" : 0,
+          "deviceType" : Platform.isAndroid ? "Android" : "IOS"
+        };
+        print("memberToMemberCalling Data = ${body}");
+        Services.responseHandler(apiName: "member/memberCalling",body: body).then((data) async {
+          if (data.Data.length > 0 && data.IsSuccess == true && spoke) {
+            SharedPreferences preferences =
+            await SharedPreferences.getInstance();
+            // await preferences.setString('data', data.Data);
+            // await for camera and mic permissions before pushing video page
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FromMemberScreen(fromMemberData: dataofMember,isVideoCall:isVideoCall.toString()),
+              ),
+            );
+            /*Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => JoinPage(),
+                    ),
+                  );*/
+          } else {
+
+          }
+        }, onError: (e) {
+          showHHMsg("Try Again.","MyJini");
+        });
+      } else
+        showHHMsg("No Internet Connection.","MyJini");
+    } on SocketException catch (_) {
+      showHHMsg("No Internet Connection.","MyJini");
+    }
+  }
+
   void _listen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
@@ -272,11 +341,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       print("available");
       print(available);
       if (available) {
-        // setState(() => _isListening = true);
+        setState(() => _isListening = true);
         _speech.listen(
-          listenFor: Duration(hours: 1),
-          onSoundLevelChange: null,
-          cancelOnError: true,
           onResult: (val) => setState(() {
             _text = val.recognizedWords;
             if (val.hasConfidenceRating && val.confidence > 0) {
@@ -285,29 +351,156 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               //   memberToMemberCalling(true);
               //
               // }
-              print(_text);
-              // for(int i=0;i<memberData.length;i++){
-              //   print(_text.toUpperCase().trim().replaceAll(" ", ""));
-              //   print(memberData[i]["ContactNo"].toString().toUpperCase());
-              //   if(_text.toUpperCase().
-              //   contains(memberData[i]["Name"].toString().toUpperCase()) ||
-              //       _text.toUpperCase().trim().replaceAll(" ", "").
-              //       contains(memberData[i]["ContactNo"].toString().toUpperCase())
-              //   ){
-              //     print("successfully called");
-              //     memberToMemberCalling(true,memberData[i]);
-              //   }
-              // }
-
-              // if(val.recognizedWords == "Arpit Shah"){
-              //   memberToMemberCalling(true);
-              // }
-              // if(identical(val.recognizedWords,ore)){
-              //   print("true called");
-              // }
-              // if(rubi.compareTo(ore).toString() == "1"){
-              //   memberToMemberCalling(true);
-              // }
+              bool isDirectoryScreen = false;
+              bool isSocietyVendor = false;
+              bool isOtherVendor = false;
+              bool isVideoCall = false;
+              print(_text.replaceAll(" ", "").toUpperCase());
+              var vendorName,vendorId;
+              if(_text.replaceAll(" ", "").toUpperCase().contains("ADDFAMILYMEMBER")){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddFamilyMember(),
+                  ),
+                );
+              }
+              else if(_BirthDate!=null &&
+                  (_text.replaceAll(" ", "").contains("birthdate") ||
+                      _text.replaceAll(" ", "").contains("birthday"))){
+                setState(() {
+                  _isListening = false;
+                });
+                speak("Your birthdate is" +
+                    DateFormat("yMMMMd").format(_BirthDate).split(" ")[1] +
+                    DateFormat("yMMMMd").format(_BirthDate).split(" ")[0] +
+                    DateFormat("yMMMMd").format(_BirthDate).split(" ")[2]);
+              }
+              else if(_text.replaceAll(" ", "").toUpperCase().contains("VIDEOCALL") ||
+                  _text.replaceAll(" ", "").toUpperCase().contains("AUDIOCALL") ||
+                  _text.replaceAll(" ", "").toUpperCase().contains("CALL")){
+                print("video call entered");
+                for(int i=0;i<memberData.length;i++){
+                  if(_text.toUpperCase().replaceAll(" ","").contains(Name.replaceAll(" ", ""))){
+                    speak("Sorry you cannot Call to yourself");
+                  }
+                  else if(_text.toUpperCase().replaceAll(" ","").
+                  contains(memberData[i]["Name"].toString().toUpperCase().replaceAll(" ",""))){
+                    if(_text.replaceAll(" ", "").toUpperCase().contains("AUDIOCALL")){
+                      memberToMemberCalling(false, memberData[i]);
+                    }
+                    else{
+                      memberToMemberCalling(true, memberData[i]);
+                    }
+                  }
+                }
+                setState(() {
+                  _isListening = false;
+                });
+              }
+              else {
+                for (int i = 0; i < societyVendorDetails.length; i++) {
+                  societyVendorDetails[i]["ServiceNameFull"] =
+                      societyVendorDetails[i]["ServiceName"] + "ian";
+                  if (societyVendorDetails[i]["ServiceName"]
+                      .toString()
+                      .toUpperCase()
+                      .
+                  contains(_text.toUpperCase())) {
+                    isSocietyVendor = true;
+                    setState(() {
+                      _isListening = false;
+                    });
+                  }
+                }
+                print(_text);
+                print("isSocietyVendor");
+                print(isSocietyVendor);
+                if (isSocietyVendor) {
+                  speak("Searching for" + _text);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ServicesScreen(search: _text.toUpperCase(),
+                                  initialIndex: 0)));
+                }
+                else {
+                  print(_text.toUpperCase());
+                  for (int i = 0; i < vendorsDataList.length; i++) {
+                    if (vendorsDataList[i]["vendorCategoryName"].toString()
+                        .trim().toUpperCase()
+                        .contains(_text.toUpperCase())) {
+                      isOtherVendor = true;
+                      vendorName = vendorsDataList[i]["vendorCategoryName"];
+                      vendorId = vendorsDataList[i]["_id"];
+                    }
+                  }
+                  print("isOtherVendor");
+                  print(isOtherVendor);
+                  if (isOtherVendor) {
+                    speak("Searching for" + _text);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SubServicesScreen(
+                              vendorName.toString(),
+                              vendorId.toString(),
+                            ),
+                      ),
+                    );
+                  }
+                  else {
+                    for (int i = 0; i < memberData.length; i++) {
+                      print((memberData[i]["WingData"][0]["wingName"] +
+                          memberData[i]["FlatData"][0]["flatNo"])
+                          .toString().toUpperCase().replaceAll("-", ""));
+                      print(_text.toUpperCase().trim().replaceAll(" ", ""));
+                      if (memberData[i]["Name"].toString().split(" ")[0]
+                          .toUpperCase()
+                          .contains(_text.split(" ")[0].toUpperCase().trim()) ||
+                          memberData[i]["ContactNo"].toString().toUpperCase().
+                          contains(_text.toUpperCase().trim().replaceAll(" ",
+                              "")) ||
+                          memberData[i]["Vehicles"].toString().toUpperCase()
+                              .replaceAll("-", "")
+                              .contains(_text.toUpperCase().trim().replaceAll(
+                              " ", "")) ||
+                          (memberData[i]["WingData"][0]["wingName"] +
+                              memberData[i]["FlatData"][0]["flatNo"])
+                              .toString().toUpperCase().replaceAll("-", "")
+                              .contains(_text.toUpperCase().trim().replaceAll(
+                              " ", ""))
+                      ) {
+                        print("found true");
+                        isDirectoryScreen = true;
+                        setState(() {
+                          _isListening = false;
+                        });
+                      }
+                    }
+                    if (isDirectoryScreen) {
+                      speak("Searching for" + _text);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DirecotryScreen(
+                                  searchMemberName: _text.toUpperCase().trim()
+                              ),
+                        ),
+                      );
+                    }
+                    else {
+                      setState(() {
+                        _isListening = false;
+                      });
+                      speak("Sorry Could Not Search That");
+                    }
+                  }
+                }
+              }
             }
           }),
         );
@@ -318,10 +511,50 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
+  List memberData= [];
+  _getDirectoryListing(String SocietyId) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {
+          "societyId" : SocietyId
+        };
+        // setState(() {
+        //   isLoading = true;
+        // });
+        Services.responseHandler(apiName: "admin/directoryListing",body: data).then((data) async {
+          memberData.clear();
+          if (data.Data != null && data.Data.length > 0) {
+            setState(() {
+              memberData = data.Data;
+              // for(int i=0;i<data.Data.length;i++){
+              //   if(data.Data[i]["society"]["wingId"] == selectedWing){
+              //     memberData.add(data.Data[i]);
+              //   }
+              // }
+              // isLoading = false;
+            });
+            print("memberData");
+            print(memberData);
+          } else {
+            // setState(() {
+            //   isLoading = false;
+            // });
+          }
+        }, onError: (e) {
+          showHHMsg("Something Went Wrong Please Try Again","");
+        });
+      }
+    } on SocketException catch (_) {
+      showHHMsg("No Internet Connection.","");
+    }
+  }
+
   @override
   Future<void> initState() {
     super.initState();
     _speech = stt.SpeechToText();
+    controller.init();
     getAdvertisementData();
     AppLifecycleState state;
     didChangeAppLifecycleState(state);
@@ -332,35 +565,54 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     permissionValidator.camera();
     _getLocaldata();
     print("initstate executed");
-    // setNotification(context);
-    // getApkVersion();
     try {
       versionCheck(context);
     } catch (e) {
       print(e);
     }
-    //_getIsReviewed();
-    //_showDialog();
-
-    /*if (ReviewList.length > 0) {
-      return _showDialog();
-    }*/
     getSocietyDetails();
-    // initPlayer();
-    // getAdvertisementData(); //Tell monil to give Advertisement service - 1 number
-    // getAds();
-    // initSpeechRecognizer();
-    // if (Platform.isIOS) {
-    //   iosSubscription =
-    //       _firebaseMessaging.onIosSettingsRegistered.listen((data) {
-    //     print("FFFFFFFF" + data.toString());
-    //     saveDeviceToken();
-    //   });
-    //   _firebaseMessaging
-    //       .requestNotificationPermissions(IosNotificationSettings());
-    // } else {
-    //   saveDeviceToken();
-    // }
+    getVendorCategory();
+  }
+
+
+
+  List vendorsDataList = [];
+  getVendorCategory() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var body = {};
+        setState(() {
+          isLoading = true;
+        });
+        Services.responseHandler(
+            apiName: "admin/getAllVendorCategory", body: body)
+            .then((data) async {
+          if (data.Data != null && data.Data.length > 0) {
+            setState(() {
+              isLoading = false;
+              vendorsDataList = data.Data;
+            });
+          } else {
+            setState(() {
+              isLoading = false;
+            });
+          }
+        }, onError: (e) {
+          setState(() {
+            isLoading = false;
+          });
+          Fluttertoast.showToast(
+              msg: "Something Went Wrong", toastLength: Toast.LENGTH_LONG);
+        });
+      }
+    } on SocketException catch (_) {
+      setState(() {
+        isLoading = false;
+      });
+      Fluttertoast.showToast(
+          msg: "No Internet Access", toastLength: Toast.LENGTH_LONG);
+    }
   }
 
   setForegroundValue() async {
@@ -745,6 +997,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             .then((data) async {
           print("data");
           print(data);
+          _getDirectoryListing(SocietyId);
         }, onError: (e) {
           showMsg("Something Went Wrong.\nPlease Try Again");
           setState(() {
@@ -1153,7 +1406,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
     print("uniqueid");
     print(identifier);
-    getMemberRole(memberId, SocietyId);
   }
 
   _logoutFunction() async {
@@ -1205,8 +1457,38 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       Address = prefs.getString(constant.Session.Address);
       ResidenceType = prefs.getString(constant.Session.ResidenceType);
       mapLink = prefs.getString(constant.Session.mapLink);
+      // _BirthDate = DateTime.parse(prefs.getString(constant.Session.DOB));
     });
+    getSocietyVendors(SocietyId);
+    getMemberRole(memberId, SocietyId);
     _handleSendNotification();
+  }
+
+  List societyVendorDetails = [];
+  getSocietyVendors(String id) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {
+          "societyId": id,
+        };
+        Services.responseHandler(apiName: "member/getVendors", body: data).then(
+                (data) async {
+              print("data");
+              print(data.Data);
+              if (data.Data != null && data.Data.length > 0) {
+                setState(() {
+                  societyVendorDetails = data.Data;
+                });
+              } else {
+              }
+            }, onError: (e) {
+          showMsg("Something Went Wrong.\nPlease Try Again");
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
   }
 
   DateTime currentBackPressTime;
@@ -1436,20 +1718,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             IconButton(
               iconSize: 30,
               icon: Image.asset(
-                'images/bloodplasma.png',
+                'images/reminder.png',
                 fit: BoxFit.fill,
               ),
               onPressed: () {
-                // Navigator.pushNamed(context, '/BloodPlasma');
-                Fluttertoast.showToast(
-                    msg: "Coming Soon!!!",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    backgroundColor: Colors.red,
-                    textColor: Colors.white,
-                    fontSize: 16.0);
+                Navigator.pushNamed(context, '/Reminders');
+                // Fluttertoast.showToast(
+                //     msg: "Coming Soon!!!",
+                //     toastLength: Toast.LENGTH_SHORT,
+                //     gravity: ToastGravity.BOTTOM,
+                //     backgroundColor: Colors.red,
+                //     textColor: Colors.white,
+                //     fontSize: 16.0);
               },
             ),
+
           ],
           bottom: PreferredSize(
               child: GestureDetector(
@@ -2022,6 +2305,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               });
                             }).toList(),
                           ),
+                          Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Align(alignment: Alignment.bottomRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SOSpage(),
+                                    ),
+                                  );
+                                },
+                                child: Image.asset(
+                                  "images/SOS.png",
+                                  width: 60,
+                                  height: 60,
+                                ),
+                              ),
+                            ),
+                          ),
                           Row(
                             mainAxisAlignment:
                             MainAxisAlignment.center,
@@ -2097,17 +2400,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             )
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => SOSpage()));
-          },
-          child: Container(
-            height: 60,
-            width: 60,
-            child: Image.asset(
-              "images/SOS.png",
-              fit: BoxFit.fill,
+        floatingActionButton: SizedBox(
+          child: AvatarGlow(
+            animate: _isListening,
+            glowColor: Theme.of(context).primaryColor,
+            endRadius: 25.0,
+            duration: const Duration(milliseconds: 2000),
+            repeatPauseDuration: const Duration(milliseconds: 100),
+            repeat: true,
+            child: FloatingActionButton(
+              onPressed: _listen,
+              child: Icon(
+                  _isListening ? Icons.mic : Icons.mic_none,
+              ),
             ),
           ),
         ),

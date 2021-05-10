@@ -1124,10 +1124,19 @@ class _AddStaffState extends State<AddStaff> {
               minWidth: MediaQuery.of(context).size.width - 20,
               onPressed: !buttonPressed
                   ? () {
-                      setState(() {
-                        buttonPressed = true;
-                      });
-                      _SaveStaff();
+                if(staff==''||txtName.text==''||txtContactNo.text==''||Gender==''||selectedWing==''){
+                  Fluttertoast.showToast(
+                      msg: "Please Fill All Mandatory Details",
+                      backgroundColor: Colors.red,
+                      gravity: ToastGravity.TOP,
+                      textColor: Colors.white);
+                }
+                else{
+                  setState(() {
+                    buttonPressed = true;
+                  });
+                  _SaveStaff();
+                }
                     }
                   : null,
               child: Text(

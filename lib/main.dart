@@ -23,7 +23,7 @@ import 'package:smart_society_new/Admin_App/Screens/Complaints.dart';
 import 'package:smart_society_new/Admin_App/Screens/Dashboard.dart';
 import 'package:smart_society_new/Admin_App/Screens/DirectoryMember.dart';
 import 'package:smart_society_new/Admin_App/Screens/Document.dart';
-import 'package:smart_society_new/Admin_App/Screens/SocietyVendorsAdminScreen.dart';
+import 'package:smart_society_new/Admin_App/Screens/VendorsAdminScreen.dart';
 import 'package:smart_society_new/Admin_App/Screens/EditDocument.dart';
 import 'package:smart_society_new/Admin_App/Screens/EventsAdmin.dart';
 import 'package:smart_society_new/Admin_App/Screens/Expense.dart';
@@ -66,6 +66,9 @@ import 'package:smart_society_new/Member_App/component/NotificationPopup.dart';
 import 'package:smart_society_new/Member_App/screens/AddDailyResource.dart';
 import 'package:smart_society_new/Member_App/screens/AddFamilyMember.dart';
 import 'package:smart_society_new/Member_App/screens/AddGuest.dart';
+import 'package:smart_society_new/Member_App/screens/OffersScreen.dart';
+import 'package:smart_society_new/Member_App/screens/OffersListingScreen.dart';
+import 'package:smart_society_new/Member_App/screens/ViewOfferScreen.dart';
 import 'package:smart_society_new/Member_App/screens/AdvertisementCreate.dart';
 import 'package:smart_society_new/Member_App/screens/AdvertisementManage.dart';
 import 'package:smart_society_new/Member_App/screens/Amenities.dart';
@@ -1119,15 +1122,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
           '/Polling': (context) => PollingScreen(),
           '/ViewGalleryPhotos': (context) => ViewGalleryPhotos(),
           '/Maintainence': (context) => Maintainance(),
+          '/OffersScreen': (context) => OffersScreen(),
+          '/OffersListingScreen': (context) => OffersListingScreen(),
+          '/ViewOfferScreen': (context) => ViewOfferScreen(),
           '/GlobalSearch': (context) => GlobalSearchMembers(),
           '/AdvertisementCreate': (context) => AdvertisementCreate(),
           '/NoticeBoard': (context) => NoticeBoard(),
-          '/Vendors': (context) => ServicesScreen(),
+          '/Vendors': (context) => ServicesScreen(initialIndex: 0,),
           '/MyServiceRequests': (context) => MyServiceRequests(),
           '/AdvertisementList': (context) => AdvertisementList(),
           '/MyWishList': (context) => MyWishList(),
           '/IntroScreen': (context) => IntroScreen(),
-          '/SocietyVendorsAdminScreen': (context) => SocietyVendorsAdminScreen(),
+          '/VendorsAdminScreen': (context) => VendorsAdminScreen(),
           '/VisitorSuccess': (context) => VisitorSuccess(),
           '/CreateSociety': (context) => CreateSociety(),
           '/SetupWings': (context) => SetupWings(),

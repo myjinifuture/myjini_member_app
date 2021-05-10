@@ -1557,7 +1557,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               print(selectedFlat);
                               print(selectedWing);
                               if(txtname.text == "" ||
-                                  txtmobile.text == "" ||
+                                  txtmobile.text == "" ||Gender==''||
                                   selectedFlat == null || selectedWing == null){
                                 Fluttertoast.showToast(
                                     msg: "Fields Can't be empty",

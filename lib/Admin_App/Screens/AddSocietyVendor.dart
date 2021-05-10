@@ -7,11 +7,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 
 class AddSocietyVendor extends StatefulWidget {
   Function onAddSocietyVendor;
+  Function onAddOthersVendor;
+  String vendorBelongsTo;
 
-  AddSocietyVendor({this.onAddSocietyVendor});
+  AddSocietyVendor({this.onAddSocietyVendor,this.vendorBelongsTo,this.onAddOthersVendor});
 
   @override
   _AddSocietyVendorState createState() => _AddSocietyVendorState();
@@ -27,6 +30,10 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
   String selectedCountryCode;
   String selectedCity;
   String vendorCategoryId;
+  String societyId;
+  String memberId;
+  String _path;
+  String _fileName;
 
   bool isLoading = false;
   bool stateLoading = false;
@@ -56,9 +63,6 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
     getState();
     _getLocaldata();
   }
-
-  String societyId;
-  String memberId;
 
   _getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -115,6 +119,26 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
         setState(() {
           isLoading = true;
         });
+        String filename = "";
+        String filePath = "";
+        File compressedFile;
+        if (_image != null) {
+          ImageProperties properties =
+          await FlutterNativeImage.getImageProperties(_image.path);
+
+          compressedFile = await FlutterNativeImage.compressImage(
+            _image.path,
+            quality: 80,
+            targetWidth: 600,
+            targetHeight: (properties.height * 600 / properties.width).round(),
+          );
+
+          filename = _image.path.split('/').last;
+          filePath = compressedFile.path;
+        } else if (_path != null && _path != '') {
+          filePath = _path;
+          filename = _fileName;
+        }
         print('hiiiiiii');
         FormData data = FormData.fromMap({
           "vendorCategoryId": vendorCategoryId,
@@ -130,8 +154,11 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
           "City": selectedCity.toString(),
           "emailId": emailController.text,
           "societyId": societyId,
-          "vendorBelongsTo": "society",
-          "vendorImage": _image == null ? "" : _image,
+          "vendorBelongsTo": widget.vendorBelongsTo,
+          "vendorImage": (filePath != null && filePath != '')
+              ? await MultipartFile.fromFile(filePath,
+              filename: filename.toString())
+              : null,
         });
         print({
           "vendorCategoryId": vendorCategoryId,
@@ -147,8 +174,11 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
           "City": selectedCity.toString(),
           "emailId": emailController.text,
           "societyId": societyId,
-          "vendorBelongsTo": "society",
-          "vendorImage": _image == null ? "" : _image,
+          "vendorBelongsTo": widget.vendorBelongsTo,
+          "vendorImage": (filePath != null && filePath != '')
+              ? await MultipartFile.fromFile(filePath,
+              filename: filename.toString())
+              : null,
         });
         Services.responseHandler(apiName: "member/addVendor", body: data).then(
             (data) async {
@@ -162,7 +192,7 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                   textColor: Colors.white);
             });
             Navigator.pop(context);
-            widget.onAddSocietyVendor();
+            widget.vendorBelongsTo=='society'?widget.onAddSocietyVendor():widget.onAddOthersVendor();
           } else {
             setState(() {
               isLoading = false;
@@ -713,7 +743,7 @@ class _AddSocietyVendorState extends State<AddSocietyVendor> {
                                   textColor: Colors.white);
                             }
                             else{
-                              print('Add vendor cicked');
+                              // print('Add vendor cicked');
                               addVendor();
                             }
                           },

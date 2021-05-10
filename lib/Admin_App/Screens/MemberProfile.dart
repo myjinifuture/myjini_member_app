@@ -129,14 +129,14 @@ class _MemberProfileState extends State<MemberProfile> {
     }
   }
 
-  _getVehicle() async {
+  _getVehicle(String id) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         setState(() {
           isLoading = true;
         });
-        var data = {"memberId": MemberId};
+        var data = {"memberId": id};
         Services.responseHandler(
                 apiName: "member/getMemberVehicles", body: data)
             .then((data) async {
@@ -1138,7 +1138,7 @@ class _MemberProfileState extends State<MemberProfile> {
             Flexible(
               child: GestureDetector(
                 onTap: () {
-                  _getVehicle();
+                  _getVehicle(widget.memberData["_id"]);
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width,

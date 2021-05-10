@@ -283,23 +283,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   }
                   else {
                     // await mallLocalData();
-                    // Navigator.pushAndRemoveUntil(context,
-                    //     SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (
-                              context) =>
-                              OTP(
-                                mobileNo: _MobileNumber
-                                    .text
-                                    .toString(),
-                                onSuccess: () async {
-                                  await localdata();
-                                  Navigator.pushAndRemoveUntil(context,
-                                      SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);                                },
-                              ),
-                        ));
+                    await localdata();
+                    Navigator.pushAndRemoveUntil(context,
+                        SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (
+                    //           context) =>
+                    //           OTP(
+                    //             mobileNo: _MobileNumber
+                    //                 .text
+                    //                 .toString(),
+                    //             onSuccess: () async {
+                    //               await localdata();
+                    //               Navigator.pushAndRemoveUntil(context,
+                    //                   SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);                                },
+                    //           ),
+                    //     ));
 
                   }
                   // _MallLoginApi();

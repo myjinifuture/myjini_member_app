@@ -15,6 +15,11 @@ import 'package:smart_society_new/Member_App/component/MyServiceRequestComponent
 import 'package:easy_gradient_text/easy_gradient_text.dart';
 
 class ServicesScreen extends StatefulWidget {
+  var search;
+  int initialIndex;
+
+  ServicesScreen({this.search,this.initialIndex});
+
   @override
   _ServicesScreenState createState() => _ServicesScreenState();
 }
@@ -28,13 +33,14 @@ class _ServicesScreenState extends State<ServicesScreen>
   ProgressDialog pr;
   List societyVendorDetails = [];
   bool societyVendorsLoading = false;
+  int index = 0;
 
   @override
   void initState() {
     getSocietyVendors();
     _ServiceData();
     _getMyLeadsList();
-    _tabController = new TabController(vsync: this, length: 2);
+    _tabController = new TabController(vsync: this, length: 2,initialIndex: widget.initialIndex);
   }
 
   _getMyLeadsList() async {
@@ -237,8 +243,21 @@ class _ServicesScreenState extends State<ServicesScreen>
               print(data.Data);
               if (data.Data != null && data.Data.length > 0) {
                 setState(() {
-                  societyVendorsLoading = false;
-                  societyVendorDetails = data.Data;
+                  if(widget.search!=null){
+                    societyVendorsLoading = false;
+                    for(int i=0;i<data.Data.length;i++){
+                      data.Data[i]["ServiceNameFull"] = data.Data[i]["ServiceName"] + "ian";
+                      if(data.Data[i]["ServiceName"].toString().toUpperCase().
+                      contains(widget.search.toUpperCase())){
+                        societyVendorDetails.add(data.Data[i]);
+                      }
+                    }
+                  }
+                  else{
+                    societyVendorsLoading = false;
+                    societyVendorDetails = data.Data;
+                  }
+
                 });
                 // print("societyVendorDetails");
                 // print(societyVendorDetails);

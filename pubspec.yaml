@@ -32,7 +32,7 @@ dependencies:
   firebase_analytics: any
   twilio_flutter: any
   speech_recognition: ^0.3.0+1
-  speech_to_text: ^3.1.0
+  speech_to_text: any
   carousel_slider: ^1.4.1
   flutter_otp: ^0.3.2
   flutter_downloader: any

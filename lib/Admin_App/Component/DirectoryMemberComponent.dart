@@ -16,12 +16,12 @@ import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 
 class DirectoryMemberComponent extends StatefulWidget {
-  var MemberData;
+  var MemberData,search,wingName;
   Function onAdminUpdate;
 
   int index;
 
-  DirectoryMemberComponent({this.MemberData, this.index, this.onAdminUpdate});
+  DirectoryMemberComponent({this.MemberData, this.index, this.onAdminUpdate,this.search,this.wingName});
 
   @override
   _DirectoryMemberComponentState createState() =>
@@ -230,8 +230,9 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                                       color: Colors.grey[700])),
                               Row(
                                 children: <Widget>[
-                                  // Text("${widget.MemberData["WingData"][0]["wingName"]}".toUpperCase()),
-                                  // Text(" - "),
+                                  widget.search == null ? Container():
+                                  Text("${widget.wingName}".toUpperCase()),
+                                  widget.search == null ? Container():Text(" - "),
                                   Text("${widget.MemberData["FlatData"][0]["flatNo"]}".toUpperCase()),
                                 ],
                               ),
