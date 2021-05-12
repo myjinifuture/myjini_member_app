@@ -46,10 +46,10 @@ class _ContactUsState extends State<ContactUs> {
             Divider(),
             GestureDetector(
               onTap: () {
-                launch('tel:9023803870');
+                launch('tel:8753005900');
               },
               child: ListTile(
-                title: Text("9023803870"),
+                title: Text("8753005900"),
                 subtitle: Text("Mobile Number"),
                 leading: Icon(
                   Icons.call,

@@ -357,7 +357,7 @@ class _NotificationPopupState extends State<NotificationPopup> {
                       child: Row(
                         children: [
                           Text(
-                              "${widget.data["MemberWing"]} - ${widget.data["data"]["MemberFlat"]}"),
+                              "${widget.data["MemberWing"]} - ${widget.data["MemberFlat"]}"),
                         ],
                       ),
                     ),

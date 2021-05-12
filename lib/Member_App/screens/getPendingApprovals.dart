@@ -149,99 +149,94 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () {
-          Navigator.pushNamedAndRemoveUntil(
-              context, '/HomeScreen', (route) => false);        },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Pending Approvals"),
-          // leading: IconButton(
-          //     icon: Icon(Icons.arrow_back),
-          //     onPressed: () {
-          //       Navigator.pushReplacementNamed(context, "/HomeScreen");
-          //     }),
-        ),
-        body: isLoading ? Center(
-          child: CircularProgressIndicator(),
-        ) : ListView.builder(
-            itemCount: pendingApprovals.length,
-            itemBuilder: (BuildContext ctxt, int index) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10, top: 5),
-                child: new Container(
-                  color: Colors.white,
-                  child: Column(
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Padding(
-                                    padding:
-                                    const EdgeInsets.only(left: 8.0, bottom: 6.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text("${pendingApprovals[index]["Name"]}",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.grey[700])),
-                                        Row(
-                                          children: <Widget>[
-                                            Text("Flat No:"),
-                                            Text("${pendingApprovals[index]["FlatData"][0]["flatNo"]}"),
-                                            SizedBox(
-                                              width: 40,
-                                            ),
-                                            RaisedButton(
-                                              color: Colors.white,
-                                              child:  Text('Approve',
-                                                style: TextStyle(
-                                                    color: Colors.green,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                ),
-                                              ),
-                                              onPressed: () => _memberApproval(true,pendingApprovals[index]["_id"]),
-                                            ),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            RaisedButton(
-                                              color: Colors.white,
-                                              child:  Text('Reject',
-                                                style: TextStyle(
-                                                    color: Colors.red,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15
-                                                ),
-                                              ),
-                                              onPressed: () => _memberApproval(false,pendingApprovals[index]["_id"]),
-                                            ),
-                                          ],
-                                        ),
-                                        Text("${pendingApprovals[index]["ContactNo"]}",
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Pending Approvals"),
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pushReplacementNamed(context, "/HomeScreen");
+        //     }),
+      ),
+      body: isLoading ? Center(
+        child: CircularProgressIndicator(),
+      ) : ListView.builder(
+          itemCount: pendingApprovals.length,
+          itemBuilder: (BuildContext ctxt, int index) {
+            return Padding(
+              padding: const EdgeInsets.only(left: 10.0, right: 10, top: 5),
+              child: new Container(
+                color: Colors.white,
+                child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Padding(
+                                  padding:
+                                  const EdgeInsets.only(left: 8.0, bottom: 6.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text("${pendingApprovals[index]["Name"]}",
                                           style: TextStyle(
                                               fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.purple
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.grey[700])),
+                                      Row(
+                                        children: <Widget>[
+                                          Text("Flat No:"),
+                                          Text("${pendingApprovals[index]["FlatData"][0]["flatNo"]}"),
+                                          SizedBox(
+                                            width: 40,
                                           ),
-                                        )
+                                          RaisedButton(
+                                            color: Colors.white,
+                                            child:  Text('Approve',
+                                              style: TextStyle(
+                                                  color: Colors.green,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15,
+                                              ),
+                                            ),
+                                            onPressed: () => _memberApproval(true,pendingApprovals[index]["_id"]),
+                                          ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          RaisedButton(
+                                            color: Colors.white,
+                                            child:  Text('Reject',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15
+                                              ),
+                                            ),
+                                            onPressed: () => _memberApproval(false,pendingApprovals[index]["_id"]),
+                                          ),
+                                        ],
+                                      ),
+                                      Text("${pendingApprovals[index]["ContactNo"]}",
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.purple
+                                        ),
+                                      )
 
-                                      ],
-                                    ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
-                      ),
-                ),
-              );
-            }),
+                              ),
+                            ],
+                          ),
+                        ],
+                    ),
+              ),
+            );
+          }),
 
-      ),
     );
   }
 }

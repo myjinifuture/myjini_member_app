@@ -27,7 +27,7 @@ class ServicesScreen extends StatefulWidget {
 class _ServicesScreenState extends State<ServicesScreen>
     with TickerProviderStateMixin {
   bool isLoading = false;
-  List ServiceData = new List();
+  List ServiceData = [];
   TabController _tabController;
   List NewList = [];
   ProgressDialog pr;
@@ -357,7 +357,6 @@ class _ServicesScreenState extends State<ServicesScreen>
                   //         ))
                   //   ],
                   // ),
-
                   societyVendorsLoading == false
                       ? societyVendorDetails.length > 0
                       ? Column(
@@ -741,14 +740,14 @@ class _ServicesScreenState extends State<ServicesScreen>
                                   ))
                                   : Center(
                                   child: Text(
-                                    "No Data Founddddd",
+                                    "No Data Found",
                                     style: TextStyle(
                                         color: Colors.grey,
                                         fontWeight: FontWeight.w500,
                                         fontSize: 18),
                                   ))),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ],

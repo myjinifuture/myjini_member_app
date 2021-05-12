@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pin_input_text_field/pin_input_text_field.dart';
@@ -28,7 +28,7 @@ class _OTPState extends State<OTP> {
   String fcmToken = "";
   String error;
 
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   bool isCodeSent = false;
   String _verificationId;
@@ -41,73 +41,73 @@ class _OTPState extends State<OTP> {
   }
 
   void _onVerifyCode() async {
-    setState(() {
-      isCodeSent = true;
-    });
-    final PhoneVerificationCompleted verificationCompleted =
-        (AuthCredential phoneAuthCredential) {
-      _firebaseAuth
-          .signInWithCredential(phoneAuthCredential)
-          .then((UserCredential value) {
-        if (value.user != null) {
-          widget.onSuccess();
-        } else {
-          Fluttertoast.showToast(msg: "Error validating OTP, try again");
-        }
-      }).catchError((error) {
-        Fluttertoast.showToast(msg: "Try again in sometime");
-      });
-    };
-    final PhoneVerificationFailed verificationFailed =
-        (FirebaseAuthException authException) {
-      Fluttertoast.showToast(msg: authException.message);
-      setState(() {
-        isCodeSent = false;
-        error = authException.message;
-      });
-    };
-
-    final PhoneCodeSent codeSent =
-        (String verificationId, [int forceResendingToken]) async {
-      _verificationId = verificationId;
-      setState(() {
-        _verificationId = verificationId;
-      });
-    };
-    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-        (String verificationId) {
-      _verificationId = verificationId;
-      setState(() {
-        _verificationId = verificationId;
-      });
-    };
-
-    // TODO: Change country code
-
-    await _firebaseAuth.verifyPhoneNumber(
-        phoneNumber: "+91${widget.mobileNo}",
-        timeout: const Duration(seconds: 60),
-        verificationCompleted: verificationCompleted,
-        verificationFailed: verificationFailed,
-        codeSent: codeSent,
-        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
-  }
-
-  void _onFormSubmitted() async {
-    AuthCredential _authCredential = PhoneAuthProvider.credential(
-        verificationId: _verificationId, smsCode: controller.text);
-
-    _firebaseAuth
-        .signInWithCredential(_authCredential)
-        .then((UserCredential value) {
-      if (value.user != null) {
-        widget.onSuccess();
-      } else {
-        Fluttertoast.showToast(msg: "Error validating OTP, try again");
-      }
-    }).catchError((error) {
-      Fluttertoast.showToast(msg: "Something went wrong");
-    });
+  //   setState(() {
+  //     isCodeSent = true;
+  //   });
+  //   final PhoneVerificationCompleted verificationCompleted =
+  //       (AuthCredential phoneAuthCredential) {
+  //     _firebaseAuth
+  //         .signInWithCredential(phoneAuthCredential)
+  //         .then((UserCredential value) {
+  //       if (value.user != null) {
+  //         widget.onSuccess();
+  //       } else {
+  //         Fluttertoast.showToast(msg: "Error validating OTP, try again");
+  //       }
+  //     }).catchError((error) {
+  //       Fluttertoast.showToast(msg: "Try again in sometime");
+  //     });
+  //   };
+  //   final PhoneVerificationFailed verificationFailed =
+  //       (FirebaseAuthException authException) {
+  //     Fluttertoast.showToast(msg: authException.message);
+  //     setState(() {
+  //       isCodeSent = false;
+  //       error = authException.message;
+  //     });
+  //   };
+  //
+  //   final PhoneCodeSent codeSent =
+  //       (String verificationId, [int forceResendingToken]) async {
+  //     _verificationId = verificationId;
+  //     setState(() {
+  //       _verificationId = verificationId;
+  //     });
+  //   };
+  //   final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
+  //       (String verificationId) {
+  //     _verificationId = verificationId;
+  //     setState(() {
+  //       _verificationId = verificationId;
+  //     });
+  //   };
+  //
+  //   // TODO: Change country code
+  //
+  //   await _firebaseAuth.verifyPhoneNumber(
+  //       phoneNumber: "+91${widget.mobileNo}",
+  //       timeout: const Duration(seconds: 60),
+  //       verificationCompleted: verificationCompleted,
+  //       verificationFailed: verificationFailed,
+  //       codeSent: codeSent,
+  //       codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
+  // }
+  //
+  // void _onFormSubmitted() async {
+  //   AuthCredential _authCredential = PhoneAuthProvider.credential(
+  //       verificationId: _verificationId, smsCode: controller.text);
+  //
+  //   _firebaseAuth
+  //       .signInWithCredential(_authCredential)
+  //       .then((UserCredential value) {
+  //     if (value.user != null) {
+  //       widget.onSuccess();
+  //     } else {
+  //       Fluttertoast.showToast(msg: "Error validating OTP, try again");
+  //     }
+  //   }).catchError((error) {
+  //     Fluttertoast.showToast(msg: "Something went wrong");
+  //   });
   }
 
   showMsg(String msg) {
@@ -170,13 +170,13 @@ class _OTPState extends State<OTP> {
                 autoFocus: true,
                 onChanged: (pin){
                   if(pin.length == 6){
-                    _onFormSubmitted();
+                    // _onFormSubmitted();
                   }
                 },
                 textInputAction: TextInputAction.done,
                 onSubmit: (pin) {
                   if (pin.length == 6) {
-                    _onFormSubmitted();
+                    // _onFormSubmitted();
                   } else {
                     Fluttertoast.showToast(msg: "Invalid OTP");
                   }

@@ -126,7 +126,7 @@ class _RulesAndRegulationsState extends State<RulesAndRegulations> {
                     itemBuilder: (BuildContext context, int index) {
                       return RulesComponent(
                         index: index,
-                        rulesData: _rulesData[index],
+                        rulesData: _rulesData[_rulesData.length-1-index],
                         // onChange: (type) {
                         //   if (type == "false")
                         //     setState(() {

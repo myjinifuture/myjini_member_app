@@ -7,6 +7,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smart_society_new/Member_App/screens/BannerScreen.dart';
 import '../screens/AdDetailPage.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
+import 'package:smart_society_new/Admin_App/Common/Constants.dart' as cnst;
+
 
 class OffersScreen extends StatefulWidget {
   const OffersScreen({Key key}) : super(key: key);
@@ -17,10 +19,12 @@ class OffersScreen extends StatefulWidget {
 
 class _OffersScreenState extends State<OffersScreen> {
   List _advertisementData = [];
+  List dealsData = [];
   List banners = [];
 
   bool isLoading = true;
   int _current = 0;
+
   List<T> map<T>(List list, Function handler) {
     List<T> result = [];
     for (var i = 0; i < list.length; i++) {
@@ -32,6 +36,7 @@ class _OffersScreenState extends State<OffersScreen> {
   @override
   void initState() {
     getAdvertisementData();
+    getVendorDeals();
     getBanner();
   }
 
@@ -75,6 +80,42 @@ class _OffersScreenState extends State<OffersScreen> {
     }
   }
 
+  getVendorDeals() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {};
+
+        setState(() {
+          isLoading = true;
+        });
+        Services.responseHandler(
+                apiName: "adsVendor/getVendorDeals", body: data)
+            .then((data) async {
+          if (data.Data != null && data.Data.length > 0) {
+            setState(() {
+              dealsData = data.Data;
+              isLoading = false;
+            });
+            print("deals Data ::::::");
+            print(dealsData);
+          } else {
+            setState(() {
+              isLoading = false;
+            });
+          }
+        }, onError: (e) {
+          showMsg("Something Went Wrong.\nPlease Try Again");
+          setState(() {
+            isLoading = false;
+          });
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
+  }
+
   getBanner() async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -83,19 +124,19 @@ class _OffersScreenState extends State<OffersScreen> {
           isLoading = true;
         });
         Services.responseHandler(apiName: "admin/getBanner", body: {}).then(
-                (data) async {
-              if (data.Data != null && data.Data.length > 0) {
-                setState(() {
-                  banners = data.Data;
-                  isLoading = false;
-                });
-              } else {
-                setState(() {
-                  isLoading = false;
-                  banners = data.Data;
-                });
-              }
-            }, onError: (e) {
+            (data) async {
+          if (data.Data != null && data.Data.length > 0) {
+            setState(() {
+              banners = data.Data;
+              isLoading = false;
+            });
+          } else {
+            setState(() {
+              isLoading = false;
+              banners = data.Data;
+            });
+          }
+        }, onError: (e) {
           showMsg("Something Went Wrong.\nPlease Try Again");
           setState(() {
             isLoading = false;
@@ -118,7 +159,8 @@ class _OffersScreenState extends State<OffersScreen> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -138,212 +180,220 @@ class _OffersScreenState extends State<OffersScreen> {
         children: [
           _advertisementData.length > 0
               ? GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BannerScreen(
-                    bannerData: _advertisementData,
-                  ),
-                ),
-              );
-            },
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: <Widget>[
-                _advertisementData.length == 0
-                    ? CircularProgressIndicator()
-                    : CarouselSlider(
-                  height: MediaQuery.of(context)
-                      .size
-                      .height *
-                      0.218,
-                  viewportFraction: 1.0,
-                  autoPlayAnimationDuration:
-                  Duration(milliseconds: 1000),
-                  reverse: false,
-                  autoPlayCurve:
-                  Curves.fastOutSlowIn,
-                  autoPlay: true,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _current = index;
-                    });
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BannerScreen(
+                          bannerData: _advertisementData,
+                        ),
+                      ),
+                    );
                   },
-                  items:
-                  _advertisementData.map((i) {
-                    return Builder(builder:
-                        (BuildContext context) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AdDetailPage(
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: <Widget>[
+                      _advertisementData.length == 0
+                          ? CircularProgressIndicator()
+                          : CarouselSlider(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.218,
+                              viewportFraction: 1.0,
+                              autoPlayAnimationDuration:
+                                  Duration(milliseconds: 1000),
+                              reverse: false,
+                              autoPlayCurve: Curves.fastOutSlowIn,
+                              autoPlay: true,
+                              onPageChanged: (index) {
+                                setState(() {
+                                  _current = index;
+                                });
+                              },
+                              items: _advertisementData.map((i) {
+                                return Builder(builder: (BuildContext context) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => AdDetailPage(
+                                            data: i,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        child: Image.network(
+                                            Image_Url + i["Image"][0],
+                                            fit: BoxFit.fill)),
+                                  );
+                                });
+                              }).toList(),
+                            ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: map<Widget>(
+                          _advertisementData,
+                          (index, url) {
+                            return Container(
+                              width: 7.0,
+                              height: 7.0,
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 2.0),
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                  color: _current == index
+                                      ? Colors.white
+                                      : Colors.grey),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : banners.length == 0
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : CarouselSlider(
+                      height: 180,
+                      viewportFraction: 1.0,
+                      autoPlayAnimationDuration: Duration(milliseconds: 1000),
+                      reverse: false,
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      autoPlay: true,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _current = index;
+                        });
+                      },
+                      items: banners.map((i) {
+                        return Builder(builder: (BuildContext context) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AdDetailPage(
                                     data: i,
                                   ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                            width: MediaQuery.of(
-                                context)
-                                .size
-                                .width,
-                            child: Image.network(
-                                Image_Url +
-                                    i["Image"][0],
-                                fit: BoxFit.fill)),
-                      );
-                    });
-                  }).toList(),
-                ),
-
-                Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.center,
-                  children: map<Widget>(
-                    _advertisementData,
-                        (index, url) {
-                      return Container(
-                        width: 7.0,
-                        height: 7.0,
-                        margin: EdgeInsets.symmetric(
-                            vertical: 10.0,
-                            horizontal: 2.0),
-                        decoration: BoxDecoration(
-                            borderRadius:
-                            BorderRadius.all(
-                                Radius.circular(5)),
-                            color: _current == index
-                                ? Colors.white
-                                : Colors.grey),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          )
-              : banners.length == 0
-              ? Center(
-            child: CircularProgressIndicator(),
-          )
-              : CarouselSlider(
-            height: 180,
-            viewportFraction: 1.0,
-            autoPlayAnimationDuration:
-            Duration(milliseconds: 1000),
-            reverse: false,
-            autoPlayCurve: Curves.fastOutSlowIn,
-            autoPlay: true,
-            onPageChanged: (index) {
-              setState(() {
-                _current = index;
-              });
-            },
-            items: banners.map((i) {
-              return Builder(
-                  builder: (BuildContext context) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                AdDetailPage(
-                                  data: i,
                                 ),
-                          ),
-                        );
-                      },
-                      child: Container(
-                          width: MediaQuery.of(context)
-                              .size
-                              .width,
-                          child: Image.network(
-                              Image_Url + i["image"],
-                              fit: BoxFit.fill)),
-                    );
-                  });
-            }).toList(),
-          ),
-          AnimationLimiter(
-            child: GridView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                childAspectRatio: 1,
-              ),
-              itemCount: 8,
-              itemBuilder: (BuildContext context, int index) =>
-                  AnimationConfiguration.staggeredGrid(
-                position: index,
-                duration: const Duration(milliseconds: 375),
-                columnCount: 4,
-                child: SlideAnimation(
-                  child: ScaleAnimation(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => OffersListingScreen(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                              //  bottom: BorderSide(width: ,color: Colors.black54),
-                              top: BorderSide(width: 0.2, color: Colors.black)),
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              left: BorderSide(
-                                  width: 0.2, color: Colors.grey[600]),
-                            ),
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                    width: 0.2, color: Colors.grey[600]),
-                              ),
-                            ),
+                              );
+                            },
                             child: Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                      width: 0.2, color: Colors.grey[600]),
-                                ),
+                                width: MediaQuery.of(context).size.width,
+                                child: Image.network(Image_Url + i["image"],
+                                    fit: BoxFit.fill)),
+                          );
+                        });
+                      }).toList(),
+                    ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: AnimationLimiter(
+                child: GridView.builder(
+                  physics: BouncingScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    mainAxisSpacing: 3, crossAxisSpacing: 3,
+                    crossAxisCount: 3,
+                    // childAspectRatio: ,
+                  ),
+                  itemCount: _advertisementData.length,
+                  itemBuilder: (BuildContext context, int index) =>
+                      AnimationConfiguration.staggeredGrid(
+                    position: index,
+                    duration: const Duration(milliseconds: 375),
+                    columnCount: 4,
+                    child: SlideAnimation(
+                      child: ScaleAnimation(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OffersListingScreen(offersData:dealsData[index] ,),
                               ),
-                              child: Center(
+                            );
+                          },
+                          child: Stack(
+                            children: [
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: <Widget>[
-                                    Image.asset(
-                                      "images/deals.png",
-                                      width: 25,
-                                      height: 25,
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 15.0),
+                                      child: Image.asset(
+                                        "images/deals.png",
+                                        width: 45,
+                                        height: 45,
+                                      ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 5),
-                                      child: Text(
-                                        'Demo',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 11, color: Colors.black),
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              _advertisementData[index]["Title"]
+                                                  .toString()
+                                                  .toUpperCase(),
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
+                              isLoading == false
+                                  ? Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 10),
+                                          child: Container(
+                                            height: 30,
+                                            width: 30,
+                                            decoration: BoxDecoration(
+                                              color: cnst.appPrimaryMaterialColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                dealsData[index]["TotalDeals"]
+                                                    .toString(),
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  // fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : Container()
+                            ],
                           ),
                         ),
                       ),

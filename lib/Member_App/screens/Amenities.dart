@@ -184,14 +184,16 @@ class _AmenitiesState extends State<Amenities> {
                                     new Radius.circular(10.0)),
                               ),
                             ),
-                            Center(
+                            _aminitiesData[index]
+                            ["isPaid"] ==
+                                true?Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   '₹${_aminitiesData[index]["Amount"].toString()}',
                                 ),
                               ),
-                            ),
+                            ):Container(),
                             Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),

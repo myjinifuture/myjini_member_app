@@ -15,7 +15,7 @@ class MemberGuestList extends StatefulWidget {
 class _MemberGuestListState extends State<MemberGuestList> {
   bool isLoading = false;
   List _GuestList = [];
-  String Address,memberId,societyId;
+  String Address, memberId, societyId;
   String Type = 'Visitor';
   TextEditingController txtSearch = new TextEditingController();
   String name;
@@ -36,6 +36,7 @@ class _MemberGuestListState extends State<MemberGuestList> {
     name = prefs.getString(constant.Session.Name);
     _GetVisitorData();
   }
+
 //==============by rinki
   void launchwhatsapp({
     @required String phone,
@@ -63,11 +64,13 @@ class _MemberGuestListState extends State<MemberGuestList> {
         setState(() {
           isLoading = true;
         });
-        var data ={
+        var data = {
           "memberId": memberId,
           "societyId": societyId,
         };
-        Services.responseHandler(apiName: "member/getInvitedGuestList",body: data).then((data) async {
+        Services.responseHandler(
+                apiName: "member/getInvitedGuestList", body: data)
+            .then((data) async {
           setState(() {
             isLoading = false;
           });
@@ -103,7 +106,8 @@ class _MemberGuestListState extends State<MemberGuestList> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -116,161 +120,167 @@ class _MemberGuestListState extends State<MemberGuestList> {
     return Padding(
       padding: const EdgeInsets.only(right: 4.0, left: 4.0),
       child: Card(
-          elevation: 2,
-          child: Column(
-            children: <Widget>[
-              Container(
-                height: 1,
-                color: Colors.grey[200],
-                width: MediaQuery.of(context).size.width / 1.1,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        top: 10.0, left: 10.0, bottom: 10.0),
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        image: new DecorationImage(
-                            image: AssetImage("images/man.png"),
-                            fit: BoxFit.cover),
-                        borderRadius:
-                            BorderRadius.all(new Radius.circular(75.0)),
-                      ),
+        elevation: 2,
+        child: Column(
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    width: 55,
+                    height: 55,
+                    decoration: BoxDecoration(
+                      image: new DecorationImage(
+                          image: AssetImage("images/man.png"),
+                          fit: BoxFit.cover),
+                      borderRadius: BorderRadius.all(new Radius.circular(75.0)),
                     ),
                   ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                          child: Row(
-                            children: <Widget>[
-                              !isSearching ? Text("${_GuestList[index]["Name"]}",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color.fromRGBO(81, 92, 111, 1))):Text("${tempList[index]["Name"]}",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color.fromRGBO(81, 92, 111, 1))),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 1.0, top: 3.0),
-                              child: !isSearching ? Text("  ${_GuestList[index]["ContactNo"]}",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey[700])):Text("  ${tempList[index]["ContactNo"]}",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey[700])),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      !isSearching
+                          ? Padding(
+                              padding: const EdgeInsets.all(3.0),
+                              child: Text(
+                                "${_GuestList[index]["Name"]}",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color.fromRGBO(81, 92, 111, 1),
+                                ),
+                              ),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.all(3.0),
+                              child: Text(
+                                "${tempList[index]["Name"]}",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color.fromRGBO(81, 92, 111, 1),
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
-                        // Row(
-                        //   children: <Widget>[
-                        //     Padding(
-                        //       padding:
-                        //       const EdgeInsets.only(left: 1.0, top: 3.0),
-                        //       child: !isSearching ? Text("  ${_GuestList[index]["vehicleNo"]}",
-                        //           style: TextStyle(
-                        //               fontSize: 16,
-                        //               fontWeight: FontWeight.w500,
-                        //               color: Colors.grey[700])):Text("  ${tempList[index]["vehicleNo"]}",
-                        //           style: TextStyle(
-                        //               fontSize: 16,
-                        //               fontWeight: FontWeight.w500,
-                        //               color: Colors.grey[700])),
-                        //     ),
-                        //   ],
-                        // ),
-                      ],
+                      !isSearching
+                          ? Padding(
+                              padding: const EdgeInsets.only(left:3.0),
+                              child: Text(
+                                "${_GuestList[index]["ContactNo"]}",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.only(left:3.0),
+                              child: Text(
+                                "${tempList[index]["ContactNo"]}",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                            ),
+                      // Row(
+                      //   children: <Widget>[
+                      //     Padding(
+                      //       padding:
+                      //       const EdgeInsets.only(left: 1.0, top: 3.0),
+                      //       child: !isSearching ? Text("  ${_GuestList[index]["vehicleNo"]}",
+                      //           style: TextStyle(
+                      //               fontSize: 16,
+                      //               fontWeight: FontWeight.w500,
+                      //               color: Colors.grey[700])):Text("  ${tempList[index]["vehicleNo"]}",
+                      //           style: TextStyle(
+                      //               fontSize: 16,
+                      //               fontWeight: FontWeight.w500,
+                      //               color: Colors.grey[700])),
+                      //     ),
+                      //   ],
+                      // ),
+                    ],
+                  ),
+                ),
+                // Padding(
+                //   padding: const EdgeInsets.only(top: 8.0),
+                //   child: IconButton(
+                //       icon: Icon(Icons.share, color: Colors.grey),
+                //       onPressed: () {
+                //         // Share.share(_GuestList[index]["ContactNo"],
+                //         //     subject: '',
+                //         // sharePositionOrigin:_GuestList[index]["ContactNo"] );
+                //         Share.share(
+                //             'http://smartsociety.itfuturz.com/QRCode.aspx?id=${_GuestList[index]["Id"]}&type=Visitor');
+                //       }),
+                // )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    !isSearching
+                        ? launch(('tel://${_GuestList[index]["ContactNo"]}'))
+                        : launch(('tel://${tempList[index]["ContactNo"]}'));
+                  },
+                  child: Icon(
+                    Icons.phone,
+                    color: Colors.green,
+                    size: 30,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    !isSearching
+                        ? launchwhatsapp(
+                            phone: "+91" + " ${_GuestList[index]["ContactNo"]}",
+                            message: "")
+                        : launchwhatsapp(
+                            phone: "+91" + " ${tempList[index]["ContactNo"]}",
+                            message: "");
+                  },
+                  child: Image.asset(
+                    "images/whatsapp.png",
+                    height: 45,
+                    width: 45,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    // !isSearching ? launch(
+                    //     ('tel://${_GuestList[index]["ContactNo"]}')):
+                    // launch(
+                    //     ('tel://${tempList[index]["ContactNo"]}'));
+                    launch(
+                        'https://wa.me/+91${_GuestList[index]["ContactNo"]}?text=${name}+ is inviting you as a guest in their society\n\n'
+                        'Please show this Code at the society gate ${_GuestList[index]["entryNo"]}\n'
+                        '${_GuestList[index]["wingData"][0]["wingName"]} - ${_GuestList[index]["flatData"][0]["flatNo"]} \n \n '
+                        '${_GuestList[index]["SocietyData"][0]["Location"]["mapLink"]} \n '
+                        '${_GuestList[index]["SocietyData"][0]["Address"]}');
+                  },
+                  child: Container(
+                    height: 30,
+                    width: 30,
+                    child: Image.asset(
+                      "images/gatepass.png",
+                      // fit: BoxFit.fill,
                     ),
                   ),
-                  GestureDetector(
-                   onTap: (){
-                     !isSearching ? launch(
-                         ('tel://${_GuestList[index]["ContactNo"]}')):
-                     launch(
-                         ('tel://${tempList[index]["ContactNo"]}'));
-                   },
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 20.0,right: 10),
-                      child: Icon(Icons.phone,color: Colors.green,size: 30,)
-                    ),
-                  ),
-
-                  GestureDetector(
-                    onTap: (){
-                      !isSearching ?
-                      launchwhatsapp(
-                          phone:
-                          "+91" + " ${_GuestList[index]["ContactNo"]}",
-                          message: ""):launchwhatsapp(
-                          phone:
-                          "+91" + " ${tempList[index]["ContactNo"]}",
-                          message: "");
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 12.0,right: 10),
-                      child: Image.asset("images/whatsapp.png",height: 45,width: 45,),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      // !isSearching ? launch(
-                      //     ('tel://${_GuestList[index]["ContactNo"]}')):
-                      // launch(
-                      //     ('tel://${tempList[index]["ContactNo"]}'));
-                      launch('https://wa.me/+91${_GuestList[index]["ContactNo"]}?text=${name}+ is inviting you as a guest in their society\n\n'
-                          'Please show this Code at the society gate ${_GuestList[index]["entryNo"]}\n'
-                          '${_GuestList[index]["wingData"][0]["wingName"]} - ${_GuestList[index]["flatData"][0]["flatNo"]} \n \n '
-                          '${_GuestList[index]["SocietyData"][0]["Location"]["mapLink"]} \n '
-                          '${_GuestList[index]["SocietyData"][0]["Address"]}');
-
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: 10.0,top:20,
-                      ),
-                      child: Container(
-                        height: 30,
-                        width: 30,
-                        child: Image.asset(
-                          "images/gatepass.png",
-                          // fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 8.0),
-                  //   child: IconButton(
-                  //       icon: Icon(Icons.share, color: Colors.grey),
-                  //       onPressed: () {
-                  //         // Share.share(_GuestList[index]["ContactNo"],
-                  //         //     subject: '',
-                  //         // sharePositionOrigin:_GuestList[index]["ContactNo"] );
-                  //         Share.share(
-                  //             'http://smartsociety.itfuturz.com/QRCode.aspx?id=${_GuestList[index]["Id"]}&type=Visitor');
-                  //       }),
-                  // )
-                ],
-              ),
-            ],
-          )),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -283,14 +293,14 @@ class _MemberGuestListState extends State<MemberGuestList> {
         tempList.clear();
         isSearching = true;
       });
-      String mobile = "",name="",vehicleNo="";
+      String mobile = "", name = "", vehicleNo = "";
       for (int i = 0; i < _GuestList.length; i++) {
-         name = _GuestList[i]["Name"];
+        name = _GuestList[i]["Name"];
         mobile = _GuestList[i]["ContactNo"];
-         vehicleNo = _GuestList[i]["vehicleNo"];
-         if (name.toLowerCase().contains(searchText.toLowerCase()) ||
-            mobile.toLowerCase().contains(searchText.toLowerCase())||
-             vehicleNo.toLowerCase().contains(searchText.toLowerCase())) {
+        vehicleNo = _GuestList[i]["vehicleNo"];
+        if (name.toLowerCase().contains(searchText.toLowerCase()) ||
+            mobile.toLowerCase().contains(searchText.toLowerCase()) ||
+            vehicleNo.toLowerCase().contains(searchText.toLowerCase())) {
           setState(() {
             tempList.add(_GuestList[i]);
           });
@@ -306,17 +316,16 @@ class _MemberGuestListState extends State<MemberGuestList> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: (){
+      onWillPop: () {
         Navigator.pushNamedAndRemoveUntil(
-            context, '/HomeScreen', (route) => false);      },
+            context, '/HomeScreen', (route) => false);
+      },
       child: Scaffold(
-        body:
-        SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Column(
             children: [
               Padding(
-                padding:
-                const EdgeInsets.only(top: 5.0, right: 8.0, left: 8.0),
+                padding: const EdgeInsets.only(top: 5.0, right: 8.0, left: 8.0),
                 child: TextFormField(
                   onChanged: searchOperation,
                   controller: txtSearch,
@@ -325,8 +334,7 @@ class _MemberGuestListState extends State<MemberGuestList> {
                       counter: Text(""),
                       border: new OutlineInputBorder(
                           borderSide: new BorderSide(color: Colors.black),
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(8))),
+                          borderRadius: BorderRadius.all(Radius.circular(8))),
                       suffixIcon: Icon(
                         Icons.search,
                         color: constant.appPrimaryMaterialColor,
@@ -339,27 +347,29 @@ class _MemberGuestListState extends State<MemberGuestList> {
               ),
               isLoading
                   ? Container(
-                child: Center(child: CircularProgressIndicator()),
-              )
+                      child: Center(child: CircularProgressIndicator()),
+                    )
                   : _GuestList.length > 0
-                  ? Container(
-                child: Container(
-                  child: isSearching ? ListView.builder(
-                    physics: PageScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: tempList.length,
-                    itemBuilder: _MyGuestlistCard,
-                  ):ListView.builder(
-                    physics: PageScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: _GuestList.length,
-                    itemBuilder: _MyGuestlistCard,
-                  ),
-                ),
-              )
-                  : Container(
-                child: Center(child: Text("No Data Found")),
-              ),
+                      ? Container(
+                          child: Container(
+                            child: isSearching
+                                ? ListView.builder(
+                                    physics: PageScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: tempList.length,
+                                    itemBuilder: _MyGuestlistCard,
+                                  )
+                                : ListView.builder(
+                                    physics: PageScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: _GuestList.length,
+                                    itemBuilder: _MyGuestlistCard,
+                                  ),
+                          ),
+                        )
+                      : Container(
+                          child: Center(child: Text("No Data Found")),
+                        ),
             ],
           ),
         ),

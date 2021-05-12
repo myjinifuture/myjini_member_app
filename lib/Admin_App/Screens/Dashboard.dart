@@ -36,6 +36,7 @@ class _DashboardState extends State<Dashboard> {
   List memberData = [];
   bool _isSearching = false;
   DateTime currentBackPressTime;
+
   // FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   StreamSubscription iosSubscription;
   String fcmToken = "";
@@ -147,7 +148,7 @@ class _DashboardState extends State<Dashboard> {
     {
       "image": "images/editsocietydetails.png",
       "count": "0",
-      "title": "Edit Society Details",
+      "title": "Edit Wing Details",
       "screen": "getPendingApprovals"
     },
     {
@@ -308,9 +309,6 @@ class _DashboardState extends State<Dashboard> {
         societyId); // ask monil to make dashboardcount api service 16 - number
   }
 
-
-
-
   _getDashboardCount(String societyId) async {
     try {
       print("dashoard called");
@@ -367,9 +365,14 @@ class _DashboardState extends State<Dashboard> {
         setState(() {
           _AdminMenuList[i]["count"] = data["TotalStaff"].toString();
         });
+      if (_AdminMenuList[i]["title"] == "All Vendors")
+        setState(() {
+          _AdminMenuList[i]["count"] = data["Vendor"].toString();
+        });
       if (_AdminMenuList[i]["title"] == "Emergency Numbers")
         setState(() {
-          _AdminMenuList[i]["count"] = data["SocietyEmergencyContact"].toString();
+          _AdminMenuList[i]["count"] =
+              data["SocietyEmergencyContact"].toString();
         });
       if (_AdminMenuList[i]["title"] == "Amenities")
         setState(() {
@@ -393,7 +396,6 @@ class _DashboardState extends State<Dashboard> {
         setState(() {
           _AdminMenuList[i]["count"] = data["Gallery"].toString();
         });
-
 
       if (_AdminMenuList[i]["title"] == "Pending Approvals")
         setState(() {
@@ -470,7 +472,8 @@ class _DashboardState extends State<Dashboard> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -518,7 +521,8 @@ class _DashboardState extends State<Dashboard> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
             new FlatButton(
@@ -526,7 +530,8 @@ class _DashboardState extends State<Dashboard> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -546,7 +551,8 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.of(context).pop();;
+        Navigator.of(context).pop();
+        ;
         /*   if (_isSearching)
           _handleSearchEnd();
         else {
@@ -699,7 +705,7 @@ class _DashboardState extends State<Dashboard> {
                                   child: GestureDetector(
                                     onTap: () {
                                       if (_AdminMenuList[index]["title"] ==
-                                          "Edit Society Details") {
+                                          "Edit Wing Details") {
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder:
@@ -724,9 +730,8 @@ class _DashboardState extends State<Dashboard> {
                                             backgroundColor: Colors.red,
                                             textColor: Colors.white,
                                             fontSize: 16.0);
-                                      }
-                                      else if (_AdminMenuList[index]
-                                      ["title"] ==
+                                      } else if (_AdminMenuList[index]
+                                              ["title"] ==
                                           "Expense") {
                                         Fluttertoast.showToast(
                                             msg: "Coming Soon!!!",
@@ -735,9 +740,8 @@ class _DashboardState extends State<Dashboard> {
                                             backgroundColor: Colors.red,
                                             textColor: Colors.white,
                                             fontSize: 16.0);
-                                      }
-                                      else if (_AdminMenuList[index]
-                                      ["title"] ==
+                                      } else if (_AdminMenuList[index]
+                                              ["title"] ==
                                           "Income") {
                                         Fluttertoast.showToast(
                                             msg: "Coming Soon!!!",
@@ -746,9 +750,8 @@ class _DashboardState extends State<Dashboard> {
                                             backgroundColor: Colors.red,
                                             textColor: Colors.white,
                                             fontSize: 16.0);
-                                      }
-                                      else if (_AdminMenuList[index]
-                                      ["title"] ==
+                                      } else if (_AdminMenuList[index]
+                                              ["title"] ==
                                           "Balance Sheet") {
                                         Fluttertoast.showToast(
                                             msg: "Coming Soon!!!",
@@ -757,7 +760,7 @@ class _DashboardState extends State<Dashboard> {
                                             backgroundColor: Colors.red,
                                             textColor: Colors.white,
                                             fontSize: 16.0);
-                                      }else {
+                                      } else {
                                         Navigator.pushNamed(context,
                                             "/${_AdminMenuList[index]["screen"]}");
                                       }
@@ -790,7 +793,7 @@ class _DashboardState extends State<Dashboard> {
                                                 children: <Widget>[
                                                   _AdminMenuList[index]["title"]
                                                               .toString() !=
-                                                          'Edit Society Details'
+                                                          'Edit Wing Details'
                                                       ? Text(
                                                           "${_AdminMenuList[index]["count"]}",
                                                           style: TextStyle(

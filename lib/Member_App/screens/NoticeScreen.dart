@@ -126,7 +126,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
-                    child: Text("${NoticeData[index]["Title"]}",
+                    child: Text("${NoticeData[NoticeData.length- 1 -index]["Title"]}",
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -143,7 +143,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.all(Radius.circular(100.0))),
                     child: Center(
-                      child: Text(NoticeData[index]["dateTime"][0],
+                      child: Text(NoticeData[NoticeData.length- 1 -index]["dateTime"][0],
                           style: TextStyle(
                               color: Colors.black54,
                               fontWeight: FontWeight.w600,
@@ -169,7 +169,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
                         padding: const EdgeInsets.only(
                             top: 10.0, left: 12.0, right: 12.0, bottom: 8.0),
                         child: Text(
-                          "${NoticeData[index]["Description"]}",
+                          "${NoticeData[NoticeData.length- 1 -index]["Description"]}",
                           overflow: TextOverflow.fade,
                           textAlign: TextAlign.left,
                           style: TextStyle(
@@ -181,13 +181,13 @@ class _NoticeScreenState extends State<NoticeScreen> {
                     ],
                   ),
                   Container(
-                    child: NoticeData[index]["FileAttachment"] != ""
+                    child: NoticeData[NoticeData.length- 1 -index]["FileAttachment"] != ""
                         ? Padding(
                             padding: const EdgeInsets.only(top: 15, bottom: 8),
                             child: GestureDetector(
                               onTap: () {
                                 _launchURL(Image_Url +
-                                    "${NoticeData[index]["FileAttachment"]}");
+                                    "${NoticeData[NoticeData.length- 1 -index]["FileAttachment"]}");
                               },
                               child: Container(
                                   width: 150,
