@@ -83,14 +83,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _CodeVerification(widget.societyCode);
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(message: 'Please Wait');
-    // _firebaseMessaging.getToken().then((token) {
-    //   setState(() {
-    //     fcmToken = token;
-    //     print('fcm in register----------->' + '${token}');
-    //   });
-    //   print("fcmToken1");
-    //   print(fcmToken);
-    // });
     getAllSocieties();
   }
 
