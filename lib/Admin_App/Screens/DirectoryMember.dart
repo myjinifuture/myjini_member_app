@@ -125,8 +125,7 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                 if (data.Data[i]["totalFloor"].toString() != "0") {
                   _wingList.add(data.Data[i]);
                 }
-              }
-              ;
+              };
               // _wingList = data.Data;
               isLoading = false;
               selectedWing = data.Data[0]["_id"].toString();
@@ -191,60 +190,63 @@ class _DirectoryMemberState extends State<DirectoryMember> {
           ? LoadingComponent()
           : Column(
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    for (int i = 0; i < _wingList.length; i++) ...[
-                      GestureDetector(
-                        onTap: () {
-                          if (selectedWing !=
-                              _wingList[i]["_id"].toString()) {
-                            setState(() {
-                              selectedWing = _wingList[i]["_id"].toString();
-                              _getDirectoryListing(selectedWing);
-                            });
-                            setState(() {
-                              memberData = [];
-                              filterMemberData = [];
-                              searchMemberData = [];
-                              isFilter = false;
-                              _isSearching = false;
-                            });
-                          }
-                        },
-                        child: Container(
-                          width:
-                              selectedWing == _wingList[i]["_id"].toString()
-                                  ? 60
-                                  : 45,
-                          height:
-                              selectedWing == _wingList[i]["_id"].toString()
-                                  ? 60
-                                  : 45,
-                          margin: EdgeInsets.only(top: 10, left: 5, right: 5),
-                          decoration: BoxDecoration(
-                              color: selectedWing ==
-                                      _wingList[i]["_id"].toString()
-                                  ? cnst.appPrimaryMaterialColor
-                                  : Colors.white,
-                              border: Border.all(
-                                  color: cnst.appPrimaryMaterialColor),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(4))),
-                          alignment: Alignment.center,
-                          child: Text(
-                            "${_wingList[i]["wingName"]}",
-                            style: TextStyle(
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      for (int i = 0; i < _wingList.length; i++) ...[
+                        GestureDetector(
+                          onTap: () {
+                            if (selectedWing !=
+                                _wingList[i]["_id"].toString()) {
+                              setState(() {
+                                selectedWing = _wingList[i]["_id"].toString();
+                                _getDirectoryListing(selectedWing);
+                              });
+                              setState(() {
+                                memberData = [];
+                                filterMemberData = [];
+                                searchMemberData = [];
+                                isFilter = false;
+                                _isSearching = false;
+                              });
+                            }
+                          },
+                          child: Container(
+                            width:
+                                selectedWing == _wingList[i]["_id"].toString()
+                                    ? 60
+                                    : 45,
+                            height:
+                                selectedWing == _wingList[i]["_id"].toString()
+                                    ? 60
+                                    : 45,
+                            margin: EdgeInsets.only(top: 10, left: 5, right: 5),
+                            decoration: BoxDecoration(
                                 color: selectedWing ==
                                         _wingList[i]["_id"].toString()
-                                    ? Colors.white
-                                    : cnst.appPrimaryMaterialColor,
-                                fontSize: 19),
+                                    ? cnst.appPrimaryMaterialColor
+                                    : Colors.white,
+                                border: Border.all(
+                                    color: cnst.appPrimaryMaterialColor),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(4))),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "${_wingList[i]["wingName"]}",
+                              style: TextStyle(
+                                  color: selectedWing ==
+                                          _wingList[i]["_id"].toString()
+                                      ? Colors.white
+                                      : cnst.appPrimaryMaterialColor,
+                                  fontSize: 19),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
                 // Align(
                 //   alignment: Alignment.centerRight,

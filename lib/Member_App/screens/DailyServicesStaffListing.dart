@@ -16,10 +16,15 @@ class DailyServicesStaffListing extends StatefulWidget {
 }
 
 class _DailyServicesStaffListingState extends State<DailyServicesStaffListing> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("widget.staffData");
-    print(widget.staffData);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -34,6 +39,7 @@ class _DailyServicesStaffListingState extends State<DailyServicesStaffListing> {
                 // shrinkWrap: true,
                 itemCount: widget.staffData["StaffCount"],
                 itemBuilder: (BuildContext context, int index) {
+                  print( widget.staffData["staffImage"]);
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -58,31 +64,54 @@ class _DailyServicesStaffListingState extends State<DailyServicesStaffListing> {
                         children: [
                           Row(
                             children: [
-                              widget.staffData["StaffData"][index]
-                                          ["staffImage"] ==
-                                      ""
+                              widget.staffData["staffImage"] != null ||
+                                  widget.staffData["staffImage"] != ""
                                   ? Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ClipOval(
-                                        child: FadeInImage.assetNetwork(
-                                            placeholder: 'images/user.png',
-                                            image:
-                                                "${constant.Image_Url}${widget.staffData["StaffData"][index]["staffImage"]}",
-                                            width: 80,
-                                            height: 80,
-                                            fit: BoxFit.fill),
-                                      ),
-                                    )
+                                  padding: const EdgeInsets.all(8.0),
+                                  child:
+                                  ClipOval(
+                                      child: /*widget._staffInSideList["Image"] == null && widget._staffInSideList["Image"] == '' ?*/
+                                      FadeInImage.assetNetwork(
+                                          placeholder: 'images/user.png',
+                                          image:
+                                          "${constant.Image_Url}${widget.staffData["staffImage"]}",
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.fill))
+                              )
                                   : Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ClipOval(
-                                        child: Image.asset(
-                                          'images/user.png',
-                                          width: 80,
-                                          height: 80,
-                                        ),
-                                      ),
-                                    ),
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ClipOval(
+                                      child: Image.asset(
+                                        'images/user.png',
+                                        width: 50,
+                                        height: 50,
+                                      ))),
+                              // widget.staffData["StaffData"][index]
+                              //             ["staffImage"] ==
+                              //         ""
+                              //     ? Padding(
+                              //         padding: const EdgeInsets.all(8.0),
+                              //         child: ClipOval(
+                              //           child: FadeInImage.assetNetwork(
+                              //               placeholder: 'images/user.png',
+                              //               image:
+                              //                   "${constant.Image_Url}${widget.staffData["StaffData"][index]["staffImage"]}",
+                              //               width: 80,
+                              //               height: 80,
+                              //               fit: BoxFit.fill),
+                              //         ),
+                              //       )
+                              //     : Padding(
+                              //         padding: const EdgeInsets.all(8.0),
+                              //         child: ClipOval(
+                              //           child: Image.asset(
+                              //             'images/user.png',
+                              //             width: 80,
+                              //             height: 80,
+                              //           ),
+                              //         ),
+                              //       ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

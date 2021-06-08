@@ -385,6 +385,7 @@ class IntervalSelection extends StatefulWidget {
 
 class _IntervalSelectionState extends State<IntervalSelection> {
   var _intervals = [
+    1,2,4,
     6,
     8,
     12,

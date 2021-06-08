@@ -47,6 +47,7 @@ class _PollingState extends State<Polling> {
         setState(() {
           isLoading = true;
         });
+        _pollingList.clear();
         Services.responseHandler(apiName: "admin/getAllPollingQuestion_v1",body: data)
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
@@ -145,15 +146,6 @@ class _PollingState extends State<Polling> {
           "Polling",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        // leading: IconButton(
-        //   icon: Icon(
-        //     Icons.arrow_back,
-        //     color: Colors.white,
-        //   ),
-        //   onPressed: () {
-        //     Navigator.pushReplacementNamed(context, "/Dashboard");
-        //   },
-        // ),
       ),
       body: isLoading
           ? LoadingComponent()
@@ -165,7 +157,11 @@ class _PollingState extends State<Polling> {
                       print("_pollingList123");
                       print(_pollingList[index]["PollOptions"]);
                       // _getResponseOfPolling(_pollingList[index]["_id"]);
-                      return PollingComponent(_pollingList, index,totalMembersInSociety);
+                      return PollingComponent(_pollingList, index,totalMembersInSociety,
+                        deleted: (){
+                        _getPollingData();
+                        },
+                      updated: _getPollingData,);
                     },
                   ),
                 )

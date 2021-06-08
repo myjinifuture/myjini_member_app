@@ -6,6 +6,7 @@ import 'package:smart_society_new/Admin_App/Screens/UpdateRules.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RulesComponent extends StatefulWidget {
   var rulesData;
@@ -14,8 +15,9 @@ class RulesComponent extends StatefulWidget {
   Function onUpdate;
   Function onDelete;
   int index;
+  String wingId;
 
-  RulesComponent({this.rulesData, this.index,this.onUpdate,this.onDelete});
+  RulesComponent({this.rulesData, this.index,this.onUpdate,this.onDelete,this.wingId});
 
   @override
   _RulesComponentState createState() => _RulesComponentState();
@@ -90,36 +92,36 @@ class _RulesComponentState extends State<RulesComponent> {
     );
   }
 
-  void _showConfirmDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("MYJINI"),
-          content: new Text("Are You Sure You Want To Delete this Rule ?"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("No",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w600)),
-              onPressed: () {
-                Navigator.of(context).pop();;
-              },
-            ),
-            new FlatButton(
-              child: new Text("Yes",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w600)),
-              onPressed: () {
-                Navigator.of(context).pop();;
-                _deleteRules();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+    void _showConfirmDialog() {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("MYJINI"),
+            content: new Text("Are You Sure You Want To Delete this Rule ?"),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("No",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w600)),
+                onPressed: () {
+                  Navigator.of(context).pop();;
+                },
+              ),
+              new FlatButton(
+                child: new Text("Yes",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w600)),
+                onPressed: () {
+                  Navigator.of(context).pop();;
+                  _deleteRules();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
 
   _launchURL(url) async {
     if (await canLaunch(url)) {
@@ -131,6 +133,7 @@ class _RulesComponentState extends State<RulesComponent> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.rulesData[widget.index]);
     return AnimationConfiguration.staggeredList(
       position: widget.index,
       duration: const Duration(milliseconds: 450),
@@ -168,12 +171,27 @@ class _RulesComponentState extends State<RulesComponent> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => UpdateRules(rulesData: widget.rulesData,onUpdate: widget.onUpdate,),
-                            ),
-                          );
+                          bool allowed = true;
+                          for(int i=0;i<widget.rulesData["ruleFor"]["wingId"].length;i++){
+                            if(widget.rulesData["ruleFor"]["wingId"][i] == widget.wingId){
+                              Fluttertoast.showToast(
+                                  msg: "Not Permitted",
+                                  backgroundColor: Colors.red,
+                                  gravity: ToastGravity.TOP,
+                                  textColor: Colors.white);
+                              allowed = false;
+                            }
+                            break;
+                          }
+                          if(allowed) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UpdateRules(rulesData: widget.rulesData,onUpdate: widget.onUpdate,),
+                              ),
+                            );
+                          }
+
                         },
                         child: Image.asset("images/edit_icon.png",
                             width: 24, height: 24, fit: BoxFit.fill),
@@ -183,7 +201,21 @@ class _RulesComponentState extends State<RulesComponent> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          _showConfirmDialog();
+                          bool allowed = true;
+                          for(int i=0;i<widget.rulesData["ruleFor"]["wingId"].length;i++){
+                            if(widget.rulesData["ruleFor"]["wingId"][i] == widget.wingId){
+                              Fluttertoast.showToast(
+                                  msg: "Not Permitted",
+                                  backgroundColor: Colors.red,
+                                  gravity: ToastGravity.TOP,
+                                  textColor: Colors.white);
+                              allowed = false;
+                            }
+                            break;
+                          }
+                          if(allowed) {
+                            _showConfirmDialog();
+                          }
                         },
                         child: Image.asset("images/delete_icon.png",
                             width: 24, height: 24, fit: BoxFit.fill),

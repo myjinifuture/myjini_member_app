@@ -196,29 +196,30 @@ class _DailyServicesStaffProfileScreenState
                 ),
                 child: Row(
                   children: [
-                    widget.staffProfileData["staffImage"] == ""
+                    widget.staffProfileData["staffImage"] != null ||
+                        widget.staffProfileData["staffImage"] != ""
                         ? Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ClipOval(
-                              child: FadeInImage.assetNetwork(
-                                  placeholder: 'images/user.png',
-                                  image:
-                                      "${constant.Image_Url}${widget.staffProfileData["staffImage"]}",
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.fill),
+                        padding: const EdgeInsets.all(8.0),
+                        child: ClipOval(
+                            child: /*widget._staffInSideList["Image"] == null && widget._staffInSideList["Image"] == '' ?*/
+                            FadeInImage.assetNetwork(
+                                placeholder: 'images/user.png',
+                                image:
+                                "${constant.Image_Url}${widget.staffProfileData["staffImage"]}",
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.fill,
                             ),
-                          )
+                        ),
+                    )
                         : Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ClipOval(
-                              child: Image.asset(
-                                'images/user.png',
-                                width: 100,
-                                height: 100,
-                              ),
-                            ),
-                          ),
+                        padding: const EdgeInsets.all(8.0),
+                        child: ClipOval(
+                            child: Image.asset(
+                              'images/user.png',
+                              width: 50,
+                              height: 50,
+                            ))),
                     SizedBox(
                       width: 5,
                     ),

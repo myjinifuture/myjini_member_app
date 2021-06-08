@@ -8,6 +8,7 @@ import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:url_launcher/url_launcher.dart';
 
 import 'GetPass.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class MemberGuestList extends StatefulWidget {
   @override
@@ -70,6 +71,7 @@ class _MemberGuestListState extends State<MemberGuestList> {
           "memberId": memberId,
           "societyId": societyId,
         };
+        _GuestList.clear();
         Services.responseHandler(
                 apiName: "member/getInvitedGuestList", body: data)
             .then((data) async {
@@ -110,6 +112,62 @@ class _MemberGuestListState extends State<MemberGuestList> {
               onPressed: () {
                 Navigator.of(context).pop();
                 ;
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  deleteGuest(String id) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {
+          "inviteGuestId": id
+        };
+        Services.responseHandler(apiName: "member/deleteInviteGuest", body: data)
+            .then((data) async {
+          if (data.Data.toString() == "1" && data.IsSuccess == true) {
+            Fluttertoast.showToast(
+                msg: "Guest Deleted Successfully",
+                backgroundColor: Colors.red,
+                gravity: ToastGravity.TOP);
+            _GetVisitorData();
+          } else {
+          }
+        }, onError: (e) {
+          print("Error : on Delete Notice $e");
+        });
+      }
+    } on SocketException catch (_) {
+    }
+  }
+
+  void _showConfirmDialog(String Id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("MYJINI"),
+          content: new Text("Are You Sure You Want To Delete this Member ?"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("No",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w600)),
+              onPressed: () {
+                Navigator.of(context).pop();;
+              },
+            ),
+            new FlatButton(
+              child: new Text("Yes",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w600)),
+              onPressed: () {
+                deleteGuest(Id);
+                Navigator.of(context).pop();;
               },
             ),
           ],
@@ -288,6 +346,15 @@ class _MemberGuestListState extends State<MemberGuestList> {
                     ),
                   ),
                 ),
+                IconButton(
+                    icon: Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      _showConfirmDialog(_GuestList[index]["_id"].toString());
+                    }),
               ],
             ),
           ],
@@ -329,8 +396,8 @@ class _MemberGuestListState extends State<MemberGuestList> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushNamedAndRemoveUntil(
-            context, '/HomeScreen', (route) => false);
+        Navigator.of(context).pop();
+
       },
       child: Scaffold(
         body: SingleChildScrollView(

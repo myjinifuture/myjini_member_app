@@ -57,7 +57,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
   TextEditingController Addresstxt = new TextEditingController();
   TextEditingController CompanyNametxt = new TextEditingController();
 
-  String MemberId, Profile;
+  String MemberId, Profile,soceityId;
 
   DateTime _BirthDate;
   String _format = 'yyyy-MMMM-dd';
@@ -72,7 +72,8 @@ class _UpdateProfileState extends State<UpdateProfile> {
     setState(() {
       wingId = prefs.getString(constant.Session.WingId);
       MemberId = prefs.getString(constant.Session.Member_Id);
-      Profile = prefs.getString(constant.Session.Profile);
+      soceityId = prefs.getString(constant.Session.SocietyId);
+      // Profile = prefs.getString(constant.Session.Profile);
       Nametxt.text = prefs.getString(constant.Session.Name);
       Wingtxt.text = prefs.getString(constant.Session.Wing);
       Residanceypetxt.text = prefs.getString(constant.Session.ResidenceType);
@@ -105,6 +106,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
           selected_Index = 2;
         });
     });
+    getMemberRole(MemberId, soceityId);
   }
 
   void _showDatePicker() {
@@ -196,10 +198,18 @@ class _UpdateProfileState extends State<UpdateProfile> {
             String base64Image = base64Encode(imageBytes);
             img = base64Image;
           }
-          var data = {
-            "memberId" : MemberId,
-            "Image" : img
-          };
+          var data;
+          if(_image==null) {
+            data = {
+              "memberId": MemberId,
+            };
+          }
+          else{
+            data = {
+              "memberId": MemberId,
+              "Image": img
+            };
+          }
           Services.responseHandler(apiName: "member/updateMemberProfileImage",body: data).then((data) async {
             // pr.hide();
             if (data.Data.toString() == "1") {
@@ -209,7 +219,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
             }
           }, onError: (e) {
 
-            showHHMsg("Something Went Wrong", "Error");
+            // showHHMsg("Something Went Wrong", "Error");
           });
         }
       } on SocketException catch (_) {
@@ -262,24 +272,12 @@ class _UpdateProfileState extends State<UpdateProfile> {
                   ? await MultipartFile.fromFile(filePath,
                   filename: filename.toString())
                   : null,
-              // "ProfessionId": "",
-              // "ParentId": "",
-              // "WingId": wingId,
-              // "FlatNo": FlatNo,
-              // "ResidenceType": _residentTypeList[selected_Index],
-              // "Gender": Gender,
-              // "IsPrivate": _isSwitched,
-              // "FcmToken": "",
-              // "IsVerified": true,
-              // "Relation": "",
-              // "IsActive": true,
-              // "Wing": ""
             });
             // pr.show();
             SharedPreferences prefs = await SharedPreferences.getInstance();
             Services.responseHandler(apiName: "member/updateMemberProfile",body: formData).then((data) async {
               // pr.hide();
-              if (data.Data != "0" && data.IsSuccess == true) {
+              if (data.Data.toString() == "1" && data.IsSuccess == true) {
                 _updateProfileImage();
                 await prefs.setString(
                     constant.Session.session_login, MobileNumbertxt.text);
@@ -360,6 +358,34 @@ class _UpdateProfileState extends State<UpdateProfile> {
     return final_date;
   }
 
+  getMemberRole(String memberId, String societyId) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {"memberId": memberId, "societyId": societyId};
+        Services.responseHandler(apiName: "member/getMemberRole", body: data)
+            .then((data) async {
+          print("data.Data");
+          print(data.Data);
+          if (data.Data[0]["society"]["isAdmin"].toString() == "1") {
+            setState(() {
+              Profile = data.Data[0]["Image"];
+            });
+          } else {
+            setState(() {
+              Profile = data.Data[0]["Image"];
+              // _advertisementData = data;
+            });
+          }
+        }, onError: (e) {
+          showHHMsg("Something Went Wrong.\nPlease Try Again", "");
+        });
+      }
+    } on SocketException catch (_) {
+      showHHMsg("No Internet Connection.", "");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -399,13 +425,19 @@ class _UpdateProfileState extends State<UpdateProfile> {
                         width: 120,
                         height: 120,
                         decoration: BoxDecoration(
-                            image: new DecorationImage(
-                                image: _image == null
-                                    ? '$Profile' == "null" || '$Profile' == ""
-                                        ? AssetImage("images/man.png")
-                                        : NetworkImage(
+                            image:
+                            new DecorationImage(
+                                image:
+                                _image == null
+                                    ?
+                                '$Profile' == "null" || '$Profile' == ""
+                                        ?
+                                AssetImage("images/man.png")
+                                        :
+                                NetworkImage(
                                             constant.Image_Url + '$Profile')
-                                    : FileImage(_image),
+                                    :
+                                FileImage(_image),
                                 fit: BoxFit.cover),
                             borderRadius:
                                 BorderRadius.all(new Radius.circular(75.0)),
@@ -435,26 +467,26 @@ class _UpdateProfileState extends State<UpdateProfile> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Text("Private Your Profile",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[700])),
-            ),
-            Transform.scale(
-              scale: 1.2,
-              child: Switch(
-                onChanged: (val) => setState(
-                    () => _isSwitched = val == true ? "true" : "false"),
-                value: _isSwitched == "true" ? true : false,
-                activeColor: Colors.green,
-                activeTrackColor: Colors.green[200],
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey[400],
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 20.0),
+            //   child: Text("Private Your Profile",
+            //       style: TextStyle(
+            //           fontSize: 14,
+            //           fontWeight: FontWeight.w600,
+            //           color: Colors.grey[700])),
+            // ),
+            // Transform.scale(
+            //   scale: 1.2,
+            //   child: Switch(
+            //     onChanged: (val) => setState(
+            //         () => _isSwitched = val == true ? "true" : "false"),
+            //     value: _isSwitched == "true" ? true : false,
+            //     activeColor: Colors.green,
+            //     activeTrackColor: Colors.green[200],
+            //     inactiveThumbColor: Colors.grey,
+            //     inactiveTrackColor: Colors.grey[400],
+            //   ),
+            // ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(

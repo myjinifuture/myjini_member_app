@@ -13,6 +13,7 @@ import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:twilio_flutter/twilio_flutter.dart';
 
 import '../common/constant.dart' as cnst;
+import 'package:flutter/services.dart';
 
 List flats=[];
 
@@ -30,6 +31,9 @@ class SOSpage extends StatefulWidget {
 }
 
 class _SOSpageState extends State<SOSpage> {
+
+  static const platform = const MethodChannel('sendSms');
+
   int isSelected = -1;
 
   List titles = ["Fire", "Accident", "Criminal", "Kids Alert","Lift Stuck"];
@@ -88,6 +92,7 @@ class _SOSpageState extends State<SOSpage> {
     GetWatchmenDetail();
     _getEmergencyContacts();
     _getLocation();
+    sendSms();
   }
 
   List emergencyContact = [];
@@ -107,7 +112,7 @@ class _SOSpageState extends State<SOSpage> {
               emergencyContact = data.Data;
             });
             for(int i=0;i<emergencyContact.length;i++){
-              sendSms("+91" + emergencyContact[i]["contactNo"]);
+              sendSms();
             }
           } else {}
         }, onError: (e) {
@@ -289,6 +294,16 @@ class _SOSpageState extends State<SOSpage> {
       }
     } on SocketException catch (_) {
       showHHMsg("No Internet Connection.", "");
+    }
+  }
+
+  Future<Null> sendSms()async {
+    print("SendSMS");
+    try {
+      final String result = await platform.invokeMethod('send',<String,dynamic>{"phone":"+919879208321","msg":"Hello! I'm sent programatically."}); //Replace a 'X' with 10 digit phone number
+      print(result);
+    } on PlatformException catch (e) {
+      print(e.toString());
     }
   }
 
@@ -535,9 +550,9 @@ class _SOSpageState extends State<SOSpage> {
 
   bool isButtonPressed = false;
 
-  void sendSms(String mobileno) async {
-    twilioFlutter.sendSMS(toNumber: mobileno, messageBody: "Emergency help needed location : https://www.google.com/maps?q=<${_lat}>,<${_long}>");
-  }
+  // void sendSms(String mobileno) async {
+  //   twilioFlutter.sendSMS(toNumber: mobileno, messageBody: "Emergency help needed location : https://www.google.com/maps?q=<${_lat}>,<${_long}>");
+  // }
 
   @override
   Widget build(BuildContext context) {

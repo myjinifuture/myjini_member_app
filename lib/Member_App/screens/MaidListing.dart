@@ -44,9 +44,11 @@ class _MaidListingState extends State<MaidListing> {
         var data = {
           "societyId": societyId,
           "wingId" : wingId,
-          "flatId" : flatId
-          // "toDate": date
+          "flatId" : flatId,
+          "toDate": date
         };
+        print("data");
+        print(data);
         setState(() {
           isLoading = true;
         });

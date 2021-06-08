@@ -104,36 +104,36 @@ class _DashboardState extends State<Dashboard> {
       "title": "Gallery",
       "screen": "Gallary"
     },
-    {
-      "image": "images/income.png",
-      "count": "0",
-      "title": "Income",
-      "screen": "Income"
-    },
-    {
-      "image": "images/expense.png",
-      "count": "0",
-      "title": "Expense",
-      "screen": "Expense"
-    },
-    {
-      "image": "images/balance_sheet.png",
-      "count": "0",
-      "title": "Balance Sheet",
-      "screen": "BalanceSheet"
-    },
+    // {
+    //   "image": "images/income.png",
+    //   "count": "0",
+    //   "title": "Income",
+    //   "screen": "Income"
+    // },
+    // {
+    //   "image": "images/expense.png",
+    //   "count": "0",
+    //   "title": "Expense",
+    //   "screen": "Expense"
+    // },
+    // {
+    //   "image": "images/balance_sheet.png",
+    //   "count": "0",
+    //   "title": "Balance Sheet",
+    //   "screen": "BalanceSheet"
+    // },
     {
       "image": "images/admin_polling.png",
       "count": "0",
       "title": "Polling",
       "screen": "AllPolling"
     },
-    {
-      "image": "images/amc_icon.png",
-      "count": "0",
-      "title": "AMCs",
-      "screen": "amcList"
-    },
+    // {
+    //   "image": "images/amc_icon.png",
+    //   "count": "0",
+    //   "title": "AMCs",
+    //   "screen": "amcList"
+    // },
     {
       "image": "images/amenities.png",
       "count": "0",
@@ -146,12 +146,12 @@ class _DashboardState extends State<Dashboard> {
       "title": "Pending Approvals",
       "screen": "getPendingApprovals"
     },
-    {
-      "image": "images/editsocietydetails.png",
-      "count": "0",
-      "title": "Edit Wing Details",
-      "screen": "getPendingApprovals"
-    },
+    // {
+    //   "image": "images/editsocietydetails.png",
+    //   "count": "0",
+    //   "title": "Edit Wing Details",
+    //   "screen": "getPendingApprovals"
+    // },
     {
       "image": "images/adminemergencynumbers.png",
       "count": "0",

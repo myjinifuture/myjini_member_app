@@ -169,9 +169,11 @@ class _EmergencyContactScreenState extends State<EmergencyContactScreen> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      Navigator.pop(context);
+                                      print('emergencyContact[index]["contactNo"]');
+                                      print(emergencyContact[index]["contactNo"]);
+                                      // Navigator.pop(context);
                                       launch(
-                                          ('tel:// ${emergencyContact[index]["ContactNo"]}'));
+                                          ('tel:// ${emergencyContact[index]["contactNo"]}'));
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.all(10.0),

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dotted_decoration/dotted_decoration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:imei_plugin/imei_plugin.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -26,7 +27,6 @@ import 'package:smart_society_new/Member_App/screens/PreferenceScreen.dart';
 import 'package:smart_society_new/Member_App/screens/UpdateProfileScreen.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:share/share.dart';
-import 'package:unique_identifier/unique_identifier.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerProfile extends StatefulWidget {
@@ -217,7 +217,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
     );
   }
 
-  String uniqueId = "Unknown";
+  String uniqueId = "";
 
   Future<void> initPlatformState() async {
     String platformImei;
@@ -232,22 +232,21 @@ class _CustomerProfileState extends State<CustomerProfile> {
     // } on PlatformException {
     //   platformImei = 'Failed to get platform version.';
     // }
-    String identifier = await UniqueIdentifier.serial;
+
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    setState(() {
-      uniqueId = identifier;
-    });
+
   }
 
   _logout() async {
     try {
       final result = await InternetAddress.lookup('google.com');
+      SharedPreferences preferences = await SharedPreferences.getInstance();
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {"memberId": memId, "playerId": playerId, "IMEI": uniqueId};
+        var data = {"memberId": memId, "playerId": preferences.getString('playerId'), "IMEI": uniqueId};
         print("data");
         print(data);
         Services.responseHandler(apiName: "member/logout", body: data).then(
@@ -255,6 +254,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
           if (data.Data != null && data.Data.toString() == "1") {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.clear();
+            DefaultCacheManager().emptyCache();
             Navigator.pushReplacementNamed(context, "/LoginScreen");
           } else {
             // setState(() {});
@@ -543,16 +543,20 @@ class _CustomerProfileState extends State<CustomerProfile> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(left: 10.0),
-                              child: CircleAvatar(
-                                backgroundImage:
-                                    //  AssetImage('assets/assets/profile.png'),
-                                    '$Profile' == "null" || '$Profile' == ""
-                                        ? AssetImage(
-                                            'assets/assets/profile.png')
-                                        : NetworkImage(
-                                            constant.Image_Url + '$Profile'),
-                                backgroundColor: appPrimaryMaterialColor,
-                                radius: 35,
+                              child: ClipOval(
+                                child: Profile != "null" && Profile != ""
+                                    ? FadeInImage.assetNetwork(
+                                  placeholder:  "images/man.png",
+                                  image: constant.Image_Url + '$Profile',
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                )
+                                    : Image.asset(
+                                  "images/man.png",
+                                  width: 60,
+                                  height: 60,
+                                ),
                               ),
                             ),
                             Expanded(

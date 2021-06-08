@@ -69,21 +69,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void initState() {
     print("widget.societyId");
     print(widget.societyId);
+    getAllSocieties();
     flatholdertypes.clear();
     if(widget.mobileNo!=null){
       isPersonAdmin = true;
+      txtname.text = widget.Name;
+      txtmobile.text = widget.mobileNo;
+      selYourSociety = widget.societyNameAndSocietyAddress;
+      print(widget.Name);
     }
     getFlatType();
-    txtname.text = widget.Name;
-    txtmobile.text = widget.mobileNo;
-    selYourSociety = widget.societyNameAndSocietyAddress;
-    print(widget.Name);
+
     // FocusScope.of(context)
     //     .requestFocus(FocusNode());
     _CodeVerification(widget.societyCode);
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(message: 'Please Wait');
-    getAllSocieties();
   }
 
   getFlatType() async {
@@ -153,6 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         setState(() {
           isLoading = true;
         });
+        print("this functon called");
         allSocieties.clear();
         Services.responseHandler(apiName: "masterAdmin/getSocietyList",body: data).then((data) async {
           print(data.Data);
@@ -604,8 +606,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         constant.Session.SocietyId, logindata[0]["society"]["societyId"].toString());
     await prefs.setString(
         constant.Session.IsVerified, logindata[0]["society"]["isVerify"].toString());
-    await prefs.setString(
-        constant.Session.Profile, logindata[0]["Image"].toString());
     await prefs.setString(constant.Session.ResidenceType,
         logindata[0]["society"]["ResidenceType"].toString());
 /*    await prefs.setString(

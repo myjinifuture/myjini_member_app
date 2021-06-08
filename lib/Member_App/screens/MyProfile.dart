@@ -365,36 +365,36 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  // Navigator.pushNamed(context, "/RegistrationDC");
-                  Navigator.pushNamed(context, "/DashBoard1");
-                },
-                child: Container(
-                  margin: EdgeInsets.only(top: 15, right: 15),
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      color: constant.appPrimaryMaterialColor,
-                      borderRadius: BorderRadius.all(Radius.circular(5))),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(
-                        Icons.person,
-                        size: 15,
-                        color: Colors.white,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "My Digital Card",
-                        style: TextStyle(fontSize: 12, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ).alignAtEnd(),
+              // GestureDetector(
+              //   onTap: () {
+              //     // Navigator.pushNamed(context, "/RegistrationDC");
+              //     Navigator.pushNamed(context, "/DashBoard1");
+              //   },
+              //   child: Container(
+              //     margin: EdgeInsets.only(top: 15, right: 15),
+              //     padding: EdgeInsets.all(8),
+              //     decoration: BoxDecoration(
+              //         color: constant.appPrimaryMaterialColor,
+              //         borderRadius: BorderRadius.all(Radius.circular(5))),
+              //     child: Row(
+              //       mainAxisSize: MainAxisSize.min,
+              //       children: <Widget>[
+              //         Icon(
+              //           Icons.person,
+              //           size: 15,
+              //           color: Colors.white,
+              //         ),
+              //         SizedBox(
+              //           width: 5,
+              //         ),
+              //         Text(
+              //           "My Digital Card",
+              //           style: TextStyle(fontSize: 12, color: Colors.white),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ).alignAtEnd(),
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: Stack(
@@ -402,7 +402,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     ClipOval(
                       child: Profile != "null" && Profile != ""
                           ? FadeInImage.assetNetwork(
-                              placeholder: "images/image_loading.gif",
+                              placeholder:  "images/man.png",
                               image: constant.Image_Url + '$Profile',
                               width: 100,
                               height: 100,

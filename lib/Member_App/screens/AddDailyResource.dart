@@ -1183,7 +1183,7 @@ class _AddDailyResourceState extends State<AddDailyResource> {
   ProgressDialog pr;
   int wingflatcount = 0;
   File _image;
-  String Gender;
+  String Gender="";
   String _FlateNo;
 
   TextEditingController txtName = TextEditingController();
@@ -1489,7 +1489,8 @@ class _AddDailyResourceState extends State<AddDailyResource> {
     "flatId" : ""
   }];
   _SaveStaff() async {
-    if (txtName.text != "") {
+    print(Gender);
+    if (txtName.text != "" && txtContactNo.text!="" && Gender!="" && selectedStaff!=null) {
       try {
         final result = await InternetAddress.lookup('google.com');
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {

@@ -12,6 +12,11 @@ import '../../Member_App/./common/Services.dart';
 import 'package:dio/dio.dart';
 
 class AddPolling extends StatefulWidget {
+  var question,wings,polloptions,Id;
+  Function onUpdate;
+
+  AddPolling({this.question,this.wings,this.polloptions,this.Id,this.onUpdate});
+
   @override
   _AddPollingState createState() => _AddPollingState();
 }
@@ -33,6 +38,9 @@ class _AddPollingState extends State<AddPolling> {
 
   @override
   void initState() {
+    print(widget.question);
+    print(widget.wings);
+    print(widget.polloptions);
     disableSubmitPolling=false;
     getLocaldata();
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
@@ -47,6 +55,22 @@ class _AddPollingState extends State<AddPolling> {
         insetAnimCurve: Curves.easeInOut,
         messageTextStyle: TextStyle(
             color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+    if(widget.question!=null) {
+      setState(() {
+        txtQuestion.text = widget.question;
+        txtOptionCount.text = widget.polloptions.length.toString();
+        _enteredCount = widget.polloptions.length;
+        print("_optionList");
+        print(_optionList);
+        for (int i = 0; i < widget.polloptions.length; i++) {
+          // _optionList[i].text = widget.polloptions[i]["pollOption"];
+          TextEditingController txtOption =
+          new TextEditingController();
+          txtOption.text = widget.polloptions[i]["pollOption"];
+          _optionList.add(txtOption);
+        }
+      });
+    }
   }
 
   String societyId,memberId;
@@ -77,45 +101,96 @@ class _AddPollingState extends State<AddPolling> {
               }
             }
           }
-          var data = {
-            "pollQuestion" : txtQuestion.text,
-            "societyId" : societyId,
-            "adminId": memberId,
-            "pollOption" : optionsData.toString().replaceAll(" ", "").replaceAll("[", "").replaceAll("]", ""),
-            "wingIds": selectedWingId.toString().replaceAll(" ", "").replaceAll("[", "").replaceAll("]", "")
-          };
+          var data,apiName;
+          if(widget.question!=null){
+            apiName = "admin/updatePollQuestion_v1";
+            data =
+              {
+                "pollQuesId": widget.Id,
+                "pollQuestion": txtQuestion.text,
+                "pollOption": optionsData.toString()
+                    .replaceAll(" ", "").replaceAll("[", "")
+                    .replaceAll("]", ""),
+              };
+          }
+          else {
+            apiName = "admin/addPollingQuestion_v2";
+            data = {
+              "pollQuestion": txtQuestion.text,
+              "societyId": societyId,
+              "adminId": memberId,
+              "pollOption": optionsData.toString()
+                  .replaceAll(" ", "")
+                  .replaceAll("[", "")
+                  .replaceAll("]", ""),
+              "wingIds": selectedWingId.toString()
+                  .replaceAll(" ", "")
+                  .replaceAll("[", "")
+                  .replaceAll("]", "")
+            };
+          }
           print("data");
           print(data);
-          FormData data1 = FormData.fromMap(data);
-          print("data1");
-          print(data1);
+          FormData data1;
+            data1 = FormData.fromMap(data);
+          print(apiName);
           // pr.show();
           // pr.show();
-          Services.responseHandler(apiName: "admin/addPollingQuestion_v2",body: data1).then((data) async {
-            // pr.hide();
-            print("data.message");
-            print(data.Message);
-            if (data.Data.length != 0 && data.IsSuccess == true) {
-              Fluttertoast.showToast(
-                  msg: "Polling Saved Successfully",
-                  backgroundColor: Colors.green,
-                  gravity: ToastGravity.TOP,
-                  textColor: Colors.white);
-              Navigator.pushReplacementNamed(context, "/AllPolling");
-            } else {
-              Fluttertoast.showToast(
-                  msg: "Polling Saved Successfully",
-                  backgroundColor: Colors.green,
-                  gravity: ToastGravity.TOP,
-                  textColor: Colors.white);
-              Navigator.pushReplacementNamed(context, "/AllPolling");
+          if(widget.question!=null){
+            Services.responseHandler(apiName: apiName,body: data1).then((data) async {
               // pr.hide();
-              // showMsg(data.Message, title: "Error");
-            }
-          }, onError: (e) {
-            // pr.hide();
-            showMsg("Try Again.");
-          });
+              print("data.message");
+              print(data.Message);
+              if (data.Data.toString() =="1" && data.IsSuccess == true) {
+                  Fluttertoast.showToast(
+                      msg: "Polling Updated Successfully",
+                      backgroundColor: Colors.green,
+                      gravity: ToastGravity.TOP,
+                      textColor: Colors.white);
+                  Navigator.pop(context);
+                  widget.onUpdate();
+              } else {
+                Fluttertoast.showToast(
+                    msg: "Polling Saved Successfully",
+                    backgroundColor: Colors.green,
+                    gravity: ToastGravity.TOP,
+                    textColor: Colors.white);
+                Navigator.pop(context);
+                // pr.hide();
+                // showMsg(data.Message, title: "Error");
+              }
+            }, onError: (e) {
+              // pr.hide();
+              showMsg("Try Again.");
+            });
+          }
+          else{
+            Services.responseHandler(apiName: apiName,body: data1).then((data) async {
+              // pr.hide();
+              print("data.message");
+              print(data.Message);
+              if (data.Data.toString() =="1" && data.IsSuccess == true) {
+                  Fluttertoast.showToast(
+                      msg: "Polling Saved Successfully",
+                      backgroundColor: Colors.green,
+                      gravity: ToastGravity.TOP,
+                      textColor: Colors.white);
+                Navigator.pushReplacementNamed(context, "/AllPolling");
+              } else {
+                Fluttertoast.showToast(
+                    msg: "Polling Saved Successfully",
+                    backgroundColor: Colors.green,
+                    gravity: ToastGravity.TOP,
+                    textColor: Colors.white);
+                Navigator.pushReplacementNamed(context, "/AllPolling");
+                // pr.hide();
+                // showMsg(data.Message, title: "Error");
+              }
+            }, onError: (e) {
+              // pr.hide();
+              showMsg("Try Again.");
+            });
+          }
         }
       } on SocketException catch (_) {
         // pr.hide();
@@ -218,7 +293,19 @@ class _AddPollingState extends State<AddPolling> {
                 });
               }
             });
-
+            if(widget.question!=null){
+              setState(() {
+                for(int i=0;i<wingsNameData.length;i++){
+                  for(int j=0;j<widget.wings.length;j++){
+                    if(wingsNameData[i]["Id"] == widget.wings[j]){
+                      selectedWing.add(wingsNameData[i]["Name"]);
+                    }
+                  }
+                }
+                print("selectedWing");
+                print(selectedWing);
+              });
+            }
           }
         }, onError: (e) {
           showMsg("$e");
@@ -239,7 +326,10 @@ class _AddPollingState extends State<AddPolling> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: widget.question!=null ? Text(
+            "Update Polling",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ):Text(
             "Add Polling",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
@@ -297,7 +387,7 @@ class _AddPollingState extends State<AddPolling> {
                           valueField: 'Name',
                           okButtonLabel: 'OK',
                           cancelButtonLabel: 'CANCEL',
-                          hintWidget: Text('No Wing Selected'),
+                          hintWidget: widget.question==null ? Text('No Wing Selected'):Text(selectedWing.toString()),
                           change: () => selectedWing,
                           onSaved: (value) {
                             setState(() {
@@ -583,7 +673,13 @@ class _AddPollingState extends State<AddPolling> {
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(left: 10),
-                                          child: Text(
+                                          child: widget.question!=null ? Text(
+                                            "Update Polling",
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ):Text(
                                             "Submit Polling",
                                             style: TextStyle(
                                               fontSize: 17,

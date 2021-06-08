@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
 import '../screens/AddFamilyMember.dart';
 import 'package:smart_society_new/Member_App/Services/SubServicesScreen.dart';
@@ -29,7 +30,6 @@ import 'package:smart_society_new/Member_App/screens/CustomerProfile.dart';
 import 'package:smart_society_new/Member_App/screens/GalleryScreen.dart';
 import 'package:smart_society_new/Member_App/screens/getPendingApprovals.dart';
 import 'package:smart_society_new/screens/bottom_navigation_screen.dart';
-import 'package:unique_identifier/unique_identifier.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -389,11 +389,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           onResult: (val) => setState(() {
             _text = val.recognizedWords;
             if (val.hasConfidenceRating && val.confidence > 0) {
-              // _confidence = val.confidence;
-              // if(val.recognizedWords.contains("video call To Arpit Shah")){
-              //   memberToMemberCalling(true);
-              //
-              // }
               bool isDirectoryScreen = false;
               bool isSocietyVendor = false;
               bool isOtherVendor = false;
@@ -403,6 +398,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               setState(() {
                 resultText.text = _text;
               });
+              if(_text.toUpperCase().contains('POSITIVE')){
+                _text.toUpperCase().replaceAll('POSITIVE', '+');
+              }
+              if(_text.toUpperCase().contains('NEGATIVE')){
+                _text.toUpperCase().replaceAll('NEGATIVE', '-');
+              }
               if (_text
                   .replaceAll(" ", "")
                   .toUpperCase()
@@ -534,6 +535,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   .toUpperCase()
                                   .trim()
                                   .replaceAll(" ", "")) ||
+                          memberData[i]["BloodGroup"]
+                              .toString()
+                              .toUpperCase()
+                              .contains(_text
+                              .toUpperCase()
+                              .trim()
+                              .replaceAll(" ", "")) ||
                           memberData[i]["Vehicles"]
                               .toString()
                               .toUpperCase()
@@ -541,7 +549,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               .contains(_text
                                   .toUpperCase()
                                   .trim()
-                                  .replaceAll(" ", "")) ||
+                                  .replaceAll(" ", "").replaceAll("-", "")) ||
                           (memberData[i]["WingData"][0]["wingName"] +
                                   memberData[i]["FlatData"][0]["flatNo"])
                               .toString()
@@ -766,142 +774,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return final_date;
   }
 
-  _showDialog() async {
-    await Future.delayed(Duration(milliseconds: 50));
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return SizedBox(
-            // height: MediaQuery.of(context).size.height/1.5,
-            child: AlertDialog(
-                content: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: ReviewList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Icon(Icons.close))
-                            ],
-                          ),
-                          Center(
-                            child: Padding(
-                              child: Text(
-                                "${ReviewList[index]["VendorName"]}",
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                              padding: const EdgeInsets.only(
-                                  left: 8.0, right: 8.0, bottom: 8.0),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Expanded(
-                                child: Padding(
-                                  child: Text(
-                                    "${ReviewList[index]["ServiceName"]}",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w500),
-                                  ),
-                                  padding: const EdgeInsets.all(8.0),
-                                ),
-                              ),
-                              Column(
-                                children: <Widget>[
-                                  Text(
-                                    constant.Inr_Rupee +
-                                        " ${ReviewList[index]["ReceivedAmount"]}",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.green,
-                                        fontSize: 17),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            child: Text(
-                              "Date - ${setDate(ReviewList[index]["Date"])}",
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: RatingBar.builder(
-                              initialRating: 3.0,
-                              minRating: 1,
-                              direction: Axis.horizontal,
-                              allowHalfRating: true,
-                              itemCount: 5,
-                              itemSize: 30,
-                              itemPadding:
-                                  EdgeInsets.symmetric(horizontal: 2.0),
-                              itemBuilder: (context, _) => Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                              ),
-                              onRatingUpdate: (rating) {
-                                setState(() {
-                                  serviceRating = rating;
-                                });
-                                print("hellorating=> " + rating.toString());
-                              },
-                            ),
-                          ),
-                          TextFormField(
-                            validator: (value) {
-                              if (value.trim() == "") {
-                                return "Please insert valid reason";
-                              }
-                            },
-                            controller: txtdescription,
-                            textInputAction: TextInputAction.next,
-                            maxLines: 4,
-                            decoration: InputDecoration(
-                                border: new OutlineInputBorder(
-                                  borderRadius: new BorderRadius.circular(5.0),
-                                  borderSide: new BorderSide(),
-                                ),
-                                labelText: "Describe your experience",
-                                hintStyle: TextStyle(fontSize: 13)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15.0),
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              height: 50,
-                              child: RaisedButton(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5)),
-                                  color: constant.appPrimaryMaterialColor,
-                                  textColor: Colors.white,
-                                  splashColor: Colors.white,
-                                  child: Text("SUBMIT",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600)),
-                                  onPressed: () {
-                                    //Navigator.pop(context);
-                                  }),
-                            ),
-                          ),
-                        ],
-                      );
-                    })),
-          );
-        });
-  }
-
   getAdvertisementData() async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -1117,70 +989,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-/*
-  _showProfileUpdateDailog(String pr) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Column(
-            children: <Widget>[
-              Image.asset(
-                "images/profile_update.png",
-                width: 60,
-                height: 60,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: Text(
-                  "Hello, $Name",
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                ),
-              )
-            ],
-          ),
-          titlePadding: EdgeInsets.only(top: 10),
-          content: Text(
-            "Your Profile Is ${100 - int.parse(pr)}% completed.\nPlease Complete Your Profile To Get Better Experience",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 15, color: Colors.grey[600]),
-          ),
-          actions: <Widget>[
-            MaterialButton(
-              minWidth: 100,
-              child: Text(
-                "Update",
-                style: TextStyle(color: Colors.white),
-              ),
-              padding: EdgeInsets.only(left: 10, right: 10),
-              color: constant.appPrimaryMaterialColor,
-              shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(5)),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/MyProfile');
-              },
-            ),
-            MaterialButton(
-              minWidth: 100,
-              child: Text(
-                "Not Now",
-                style: TextStyle(color: Colors.white),
-              ),
-              color: Colors.grey[600],
-              padding: EdgeInsets.only(left: 10, right: 10),
-              shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(5)),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-*/
-
   Widget _getMenuItem(BuildContext context, int index) {
     return AnimationConfiguration.staggeredGrid(
       position: index,
@@ -1199,39 +1007,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     textColor: Colors.white,
                     fontSize: 16.0);
               }
-              // else if (_allMenuList[index].IconName == "Reminders") {
-              //   Fluttertoast.showToast(
-              //       msg: "Coming Soon!!!",
-              //       toastLength: Toast.LENGTH_SHORT,
-              //       gravity: ToastGravity.BOTTOM,
-              //       backgroundColor: Colors.red,
-              //       textColor: Colors.white,
-              //       fontSize: 16.0);
-              //   // Navigator.push(
-              //   //   context,
-              //   //   MaterialPageRoute(
-              //   //     builder: (context) => Reminders(),
-              //   //   ),
-              //   // );
-              // }
-              // else  if (_allMenuList[index].IconName == "OffersScreen" ) {
-              //   Fluttertoast.showToast(
-              //       msg: "Coming Soon!!!",
-              //       toastLength: Toast.LENGTH_SHORT,
-              //       gravity: ToastGravity.BOTTOM,
-              //       backgroundColor: Colors.red,
-              //       textColor: Colors.white,
-              //       fontSize: 16.0);
-              // }
-              // else if (_allMenuList[index].IconName == "Polling") {
-              //   Fluttertoast.showToast(
-              //       msg: "Coming Soon!!!",
-              //       toastLength: Toast.LENGTH_SHORT,
-              //       gravity: ToastGravity.BOTTOM,
-              //       backgroundColor: Colors.red,
-              //       textColor: Colors.white,
-              //       fontSize: 16.0);
-              // }
               else {
                 Navigator.pushNamed(
                     context, '/${_allMenuList[index].IconName}');
@@ -1346,48 +1121,30 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _handleSendNotification() async {
     var status = await OneSignal.shared.getPermissionSubscriptionState();
-
     playerId = status.subscriptionStatus.userId;
     print("playerid while logout");
     print(playerId);
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.setString('playerId', playerId);
     initPlatformState();
   }
 
-  String uniqueId = "Unknown";
+  String uniqueId = "";
 
   Future<void> initPlatformState() async {
-    String platformImei;
-    String idunique;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // try {
-    //   platformImei =
-    //   await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
-    //   List<String> multiImei = await ImeiPlugin.getImeiMulti();
-    //   print(multiImei);
-    //   idunique = await ImeiPlugin.getId();
-    // } on PlatformException {
-    //   platformImei = 'Failed to get platform version.';
-    // }
-    String identifier = await UniqueIdentifier.serial;
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    setState(() {
-      uniqueId = identifier;
-    });
-    print("uniqueid");
-    print(identifier);
+
   }
 
   _logoutFunction() async {
     try {
       final result = await InternetAddress.lookup('google.com');
+      SharedPreferences preferences = await SharedPreferences.getInstance();
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
           "memberId": memberId,
-          "playerId": playerId,
+          "playerId": preferences.getString('playerId'),
           "IMEI": uniqueId
         };
         print("data");
@@ -1397,6 +1154,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           if (data.Data != null && data.Data.toString() == "1") {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.clear();
+            DefaultCacheManager().emptyCache();
             Navigator.pushReplacementNamed(context, "/LoginScreen");
           } else {
             // setState(() {});
@@ -1477,18 +1235,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Future.value(true);
   }
 
-  saveDeviceToken() async {
-    // _firebaseMessaging.getToken().then((String token) {
-    //   print("Original Token:$token");
-    //   var tokendata = token.split(':');
-    //   setState(() {
-    //     fcmToken = token;
-    //     // sendFCMTokan(token);
-    //   });
-    //   log(fcmToken);
-    //   // _registration();
-    // });
-  }
 
   Future<void> requestPermission(PermissionGroup permission) async {
     final List<PermissionGroup> permissions = <PermissionGroup>[
@@ -1541,19 +1287,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String societyCode;
   var shareMyAddressContent;
   var shareMySocietyDetailsContent;
-
-  // final Shader linearGradient1 = LinearGradient(
-  //   colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
-  // ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
-  // final Shader linearGradient2 = LinearGradient(
-  //   colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
-  // ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
-  // final Shader linearGradient3 = LinearGradient(
-  //   colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
-  // ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
-  // final Shader linearGradient4 = LinearGradient(
-  //   colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
-  // ).createShader(Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
 
   getSocietyDetails() async {
     try {
@@ -1717,7 +1450,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       child: Icon(Icons.add_to_home_screen),
                     ),
                     onPressed: () {
-                      Navigator.pushNamed(context, "/Dashboard");
+                        Navigator.pushNamed(context, "/Dashboard");
                     })
                 : Container(),
           ],
@@ -1726,7 +1459,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 onTap: () {
                   Navigator.pushNamed(context, "/GlobalSearch");
                 },
-                child: Container(
+                child:
+                Container(
                   margin:
                       EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 10),
                   height: 40,
@@ -1744,7 +1478,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       Padding(padding: EdgeInsets.only(left: 4)),
                       Expanded(
                         child: Text(
-                          "Search Member",
+                          "Search Member,Blood Group,MobileNo,VehicleNo",
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ),
@@ -1802,7 +1536,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                   child: Profile != "null" && Profile != ""
                                       ? FadeInImage.assetNetwork(
                                           placeholder:
-                                              "images/image_loading.gif",
+                                                "images/man.png",
                                           image:
                                               constant.Image_Url + '$Profile',
                                           width: 70,

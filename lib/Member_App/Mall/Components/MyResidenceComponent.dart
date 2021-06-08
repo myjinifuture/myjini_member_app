@@ -20,6 +20,7 @@ class MyResidenceComponent extends StatefulWidget {
 class _MyResidenceComponentState extends State<MyResidenceComponent> {
   String flat;
   String wing;
+  String societyId;
   bool isLoading = false;
 
   @override
@@ -32,6 +33,7 @@ class _MyResidenceComponentState extends State<MyResidenceComponent> {
     setState(() {
       flat = preferences.getString(cnst.Session.FlatNo);
       wing = preferences.getString(cnst.Session.Wing);
+      societyId = preferences.getString(cnst.Session.SocietyId);
     });
   }
 
@@ -103,6 +105,8 @@ class _MyResidenceComponentState extends State<MyResidenceComponent> {
     );
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     // print("flat and wing ${wing}-${flat}");
@@ -171,10 +175,7 @@ class _MyResidenceComponentState extends State<MyResidenceComponent> {
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13),
                           ),
-                          (widget.resData["Property"][0]['flatNo'] == flat &&
-                                  widget.resData["Property"][0]["WingData"][0]
-                                          ['wingName'] ==
-                                      wing)
+                          (widget.resData["Property"][0]['SocietyData'][0]["_id"] == societyId )
                               ? Padding(
                                   padding: const EdgeInsets.only(left: 10.0),
                                   child: Container(

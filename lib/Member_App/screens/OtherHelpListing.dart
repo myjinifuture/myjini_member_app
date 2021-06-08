@@ -42,8 +42,8 @@ class _OtherHelpListingState extends State<OtherHelpListing> {
         var data = {
           "societyId": SocietyId,
           "wingId" : wingId,
-          "flatId" : flatId
-          // "toDate": date
+          "flatId" : flatId,
+          "toDate": date
         };
         setState(() {
           isLoading = true;

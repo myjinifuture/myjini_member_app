@@ -105,10 +105,11 @@ dependencies:
   path_provider: any
   intl: ^0.16.0
   pull_to_refresh: any
-  unique_identifier: any
+#  unique_identifier: any
   provider: any
   clipboard: ^0.1.2+8
   convex_bottom_bar: any
+  flutter_cache_manager: any
   flutter_statusbarcolor: ^0.2.3
   razorpay_flutter: ^1.2.2
   webview_flutter: ^0.3.14+1
@@ -317,10 +318,6 @@ flutter:
     - images/SOS.png
     - images/sweeper.png
     - images/maid.png
-    - images/water.png
-    - images/pills.png
-    - images/loudspeaker.png
-    - images/watchman.png
     #    - assets/assets/
     #    - images/bike.png
     - assets/

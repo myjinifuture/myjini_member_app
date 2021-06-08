@@ -15,6 +15,7 @@ import 'package:vibration/vibration.dart';
 import 'dart:ui' as ui;
 
 import 'Services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 // import 'package:wakelock/wakelock.dart';
 
@@ -39,7 +40,11 @@ class JoinPage extends StatefulWidget {
   _JoinPageState createState() => _JoinPageState();
 }
 
-class _JoinPageState extends State<JoinPage> {
+class _JoinPageState extends State<JoinPage> with AutomaticKeepAliveClientMixin{
+
+  @override
+  bool get wantKeepAlive => true;
+
   static final _users = <int>[];
   bool muted = false;
   AgoraRtmChannel _channel;
@@ -50,8 +55,24 @@ class _JoinPageState extends State<JoinPage> {
   @override
   void initState() {
     initialize();
+    _getContactPermission();
     Vibration.cancel();
     super.initState();
+  }
+
+  Future<PermissionStatus> _getContactPermission() async {
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.camera);
+    if (permission != PermissionStatus.granted &&
+        permission != PermissionStatus.denied) {
+      Map<PermissionGroup, PermissionStatus> permissionStatus =
+          await PermissionHandler()
+              .requestPermissions([PermissionGroup.camera]);
+      return permissionStatus[PermissionGroup.camera] ??
+          PermissionStatus.unknown;
+    } else {
+      return permission;
+    }
   }
 
   @override
@@ -69,12 +90,7 @@ class _JoinPageState extends State<JoinPage> {
   Future<void> initialize() async {
     await _initAgoraRtcEngine();
     _addAgoraEventHandlers();
-    await AgoraRtcEngine.enableWebSdkInteroperability(true);
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    // if(widget.fromMemberData==null){
-    //   data = preferences.getString('data');
-    // }
-    // else{
+    // await AgoraRtcEngine.enableWebSdkInteroperability(true);
     if (widget.unknownVisitorEntryId != null) {
       commonId = widget.unknownVisitorEntryId;
     } else if (widget.entryIdWhileGuestEntry != null) {
@@ -82,9 +98,6 @@ class _JoinPageState extends State<JoinPage> {
     } else {
       commonId = widget.fromMemberData["CallingId"].toString();
     }
-    // }
-    print("data on join page");
-    print(commonId);
     widget.fromMemberData["NotificationType"] == "VoiceCall" ||
         widget.videoCall == "false"
         ? await AgoraRtcEngine.disableVideo()
@@ -92,7 +105,6 @@ class _JoinPageState extends State<JoinPage> {
     await AgoraRtcEngine.setParameters(
         '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
     await AgoraRtcEngine.joinChannel(null, commonId, null, 0).then((value) {
-      log("after join $value");
       setState(() {
         loading = false;
       });
@@ -109,24 +121,12 @@ class _JoinPageState extends State<JoinPage> {
   }
 
   void _addAgoraEventHandlers() {
-    // AgoraRtcEngine.onError = (dynamic code) {
-    //   print("error-> " + code.toString());
-    // };
-
     AgoraRtcEngine.onJoinChannelSuccess = (
         String channel,
         int uid,
         int elapsed,
         ) {
-      log("on join -> $channel");
-      print("on join2 -> ${uid.toString}");
     };
-
-    // AgoraRtcEngine.onLeaveChannel = () {
-    //   setState(() {
-    //     _users.clear();
-    //   });
-    // };
 
     AgoraRtcEngine.onUserJoined = (int uid, int elapsed) {
       print("smit8 ${uid}");
@@ -146,7 +146,6 @@ class _JoinPageState extends State<JoinPage> {
   List<Widget> _getRenderViews() {
     print("smit 6");
     final List<AgoraRenderWidget> list = [];
-    //user.add(widget.channelId);
     _users.forEach((int uid) {
       list.add(AgoraRenderWidget(uid));
     });
@@ -163,16 +162,6 @@ class _JoinPageState extends State<JoinPage> {
           ),
         ),
       ],
-    );
-  }
-
-  /// Video view row wrapper
-  Widget _expandedVideoRow(List<Widget> views) {
-    final wrappedViews = views.map<Widget>(_videoView).toList();
-    return Expanded(
-      child: Row(
-        children: wrappedViews,
-      ),
     );
   }
 
@@ -193,10 +182,6 @@ class _JoinPageState extends State<JoinPage> {
               color: Colors.deepPurple,
             ),
             Expanded(child: views[1]),
-            // Expanded(child: views[0]),
-            // Expanded(child: views[1]),
-            // _expandedVideoRow([views[0]]),
-            // _expandedVideoRow([views[1]])
           ],
         );
         break;
@@ -257,8 +242,6 @@ class _JoinPageState extends State<JoinPage> {
                       builder: (context) => DirecotryScreen(),
                     ),
                   );
-                  // Navigator.pushAndRemoveUntil(
-                  //     context, SlideLeftRoute(page: HomeScreen()), (route) => false);
                 } else {
                   print("else called");
                   AgoraRtcEngine.destroy();
@@ -268,11 +251,6 @@ class _JoinPageState extends State<JoinPage> {
                       builder: (context) => DirecotryScreen(),
                   ),
                   );
-                  // setState(() {
-                  //   isLoading = false;
-                  // });
-                  // Navigator.pushAndRemoveUntil(
-                  //     context, SlideLeftRoute(page: HomeScreen()), (route) => false);
                 }
               }, onError: (e) {
             showHHMsg("Something Went Wrong Please Try Again", "");
@@ -305,8 +283,6 @@ class _JoinPageState extends State<JoinPage> {
           ),
           RawMaterialButton(
             onPressed: () {
-              // Navigator.pushReplacementNamed(
-              //     context,'/HomeScreen');
               onRejectCall();
             },
             child: Icon(
@@ -357,8 +333,6 @@ class _JoinPageState extends State<JoinPage> {
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
       ByteData byteData =
       await image.toByteData(format: ui.ImageByteFormat.png);
-      var pngBytes = byteData.buffer.asUint8List();
-      // final result = await ImageGallerySaver.saveImage(pngBytes);
     } catch (e) {
       print(e);
     }  }

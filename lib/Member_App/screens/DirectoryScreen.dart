@@ -95,8 +95,10 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
                       .contains(widget.searchMemberName.split(" ")[0]) ||
                       data.Data[i]["ContactNo"].toString().toUpperCase().
                       contains(widget.searchMemberName.toUpperCase().trim().replaceAll(" ", ""))||
+                      data.Data[i]["BloodGroup"].toString().toUpperCase().
+                      contains(widget.searchMemberName.toUpperCase().trim().replaceAll(" ", ""))||
                       data.Data[i]["Vehicles"].toString().toUpperCase().replaceAll("-", "")
-                      .contains(widget.searchMemberName.replaceAll(" ", ""))  ||
+                      .contains(widget.searchMemberName.replaceAll(" ", "").replaceAll("-",""))  ||
                       (data.Data[i]["WingData"][0]["wingName"] + data.Data[i]["FlatData"][0]["flatNo"])
                           .toString().toUpperCase().replaceAll("-", "")
                           .contains(widget.searchMemberName.replaceAll(" ", ""))){
@@ -222,8 +224,7 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
     return WillPopScope(
       onWillPop: (){
         print("pressed");
-        Navigator.pushAndRemoveUntil(
-            context, SlideLeftRoute(page: HomeScreen()), (route) => false);
+        Navigator.pushNamedAndRemoveUntil(context, '/HomeScreen', (route) => false);
       },
       child: Scaffold(
         appBar: buildAppBar(context),
@@ -231,58 +232,61 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
             ? LoadingComponent()
             : Column(
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                for (int i = 0; i < _wingList.length; i++) ...[
-                  GestureDetector(
-                    onTap: () {
-                      if (selectedWing != _wingList[i]["_id"].toString()) {
-                        setState(() {
-                          selectedWing = _wingList[i]["_id"].toString();
-                          _getDirectoryListing(seletecedWing: selectedWing);
-                        });
-                        // setState(() {
-                        //   memberData = [];
-                        //   filterMemberData = [];
-                        //   searchMemberData = [];
-                        //   // isFilter = false;
-                        //   // _isSearching = false;
-                        // });
-                      }
-                    },
-                    child: Container(
-                      width: selectedWing == _wingList[i]["_id"].toString()
-                          ? 60
-                          : 45,
-                      height:
-                      selectedWing == _wingList[i]["_id"].toString()
-                          ? 60
-                          : 45,
-                      margin: EdgeInsets.only(top: 10, left: 5, right: 5),
-                      decoration: BoxDecoration(
-                          color: selectedWing ==
-                              _wingList[i]["_id"].toString()
-                              ? cnst.appPrimaryMaterialColor
-                              : Colors.white,
-                          border: Border.all(
-                              color: cnst.appPrimaryMaterialColor),
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(4))),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "${_wingList[i]["wingName"]}",
-                        style: TextStyle(
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  for (int i = 0; i < _wingList.length; i++) ...[
+                    GestureDetector(
+                      onTap: () {
+                        if (selectedWing != _wingList[i]["_id"].toString()) {
+                          setState(() {
+                            selectedWing = _wingList[i]["_id"].toString();
+                            _getDirectoryListing(seletecedWing: selectedWing);
+                          });
+                          // setState(() {
+                          //   memberData = [];
+                          //   filterMemberData = [];
+                          //   searchMemberData = [];
+                          //   // isFilter = false;
+                          //   // _isSearching = false;
+                          // });
+                        }
+                      },
+                      child: Container(
+                        width: selectedWing == _wingList[i]["_id"].toString()
+                            ? 60
+                            : 45,
+                        height:
+                        selectedWing == _wingList[i]["_id"].toString()
+                            ? 60
+                            : 45,
+                        margin: EdgeInsets.only(top: 10, left: 5, right: 5),
+                        decoration: BoxDecoration(
                             color: selectedWing ==
                                 _wingList[i]["_id"].toString()
-                                ? Colors.white
-                                : cnst.appPrimaryMaterialColor,
-                            fontSize: 19),
+                                ? cnst.appPrimaryMaterialColor
+                                : Colors.white,
+                            border: Border.all(
+                                color: cnst.appPrimaryMaterialColor),
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(4))),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "${_wingList[i]["wingName"]}",
+                          style: TextStyle(
+                              color: selectedWing ==
+                                  _wingList[i]["_id"].toString()
+                                  ? Colors.white
+                                  : cnst.appPrimaryMaterialColor,
+                              fontSize: 19),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
             Expanded(
               child: memberData.length > 0 && memberData != null
@@ -350,8 +354,7 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
           color: Colors.white,
         ),
         onPressed: () {
-          Navigator.pushAndRemoveUntil(
-              context, SlideLeftRoute(page: HomeScreen()), (route) => false);
+          Navigator.pushNamedAndRemoveUntil(context, '/HomeScreen', (route) => false);
         },
       ),
       // actions: <Widget>[

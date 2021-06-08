@@ -132,8 +132,12 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
               isDOBSwitched = data.Data[0]["Private"]["DOB"];
               isAnniversarySwitched =
                   data.Data[0]["Private"]["AnniversaryDate"];
-              isMuteNotificationsSwitched =
-                  data.Data[0]["MemberTokens"][0]["muteNotificationAudio"];
+              for(int i=0;i<data.Data[0]["MemberTokens"].length;i++){
+                if(data.Data[0]["MemberTokens"][i]["playerId"] == playerId){
+                  isMuteNotificationsSwitched =
+                  data.Data[0]["MemberTokens"][i]["muteNotificationAudio"];
+                }
+              }
             });
           } else {
             setState(() {

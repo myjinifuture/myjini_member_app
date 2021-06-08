@@ -17,7 +17,6 @@ import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:smart_society_new/Member_App/screens/HomeScreen.dart';
 import 'package:smart_society_new/Member_App/screens/OtpScreen.dart';
-import 'package:unique_identifier/unique_identifier.dart';
 import '../common/Services.dart';
 import 'OTP.dart';
 
@@ -62,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   String _platformImei = 'Unknown';
-  String uniqueId = "Unknown";
+  String uniqueId = "";
   Future<void> initPlatformState() async {
     String platformImei;
     String idunique;
@@ -76,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
     // } on PlatformException {
     //   platformImei = 'Failed to get platform version.';
     // }
-    String  identifier =await UniqueIdentifier.serial;
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
@@ -84,12 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() {
       _platformImei = platformImei;
-      uniqueId = identifier;
     });
     print("_platformImei");
     print(_platformImei);
-    print("uniqueid");
-    print(identifier);
   }
 
   void getPermissionStatus() async {
@@ -159,8 +154,8 @@ class _LoginScreenState extends State<LoginScreen> {
         constant.Session.SocietyId, logindata[0]["society"]["societyId"].toString());
     await prefs.setString(
         constant.Session.IsVerified, logindata[0]["isVerify"].toString());
-    await prefs.setString(
-        constant.Session.Profile, logindata[0]["Image"].toString());
+    // await prefs.setString(
+    //     constant.Session.Profile, logindata[0]["Image"].toString());
     await prefs.setString(constant.Session.ResidenceType,
         logindata[0]["society"]["ResidenceType"].toString());
 /*    await prefs.setString(

@@ -10,7 +10,6 @@ import 'package:smart_society_new/DigitalCommon/Constants.dart';
 import 'package:smart_society_new/DigitalComponent/HeaderComponent.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as cnst;
-import 'package:unique_identifier/unique_identifier.dart';
 
 class More extends StatefulWidget {
   @override
@@ -38,31 +37,13 @@ class _MoreState extends State<More> {
     print(playerId);
   }
 
-  String uniqueId = "Unknown";
+  String uniqueId = "";
   Future<void> initPlatformState() async {
     String platformImei;
     String idunique;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // try {
-    //   platformImei =
-    //   await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
-    //   List<String> multiImei = await ImeiPlugin.getImeiMulti();
-    //   print(multiImei);
-    //   idunique = await ImeiPlugin.getId();
-    // } on PlatformException {
-    //   platformImei = 'Failed to get platform version.';
-    // }
-    String  identifier =await UniqueIdentifier.serial;
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    setState(() {
-      uniqueId = identifier;
-    });
-    print("uniqueid");
-    print(identifier);
+
   }
 
   String societyId, memberId;

@@ -266,6 +266,7 @@ class _AddStaffState extends State<AddStaff> {
   }
 
   List selectedWingId = [];
+  bool staffAdded = false;
 
   _SaveStaff() async {
     if (txtName.text != "") {
@@ -338,7 +339,10 @@ class _AddStaffState extends State<AddStaff> {
           Services.responseHandler(apiName: "member/addStaff_v1", body: formData)
               .then((data) async {
             // pr.hide();
-            if (data.Data != null && data.IsSuccess == true) {
+            if (data.Data.length > 0 && data.IsSuccess == true) {
+              setState(() {
+                staffAdded = true;
+              });
               print("data.Data");
               print(data.Data);
               Fluttertoast.showToast(
@@ -350,7 +354,7 @@ class _AddStaffState extends State<AddStaff> {
              widget.onAddStaff();
             } else {
               // pr.hide();
-              showMsg(data.Message, title: "Error");
+              showMsg(data.Message, title: "MYJINI");
             }
           }, onError: (e) {
             // pr.hide();
@@ -1221,7 +1225,9 @@ class _AddStaffState extends State<AddStaff> {
                 }
                 else{
                   setState(() {
-                    buttonPressed = true;
+                    if(staffAdded) {
+                      buttonPressed = true;
+                    }
                   });
                   _SaveStaff();
                 }

@@ -113,7 +113,7 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
         setState(() {
           isLoading = true;
         });
-        Services.responseHandler(apiName : "admin/memberApproval", body :data).then((data) async {
+        Services.responseHandler(apiName : "admin/memberApproval_v1", body :data).then((data) async {
           if (data.Data.toString()=="1") {
             setState(() {
               Fluttertoast.showToast(
