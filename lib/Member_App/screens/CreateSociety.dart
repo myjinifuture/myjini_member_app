@@ -1198,13 +1198,13 @@ class _CreateSocietyState extends State<CreateSociety> {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w600)),
                     onPressed: isAreaSelected ? () {
-                      setState(() {
-                        buttonPressed = true;
-                      });
+                      print(txtname.text);
+                      print(txtmobile.text);
+                      print(txtwings.text);
                       if (Price_dropdownValue == "Select" ||
                           txtname.text == "" ||
                           txtmobile.text == "" ||
-                          txtwings.text == "" ||
+                          // txtwings.text == "" ||
                           selectedStateCode == null ||
                           selectedCity == null ||
                           txtYourName.text=="" ||

@@ -260,7 +260,9 @@ class _NewEntryState extends State<NewEntry> {
                           textColor: Colors.white,
                           fontSize: 16.0,
                         );
-                        Navigator.pushNamed(context, '/Reminders');
+                        // Navigator.pushNamed(context, '/Reminders');
+                          Navigator.pop(context);
+                        Navigator.pop(context);
                       }
                     },
                   ),

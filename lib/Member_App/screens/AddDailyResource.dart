@@ -1384,7 +1384,7 @@ class _AddDailyResourceState extends State<AddDailyResource> {
           "societyId" : SocietyId,
           "wingId" : WingId
         };
-        Services.responseHandler(apiName: "admin/getFlatsOfSociety",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/getFlatsOfSociety_v1",body: data).then((data) async {
           setState(() {
             isLoading = false;
           });

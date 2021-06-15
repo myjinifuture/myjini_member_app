@@ -36,8 +36,7 @@ class _SplashscreenState extends State<Splashscreen> {
         print("constant.NODE_API");
         print(constant.NODE_API);
         if (MemberId != null && MemberId != ""){
-          Navigator.pushNamedAndRemoveUntil(
-              context, '/HomeScreen', (route) => false);
+          Navigator.pushReplacementNamed(context, '/HomeScreen');
           // Navigator.push(
           //     context,
           //     MaterialPageRoute(

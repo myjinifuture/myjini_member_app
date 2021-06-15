@@ -256,184 +256,16 @@ class _StaffInOutState extends State<StaffInOut> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    print(_tabController.index);
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "Staffs",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        // leading: IconButton(
-        //   icon: Icon(
-        //     Icons.arrow_back,
-        //     color: Colors.white,
-        //   ),
-        //   onPressed: () {
-        //     Navigator.pushReplacementNamed(context, "/Dashboard");
-        //   },
-        // ),
       ),
       body: Column(
               children: <Widget>[
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: <Widget>[
-                //     for (int i = 0; i < _wingList.length; i++) ...[
-                //       GestureDetector(
-                //         onTap: () {
-                //           if (selectedWing != _wingList[i]["_id"].toString()) {
-                //             setState(() {
-                //               selectedWing = _wingList[i]["_id"].toString();
-                //             });
-                //             // setState(() {
-                //             //   _StaffData = [];
-                //             // });
-                //             // getStaffData(
-                //             //   _fromDate.toString(),
-                //             //   _toDate.toString(),
-                //             //   _wingList[i]["Id"].toString(),
-                //             // );
-                //           }
-                //         },
-                //         child: Container(
-                //           width: selectedWing == _wingList[i]["_id"].toString()
-                //               ? 60
-                //               : 45,
-                //           height:
-                //               selectedWing == _wingList[i]["_id"].toString()
-                //                   ? 60
-                //                   : 45,
-                //           margin: EdgeInsets.only(top: 10, left: 5, right: 5),
-                //           decoration: BoxDecoration(
-                //               color: selectedWing ==
-                //                       _wingList[i]["_id"].toString()
-                //                   ? cnst.appPrimaryMaterialColor
-                //                   : Colors.white,
-                //               border: Border.all(
-                //                   color: cnst.appPrimaryMaterialColor),
-                //               borderRadius:
-                //                   BorderRadius.all(Radius.circular(4))),
-                //           alignment: Alignment.center,
-                //           child: Text(
-                //             "${_wingList[i]["wingName"]}",
-                //             style: TextStyle(
-                //                 color: selectedWing ==
-                //                         _wingList[i]["_id"].toString()
-                //                     ? Colors.white
-                //                     : cnst.appPrimaryMaterialColor,
-                //                 fontSize: 19),
-                //           ),
-                //         ),
-                //       ),
-                //     ],
-                //   ],
-                // ),
-                // Padding(
-                //   padding: const EdgeInsets.all(8.0),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: <Widget>[
-                //       Row(
-                //         children: <Widget>[
-                //           GestureDetector(
-                //             onTap: () {
-                //               _showFromDatePicker();
-                //             },
-                //             child: Container(
-                //               height: 37,
-                //               decoration: BoxDecoration(
-                //                   color: Colors.grey[200],
-                //                   borderRadius:
-                //                       BorderRadius.all(Radius.circular(5))),
-                //               child: Row(
-                //                 mainAxisAlignment:
-                //                     MainAxisAlignment.spaceBetween,
-                //                 children: <Widget>[
-                //                   Padding(padding: EdgeInsets.only(left: 5)),
-                //                   Text(
-                //                     "${_fromDate.toString().substring(8, 10)}-${_fromDate.toString().substring(5, 7)}-${_fromDate.toString().substring(0, 4)}",
-                //                     style: TextStyle(fontSize: 13),
-                //                   ),
-                //                   Padding(padding: EdgeInsets.only(left: 5)),
-                //                   Container(
-                //                     width: 50,
-                //                     height: 55,
-                //                     decoration: BoxDecoration(
-                //                         color: cnst.appPrimaryMaterialColor,
-                //                         borderRadius: BorderRadius.only(
-                //                             topRight: Radius.circular(5),
-                //                             bottomRight: Radius.circular(5))),
-                //                     child: Icon(
-                //                       Icons.date_range,
-                //                       color: Colors.white,
-                //                     ),
-                //                   )
-                //                 ],
-                //               ),
-                //             ),
-                //           ),
-                //           Padding(
-                //             padding: EdgeInsets.only(left: 5, right: 5),
-                //             child: Text("To ",
-                //                 style: TextStyle(
-                //                     fontSize: 13,
-                //                     fontWeight: FontWeight.w600)),
-                //           ),
-                //           Container(
-                //             height: 37,
-                //             decoration: BoxDecoration(
-                //                 color: Colors.grey[200],
-                //                 borderRadius:
-                //                     BorderRadius.all(Radius.circular(5))),
-                //             child: Row(
-                //               mainAxisAlignment:
-                //                   MainAxisAlignment.spaceBetween,
-                //               children: <Widget>[
-                //                 Padding(padding: EdgeInsets.only(left: 5)),
-                //                 Text(
-                //                   "${_toDate.toString().substring(8, 10)}-${_toDate.toString().substring(5, 7)}-${_toDate.toString().substring(0, 4)}",
-                //                   style: TextStyle(fontSize: 13),
-                //                 ),
-                //                 Padding(padding: EdgeInsets.only(left: 5)),
-                //                 GestureDetector(
-                //                   onTap: () {
-                //                     _showToDatePicker();
-                //                   },
-                //                   child: Container(
-                //                     width: 50,
-                //                     height: 55,
-                //                     decoration: BoxDecoration(
-                //                         color: cnst.appPrimaryMaterialColor,
-                //                         borderRadius: BorderRadius.only(
-                //                             topRight: Radius.circular(5),
-                //                             bottomRight: Radius.circular(5))),
-                //                     child: Icon(
-                //                       Icons.date_range,
-                //                       color: Colors.white,
-                //                     ),
-                //                   ),
-                //                 )
-                //               ],
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //       Padding(padding: EdgeInsets.only(left: 4)),
-                //       Expanded(
-                //         child: RaisedButton(
-                //             color: cnst.appPrimaryMaterialColor,
-                //             child: Icon(
-                //               Icons.search,
-                //               color: Colors.white,
-                //             ),
-                //             onPressed: () {
-                //               // getStaffData(_fromDate.toString(),
-                //               //     _toDate.toString(), selectedWing
-                //             }),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                // Divider(),
                 TabBar(
                   unselectedLabelColor: Colors.grey[500],
                   indicatorColor: Colors.black,
@@ -508,14 +340,6 @@ class _StaffInOutState extends State<StaffInOut> with TickerProviderStateMixin {
                                         return StaffComponentBywing(
                                           visitorData: _StaffData[index],
                                           index: index,
-                                          // onDelete: () {
-                                          //   setState(() {
-                                          //     _getotherListing(
-                                          //         SocietyId,
-                                          //         _fromDate.toString(),
-                                          //         _toDate.toString());
-                                          //                                           });
-                                          // },
                                         );
                                       },
                                     ),

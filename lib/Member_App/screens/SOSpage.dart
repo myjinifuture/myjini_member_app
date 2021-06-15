@@ -508,7 +508,7 @@ class _SOSpageState extends State<SOSpage> {
           "societyId" : societyId,
           "wingId" : wingId
         };
-        Services.responseHandler(apiName: "member/getOccupiedFlats",body: data).then((data) async {
+        Services.responseHandler(apiName: "member/getOccupiedFlats_v2",body: data).then((data) async {
           if (data.Data !=null) {
             flats.clear();
             flatsToMakeSort.clear();
@@ -753,21 +753,21 @@ class _SOSpageState extends State<SOSpage> {
                   //   },
                   //   title: Text('Flats'),
                   // ),
-                  CheckboxListTile(
-                    value: selSOSContacts,
-                    onChanged: (bool value) {
-                      setState(() {
-                        selSOSContacts = !selSOSContacts;
-                      });
-                      if(value){
-                        _getEmergencyContacts();
-                      }
-                      else{
-                        emergencyContact.clear();
-                      }
-                    },
-                    title: Text('SOS Contacts'),
-                  ),
+                  // CheckboxListTile(
+                  //   value: selSOSContacts,
+                  //   onChanged: (bool value) {
+                  //     setState(() {
+                  //       selSOSContacts = !selSOSContacts;
+                  //     });
+                  //     if(value){
+                  //       _getEmergencyContacts();
+                  //     }
+                  //     else{
+                  //       emergencyContact.clear();
+                  //     }
+                  //   },
+                  //   title: Text('SOS Contacts'),
+                  // ),
                   selFlats==true?MultiSelectDialogField(
                     items: flatsToMakeSort
                         .map((val) => MultiSelectItem<dynamic>(val, val))

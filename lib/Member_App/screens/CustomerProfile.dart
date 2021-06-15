@@ -103,17 +103,17 @@ class _CustomerProfileState extends State<CustomerProfile> {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
+        // setState(() {
+        //   isLoading = true;
+        // });
         var data = {"memberId": MemberId, "vehicleNo": VehicleNo};
         Services.responseHandler(
                 apiName: "member/deleteMemberVehicles", body: data)
             .then((data) async {
           if (data.Data.toString() == "1") {
-            setState(() {
-              isLoading = false;
-            });
+            // setState(() {
+            //   isLoading = false;
+            // });
             Fluttertoast.showToast(
                 msg: "Vehicle Deleted Successfully!!!",
                 toastLength: Toast.LENGTH_LONG,
@@ -1014,8 +1014,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
                               return MyVehicleComponent(
                                 vehicleData: VehicleData[index],
                                 onDelete: () {
-                                  _DeleteMemberVehicle(
-                                      VehicleData[index]["vehicleNo"]);
+                                    _DeleteMemberVehicle(
+                                        VehicleData[index]["vehicleNo"]);
                                 },
                               );
                             }

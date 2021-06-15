@@ -443,7 +443,7 @@ String selectedSocietyId = "";
             "societyId" : selectedSocietyId,
             "wingId" : wingId
           };
-          Services.responseHandler(apiName: "admin/getFlatsOfSociety",body: data).then((data) async {
+          Services.responseHandler(apiName: "admin/getFlatsOfSociety_v1",body: data).then((data) async {
             setState(() {
               isLoading = false;
             });

@@ -162,6 +162,7 @@ import 'Member_App/screens/VerifiedOrNot.dart';
 import 'Member_App/screens/addEmergencyNumberSocietyWise.dart';
 import 'Member_App/screens/fromMemberScreen.dart';
 import 'Member_App/src/global_bloc.dart';
+import 'package:smart_society_new/Member_App/common/constant.dart' as cnst;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -214,31 +215,61 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     print(_notification);
   }
 
+  String MemberId = "";
   rejectCall() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    onRejectCall(prefs.getString('commonId'));
+    MemberId = prefs.getString(cnst.Session.Member_Id);
+    onRejectCall();
   }
 
-  onRejectCall(String commonId) async {
+  onRejectCall() async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var body = {"callingId": commonId, "rejectBy": true};
+        // if(commonId==null){
+        //   Navigator.pushAndRemoveUntil(
+        //       context, SlideLeftRoute(page: HomeScreen()), (route) => false);
+        // }
+        // else {
+        var body = {
+          "memberId": MemberId,
+          "watchmanId": ""
+        };
+        print("body");
+        print(body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        Services.responseHandler(apiName: "member/rejectCall", body: body).then(
-            (data) async {
-          prefs.setString('commonId', null);
-          if (data.Data.toString() == '1') {
-            print('call declined successfully in main.dart');
-          } else {}
-        }, onError: (e) {});
+        Services.responseHandler(apiName: "member/rejectCallForMemberWatchman", body: body)
+            .then(
+                (data) async {
+                  if (data.Data.toString() == '1') {
+                // Navigator.pushReplacementNamed(context, "/HomeScreen");
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => DirecotryScreen(),
+                //   ),
+                // );
+              } else {
+                print("else called");
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => DirecotryScreen(),
+                // ),
+                // );
+              }
+            }, onError: (e) {
+          // showHHMsg("Something Went Wrong Please Try Again", "");
+        });
       }
-    } on SocketException catch (_) {}
+    } on SocketException catch (_) {
+      // showHHMsg("No Internet Connection.", "");
+    }
   }
 
   // FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  // final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   static const platform = const MethodChannel('com.myjini_member.app');
 
@@ -1152,11 +1183,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         routes: {
           '/': (context) => Splashscreen(
                 isAppOpenedAfterNotification: isAppOpenedAfterNotification,
-                navigatorKey: navigatorKey,
+                navigatorKey: Get.key,
               ),
           '/LoginScreen': (context) => LoginScreen(playerId: playerId),
           '/GetPass': (context) => GetPass(),
-          '/HomeScreen': (context) => HomeScreen(navigatorKey: navigatorKey),
+          '/HomeScreen': (context) => HomeScreen(),
           '/getEmergencyNumberSocietyWise': (context) =>
               getEmergencyNumberSocietyWise(),
           '/Notice': (context) => NoticeScreen(),

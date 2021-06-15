@@ -431,14 +431,14 @@ class _DailyResourseComponentState extends State<DailyResourseComponent> {
                                       color: Colors.black,
                                     ),
                                   ),
-                                  Text(
+                                  widget.dailyResourceData["isMapped"]  ? Text(
                                     "${widget.dailyResourceData["entryNo"].toString().split("-")[1]}",
                                     style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.black,
                                     ),
-                                  ),
+                                  ):Container(),
                                 ],
                               ),
                             ),

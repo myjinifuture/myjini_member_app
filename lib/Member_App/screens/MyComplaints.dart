@@ -400,12 +400,12 @@ class _MyComplaintsState extends State<MyComplaints> {
                       ),
                     ],
                   ),
-                  FlatButton(
+            ComplainData[ComplainData.length- 1 -index]["complainStatus"] == 0  ? FlatButton(
                       onPressed: () {
                         _showConfirmDialog(
                             ComplainData[ComplainData.length- 1 -index]["_id"].toString());
                       },
-                      child: Container(
+                      child:Container(
                         decoration: BoxDecoration(
                             color: Colors.grey[100],
                             borderRadius:
@@ -425,7 +425,7 @@ class _MyComplaintsState extends State<MyComplaints> {
                             ],
                           ),
                         ),
-                      ))
+                      )):Container()
                 ],
               ),
             ),

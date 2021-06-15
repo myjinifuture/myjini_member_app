@@ -261,7 +261,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);                                },
                             ),
                       ));
-
                 }
                 // _MallLoginApi();
               }

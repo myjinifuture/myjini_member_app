@@ -358,7 +358,7 @@ class _WingFlatState extends State<WingFlat> {
           "societyId" : societyId,
           "wingId" : wingId
         };
-        Services.responseHandler(apiName: "admin/getFlatsOfSociety",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/getFlatsOfSociety_v1",body: data).then((data) async {
           if (data.Data !=null) {
             setState(() {
               getflatDetails = data.Data;

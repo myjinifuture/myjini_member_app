@@ -90,6 +90,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       Gender = prefs.getString(constant.Session.Gender);
       Address = prefs.getString(constant.Session.Address);
       DOB = prefs.getString(constant.Session.DOB);
+      DOB.replaceAll('00:00:00.000', '');
       _isPrivate = prefs.getString(constant.Session.isPrivate);
       MemberId = prefs.getString(constant.Session.Member_Id);
       // Profile = prefs.getString(constant.Session.Profile);
@@ -97,7 +98,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     });
 
     print("profile" + CompanyName);
-    print("dodsdssx");
+    print("date of birth");
     print(DOB);
   }
 
@@ -670,7 +671,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 leading: Image.asset('images/Cake.png',
                     width: 22, height: 22, color: Colors.grey[500]),
                 title:
-                    Text(DOB != "null" && DOB != null ? "${(DOB)}" : ""),
+                    Text(DOB != "null" && DOB != null ? "${(DOB.replaceAll("00:00:00.000", ""))}" : ""),
                 subtitle: Text("DOB"),
               ),
               Padding(

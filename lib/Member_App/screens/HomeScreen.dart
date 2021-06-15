@@ -67,10 +67,12 @@ const APP_STORE_URL = 'http://tinyurl.com/wz2aeao';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.itfuturz.mygenie_member';
 
 class HomeScreen extends StatefulWidget {
-  GlobalKey<NavigatorState> navigatorKey;
+  // GlobalKey<NavigatorState> navigatorKey;
   bool isAppOpenedAfterNotification;
 
-  HomeScreen({this.navigatorKey, this.isAppOpenedAfterNotification});
+  HomeScreen({
+    // this.navigatorKey,
+    this.isAppOpenedAfterNotification});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -86,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     _isInForeground = state == AppLifecycleState.resumed;
     print("_isInForeground during didchangeapplifecycle");
-    initOneSignalNotification(_isInForeground);
     // print(_isInForeground);
     switch (state) {
       case AppLifecycleState.paused:
@@ -104,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  GlobalKey<NavigatorState> navigatorKey;
+  // GlobalKey<NavigatorState> navigatorKey;
 
   bool isFCMtokenLoading = false;
 
@@ -154,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool isButtonPressed = false;
 
 //onesignal function for notifications
-  Future<void> initOneSignalNotification(bool isInForeground) async {
+  Future<void> initOneSignalNotification() async {
     OneSignal.shared.setNotificationOpenedHandler(
         (OSNotificationOpenedResult result) async {
       isButtonPressed = true;
@@ -166,38 +167,38 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       print(data);
       print("value of _isinforeground");
       Vibration.vibrate(
-        duration: 1500,
+        duration: 700,
       );
       if (data["notificationType"].toString() == "AddEvent") {
-        Get.to(() => Events());
+        Get.to(Events());
       }
       if (data["notificationType"].toString() == "JoinSociety") {
-        Get.to(() => getPendingApprovals());
+        Get.to(getPendingApprovals());
       } else if (data["notificationType"].toString() == "RevokeAdminRole") {
-        Get.to(() => LoginScreen());
+        Get.to(LoginScreen());
       } else if (data["NotificationType"].toString() ==
           "BroadcastMessageFromSociety") {
-        Get.to(() => BroadcastMessagePopUp(
+        Get.to(BroadcastMessagePopUp(
               broadcastMessage: data["Message"],
             ));
       } else if (data["notificationType"].toString() == "AssignAdminRole") {
-        Get.to(() => LoginScreen());
+        Get.to(LoginScreen());
       } else if (data["notificationType"].toString() == "AddDocument") {
-        Get.to(() => DocumentScreen());
+        Get.to(DocumentScreen());
       } else if (data["notificationType"].toString() == "AddGallery") {
-        Get.to(() => GalleryScreen());
+        Get.to(GalleryScreen());
       } else if (data["notificationType"].toString() == "StaffEntry" ||
           data["notificationType"].toString() == "StaffLeave") {
-        Get.to(() => NoticeBoard(message: data));
+        Get.to(NoticeBoard(message: data));
       } else if (data["notificationType"] == 'Visitor') {
-        Get.to(() => NotificationPopup(
+        Get.to(NotificationPopup(
               data,
               unknownEntry: true,
             ));
       } else if (data["notificationType"] == 'SendComplainToAdmin') {
-        Get.to(() => NotificationPopup(data, unknownEntry: false));
+        Get.to(NotificationPopup(data, unknownEntry: false));
       } else if (data["NotificationType"] == "SOS") {
-        Get.to(() => SOS(
+        Get.to(SOS(
               data,
               body: result.notification.payload.body,
             ));
@@ -206,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           data["NotificationType"] == "VideoCalling") {
         print('data');
         print(data);
-        Get.to(() => JoinPage(
+        Get.to(JoinPage(
             unknownEntry: false,
             againPreviousScreen: false,
             fromMemberData: result.notification.payload.additionalData));
@@ -214,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           data["NotificationType"] == "VoiceCall") {
         print('data');
         print(data);
-        Get.to(() => JoinPage(
+        Get.to(JoinPage(
             unknownEntry: false,
             againPreviousScreen: false,
             fromMemberData: result.notification.payload.additionalData));
@@ -222,21 +223,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           data["NotificationType"] == "VideoCalling") {
         print('data');
         print(data);
-        Get.to(() => FromMemberScreen(
+        Get.to(FromMemberScreen(
             fromMemberData: result.notification.payload.additionalData,
             rejected: "rejected"));
       } else if (data["CallResponseIs"] == "Rejected" &&
           data["NotificationType"] == "VoiceCall") {
         print('data');
         print(data);
-        Get.to(() => FromMemberScreen(
+        Get.to(FromMemberScreen(
             fromMemberData: result.notification.payload.additionalData,
             rejected: "rejected"));
       } else if (data["NotificationType"] == "VideoCalling") {
         print('data');
         print(data);
         Get.to(
-          () => Ringing(
+          Ringing(
             fromMemberData: result.notification.payload.additionalData,
           ),
         );
@@ -245,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         print('data');
         print(data);
         Get.to(
-          () => JoinPage(
+          JoinPage(
               unknownEntry: false,
               againPreviousScreen: false,
               fromMemberData: result.notification.payload.additionalData),
@@ -254,14 +255,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         print('data');
         print(data);
         Get.to(
-          () => Ringing(
+          Ringing(
               fromMemberData: result.notification.payload.additionalData),
         );
       } else if (data["NotificationType"] == "RejectVideoCallingBySender") {
         print('data');
         print(data);
         Get.to(
-          () => FromMemberScreen(
+          FromMemberScreen(
               fromMemberData: result.notification.payload.additionalData,
               rejected: "rejected"),
         );
@@ -269,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         print('data');
         print(data);
         Get.to(
-          () => FromMemberScreen(
+          FromMemberScreen(
               fromMemberData: result.notification.payload.additionalData,
               rejected: "rejected"),
         );
@@ -277,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         print('data');
         print(data);
         Get.to(
-          () => FromMemberScreen(
+          FromMemberScreen(
               fromMemberData: result.notification.payload.additionalData,
               rejected: "rejected"),
         );
@@ -285,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         print('data');
         print(data);
         Get.to(
-          () => FromMemberScreen(
+          FromMemberScreen(
               fromMemberData: result.notification.payload.additionalData,
               rejected: "rejected"),
         );
@@ -293,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         print('data');
         print(data);
         Get.to(
-          () => Ringing(
+          Ringing(
               fromMemberData: result.notification.payload.additionalData),
         );
       }
@@ -636,6 +637,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Future<void> initState() {
+    initOneSignalNotification();
     shareMyAddress();
     shareMySocietyDetails();
     super.initState();
@@ -1225,6 +1227,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   DateTime currentBackPressTime;
 
   Future<bool> onWillPop() {
+    print("exit called");
+    exit(0);
     DateTime now = DateTime.now();
     if (currentBackPressTime == null ||
         now.difference(currentBackPressTime) > Duration(seconds: 2)) {
@@ -1478,7 +1482,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       Padding(padding: EdgeInsets.only(left: 4)),
                       Expanded(
                         child: Text(
-                          "Search Member,Blood Group,MobileNo,VehicleNo",
+                          "Search Member,Blood Group,Mobile,Vehicle",
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                       ),
@@ -1867,7 +1871,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 });
                               }).toList(),
                             ),
-                  Padding(padding: EdgeInsets.all(0.0)),
                   Expanded(
                     child: SingleChildScrollView(
                       physics: BouncingScrollPhysics(),
@@ -1897,156 +1900,119 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                           _advertisementData.length > 0
                               ? GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => BannerScreen(
-                                          bannerData: _advertisementData,
-                                        ),
-                                      ),
-                                    );
+                            // onTap: () {
+                            //   Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => AdDetailPage(
+                            //         data:i,
+                            //       ),
+                            //     ),
+                            //   );
+                            // },
+                            child: Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: <Widget>[
+                                CarouselSlider(
+                                  viewportFraction: 1.0,
+                                  height:
+                                  MediaQuery.of(context).size.height * 0.218,
+                                  autoPlayAnimationDuration:
+                                  Duration(milliseconds: 1000),
+                                  reverse: false,
+                                  autoPlayCurve: Curves.fastOutSlowIn,
+                                  autoPlay: true,
+                                  onPageChanged: (index) {
+                                    setState(() {
+                                      _current = index;
+                                    });
                                   },
-                                  child: Stack(
-                                    alignment: Alignment.bottomCenter,
-                                    children: <Widget>[
-                                      _advertisementData.length == 0
-                                          ? CircularProgressIndicator()
-                                          : CarouselSlider(
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.218,
-                                              viewportFraction: 1.0,
-                                              autoPlayAnimationDuration:
-                                                  Duration(milliseconds: 1000),
-                                              reverse: false,
-                                              autoPlayCurve:
-                                                  Curves.fastOutSlowIn,
-                                              autoPlay: true,
-                                              onPageChanged: (index) {
-                                                setState(() {
-                                                  _current = index;
-                                                });
-                                              },
-                                              items:
-                                                  _advertisementData.map((i) {
-                                                return Builder(builder:
-                                                    (BuildContext context) {
-                                                  return GestureDetector(
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              AdDetailPage(
-                                                            data: i,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
-                                                    child: Container(
-                                                        width: MediaQuery.of(
-                                                                context)
-                                                            .size
-                                                            .width,
-                                                        child: Image.network(
-                                                            Image_Url +
-                                                                i["Image"][0],
-                                                            fit: BoxFit.fill)),
-                                                  );
-                                                });
-                                              }).toList(),
-                                            ),
-                                      // Padding(
-                                      //   padding: const EdgeInsets.all(20.0),
-                                      //   child: Align(alignment: Alignment.bottomRight,
-                                      //     child: GestureDetector(
-                                      //       onTap: () {
-                                      //         Navigator.pushReplacement(
-                                      //           context,
-                                      //           MaterialPageRoute(
-                                      //             builder: (context) => SOSpage(),
-                                      //           ),
-                                      //         );
-                                      //       },
-                                      //       child: Image.asset(
-                                      //         "images/SOS.png",
-                                      //         width: 60,
-                                      //         height: 60,
-                                      //       ),
-                                      //     ),
-                                      //   ),
-                                      // ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: map<Widget>(
-                                          _advertisementData,
-                                          (index, url) {
-                                            return Container(
-                                              width: 7.0,
-                                              height: 7.0,
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 10.0,
-                                                  horizontal: 2.0),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(5)),
-                                                  color: _current == index
-                                                      ? Colors.white
-                                                      : Colors.grey),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : banners.length == 0
-                                  ? Center(
-                                      child: CircularProgressIndicator(),
-                                    )
-                                  : CarouselSlider(
-                                      height: 180,
-                                      viewportFraction: 1.0,
-                                      autoPlayAnimationDuration:
-                                          Duration(milliseconds: 1000),
-                                      reverse: false,
-                                      autoPlayCurve: Curves.fastOutSlowIn,
-                                      autoPlay: true,
-                                      onPageChanged: (index) {
-                                        setState(() {
-                                          _current = index;
-                                        });
-                                      },
-                                      items: banners.map((i) {
-                                        return Builder(
-                                            builder: (BuildContext context) {
+                                  items: _advertisementData.map((i) {
+                                    return Builder(
+                                        builder: (BuildContext context) {
                                           return GestureDetector(
                                             onTap: () {
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      AdDetailPage(
-                                                    data: i,
-                                                  ),
+                                                  builder: (context) => AdDetailPage(
+                                                      data: i, index: _current),
                                                 ),
                                               );
                                             },
                                             child: Container(
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
+                                                width:
+                                                MediaQuery.of(context).size.width,
                                                 child: Image.network(
-                                                    Image_Url + i["image"],
+                                                    Image_Url + i["Image"][0],
                                                     fit: BoxFit.fill)),
                                           );
                                         });
-                                      }).toList(),
-                                    ),
+                                  }).toList(),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: map<Widget>(
+                                    _advertisementData,
+                                        (index, url) {
+                                      return Container(
+                                        width: 7.0,
+                                        height: 7.0,
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: 10.0, horizontal: 2.0),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5)),
+                                            color: _current == index
+                                                ? Colors.white
+                                                : Colors.grey),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                              : banners.length == 0
+                              ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                              : CarouselSlider(
+                            height: 160,
+                            viewportFraction: 1.0,
+                            autoPlayAnimationDuration:
+                            Duration(milliseconds: 1000),
+                            reverse: false,
+                            autoPlayCurve: Curves.fastOutSlowIn,
+                            autoPlay: true,
+                            onPageChanged: (index) {
+                              setState(() {
+                                _current = index;
+                              });
+                            },
+                            items: banners.map((i) {
+                              return Builder(builder: (BuildContext context) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AdDetailPage(
+                                          data: i,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                      width:
+                                      MediaQuery.of(context).size.width,
+                                      child: Image.network(
+                                          Image_Url + i["image"],
+                                          fit: BoxFit.fill)),
+                                );
+                              });
+                            }).toList(),
+                          ),
                         ],
                       ),
                     ),

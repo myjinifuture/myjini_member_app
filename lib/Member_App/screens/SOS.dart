@@ -194,6 +194,7 @@ class _SOSState extends State<SOS> {
                   ),
                 ),
                 onPressed: (){
+                  print(widget.data);
                   launch(widget.data["GoogleMap"]);
                 },
               ),

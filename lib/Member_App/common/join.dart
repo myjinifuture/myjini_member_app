@@ -16,6 +16,7 @@ import 'dart:ui' as ui;
 
 import 'Services.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:smart_society_new/Member_App/common/constant.dart' as cnst;
 
 // import 'package:wakelock/wakelock.dart';
 
@@ -54,11 +55,24 @@ class _JoinPageState extends State<JoinPage> with AutomaticKeepAliveClientMixin{
 
   @override
   void initState() {
+    GetLocalData();
     initialize();
     _getContactPermission();
     Vibration.cancel();
     super.initState();
   }
+
+  String MemberId = "";
+  GetLocalData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String memberId = prefs.getString(cnst.Session.Member_Id);
+
+    if (memberId != null && memberId != "")
+      setState(() {
+        MemberId = memberId;
+      });
+  }
+
 
   Future<PermissionStatus> _getContactPermission() async {
     PermissionStatus permission = await PermissionHandler()
@@ -214,20 +228,20 @@ class _JoinPageState extends State<JoinPage> with AutomaticKeepAliveClientMixin{
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        if(commonId==null){
-          Navigator.pushAndRemoveUntil(
-              context, SlideLeftRoute(page: HomeScreen()), (route) => false);
-        }
-        else {
+        // if(commonId==null){
+        //   Navigator.pushAndRemoveUntil(
+        //       context, SlideLeftRoute(page: HomeScreen()), (route) => false);
+        // }
+        // else {
           var body = {
-            "callingId": commonId,
-            "rejectBy": true
+            "memberId": MemberId,
+            "watchmanId": ""
           };
           print("body");
           print(body);
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('commonId', commonId);
-          Services.responseHandler(apiName: "member/rejectCall", body: body)
+          Services.responseHandler(apiName: "member/rejectCallForMemberWatchman", body: body)
               .then(
                   (data) async {
                     if(widget.againPreviousScreen){
@@ -236,26 +250,27 @@ class _JoinPageState extends State<JoinPage> with AutomaticKeepAliveClientMixin{
                 else if (data.Data.toString() == '1') {
                   print('call declined successfully');
                   AgoraRtcEngine.destroy();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DirecotryScreen(),
-                    ),
-                  );
+                  Navigator.pushReplacementNamed(context, "/HomeScreen");
+                      // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => DirecotryScreen(),
+                  //   ),
+                  // );
                 } else {
                   print("else called");
                   AgoraRtcEngine.destroy();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DirecotryScreen(),
-                  ),
-                  );
+                       Navigator.pushReplacementNamed(context, "/HomeScreen");
+                      // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => DirecotryScreen(),
+                  // ),
+                  // );
                 }
               }, onError: (e) {
             showHHMsg("Something Went Wrong Please Try Again", "");
           });
-        }
       }
     } on SocketException catch (_) {
       showHHMsg("No Internet Connection.", "");

@@ -59,7 +59,8 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
-          "societyId" : societyId
+          "societyId" : societyId,
+          "wingId" : wingId,
           // "societyId" : "60630c2c86c69d00229fe13d"
         };
        if(done != "done") {
@@ -67,7 +68,7 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
            isLoading = true;
          });
        }
-        Services.responseHandler(apiName : "admin/getMemberApprovalList", body :data).then((data) async {
+        Services.responseHandler(apiName : "admin/getMemberApprovalList_v1", body :data).then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               pendingApprovals = data.Data;
@@ -97,7 +98,7 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
     }
   }
 
-  _memberApproval(bool isverified,String memberid) async {
+  _memberApproval(bool isverified,String memberid,String wing,String flat) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -107,8 +108,8 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
           "isVerify" : isverified,
           "deviceType" : Platform.isAndroid ? "Android" : "IOS",
           "adminId" : memberId,
-          "wingId" : wingId,
-          "flatId" : flatId
+          "wingId" : wing,
+          "flatId" : flat
         };
         setState(() {
           isLoading = true;
@@ -203,7 +204,10 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
                                                   fontSize: 15,
                                               ),
                                             ),
-                                            onPressed: () => _memberApproval(true,pendingApprovals[index]["_id"]),
+                                            onPressed: () => _memberApproval(true,pendingApprovals[index]["_id"],
+                                                pendingApprovals[index]["society"]["wingId"],
+                                              pendingApprovals[index]["society"]["flatId"],
+                                            ),
                                           ),
                                           SizedBox(
                                             width: 20,
@@ -217,7 +221,10 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
                                                   fontSize: 15
                                               ),
                                             ),
-                                            onPressed: () => _memberApproval(false,pendingApprovals[index]["_id"]),
+                                            onPressed: () => _memberApproval(false,pendingApprovals[index]["_id"],
+                                              pendingApprovals[index]["society"]["wingId"],
+                                              pendingApprovals[index]["society"]["flatId"],
+                                            ),
                                           ),
                                         ],
                                       ),
