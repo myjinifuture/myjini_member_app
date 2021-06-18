@@ -24,12 +24,16 @@ class _MyStaffOthersListingState extends State<MyStaffOthersListing> {
 
   @override
   void initState() {
-    _getMaidListing();
+
     initialDate = DateTime.now().toString().split(" ")[0].split("-")[2] +
         "/" +
         DateTime.now().toString().split(" ")[0].split("-")[1] +
         "/" +
         DateTime.now().toString().split(" ")[0].split("-")[0];
+    print(initialDate);
+    _getMaidListing(
+        date: initialDate
+    );
   }
 
   Future<void> _selectDate(BuildContext context) async {

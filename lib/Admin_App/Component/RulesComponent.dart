@@ -50,6 +50,7 @@ class _RulesComponentState extends State<RulesComponent> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         // widget.onChange("loading");
         var data = {"ruleId": widget.rulesData["_id"].toString(),};
+        print(data);
         Services.responseHandler(apiName: "admin/deleteSocietyRule", body: data)
             .then((data) async {
           if (data.Data.toString() == "1" && data.IsSuccess == true) {
@@ -113,7 +114,7 @@ class _RulesComponentState extends State<RulesComponent> {
                     style: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.w600)),
                 onPressed: () {
-                  Navigator.of(context).pop();;
+                  Navigator.of(context).pop();
                   _deleteRules();
                 },
               ),
@@ -201,20 +202,23 @@ class _RulesComponentState extends State<RulesComponent> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          bool allowed = true;
+                          bool allowed = false;
                           for(int i=0;i<widget.rulesData["ruleFor"]["wingId"].length;i++){
+                            print(widget.rulesData["ruleFor"]["wingId"][i]);
+                            print(widget.wingId);
                             if(widget.rulesData["ruleFor"]["wingId"][i] == widget.wingId){
-                              Fluttertoast.showToast(
-                                  msg: "Not Permitted",
-                                  backgroundColor: Colors.red,
-                                  gravity: ToastGravity.TOP,
-                                  textColor: Colors.white);
-                              allowed = false;
+                              allowed = true;
                             }
                             break;
                           }
                           if(allowed) {
                             _showConfirmDialog();
+                          }else{
+                            Fluttertoast.showToast(
+                                msg: "Not Permitted",
+                                backgroundColor: Colors.red,
+                                gravity: ToastGravity.TOP,
+                                textColor: Colors.white);
                           }
                         },
                         child: Image.asset("images/delete_icon.png",

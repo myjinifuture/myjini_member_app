@@ -44,6 +44,7 @@ class _RulesAndRegulationsState extends State<RulesAndRegulations> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String societyId = prefs.getString(constant.Session.SocietyId);
          wingId = prefs.getString(constant.Session.WingId);
+         print("m------------>${wingId}");
         var data = {
           "societyId": societyId,
           // "wingId" : wingId

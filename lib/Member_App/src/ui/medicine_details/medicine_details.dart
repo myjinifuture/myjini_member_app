@@ -114,7 +114,10 @@ class MedicineDetails extends StatelessWidget {
                         child: GestureDetector(
                           onTap: () {
                             _globalBloc.removeMedicine(medicine);
+                            print("smit");
                             Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                            print("smits");
                           },
                           child: InkWell(
                             child: Container(

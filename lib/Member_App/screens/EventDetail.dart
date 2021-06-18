@@ -135,6 +135,7 @@ class _EventDetailState extends State<EventDetail> {
                 fontSize: 16,
                 color: constant.appPrimaryMaterialColor,
               ),
+              textAlign: TextAlign.center,
             ),
             leading: Icon(
               Icons.title,

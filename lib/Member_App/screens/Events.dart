@@ -20,7 +20,7 @@ class _EventsState extends State<Events> {
   List filteredEventsData = [];
   List registeredMemberData = [];
   bool isLoading = false;
-  String SocietyId, MemberId, ParentId,Wing;
+  String SocietyId, MemberId, ParentId, Wing;
   ProgressDialog pr;
 
   @override
@@ -32,6 +32,7 @@ class _EventsState extends State<Events> {
   }
 
   String wingId = "";
+
   _getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     SocietyId = prefs.getString(constant.Session.SocietyId);
@@ -74,10 +75,9 @@ class _EventsState extends State<Events> {
         });
         SharedPreferences prefs = await SharedPreferences.getInstance();
         Wing = prefs.getString(constant.Session.Wing);
-        var data = {"societyId": SocietyId,
-        "wingId" : wingId
-        };
-        Services.responseHandler(apiName: "admin/getSocietyEvent_v2", body: data)
+        var data = {"societyId": SocietyId, "wingId": wingId};
+        Services.responseHandler(
+                apiName: "admin/getSocietyEvent_v2", body: data)
             .then((data) async {
           setState(() {
             isLoading = false;
@@ -85,10 +85,10 @@ class _EventsState extends State<Events> {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               EventsData = data.Data;
-              for(int i=0;i<EventsData.length;i++){
-               if(Wing==EventsData[i]["WingData"][0]["wingName"]){
-                 filteredEventsData.add(EventsData[i]);
-               }
+              for (int i = 0; i < EventsData.length; i++) {
+                if (Wing == EventsData[i]["WingData"][0]["wingName"]) {
+                  filteredEventsData.add(EventsData[i]);
+                }
               }
             });
           } else {
@@ -214,96 +214,155 @@ class _EventsState extends State<Events> {
         centerTitle: true,
       ),
       body: isLoading == false
-          ? EventsData.length>0?ListView.separated(
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    registeredMemberDetails(
-                        eventId: EventsData[index]["_id"].toString(),
-                        eventData: EventsData[index],
-                        onEventResponse: GetEventDetails);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
+          ? EventsData.length > 0
+              ? ListView.separated(
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        registeredMemberDetails(
+                            eventId: EventsData[index]["_id"].toString(),
+                            eventData: EventsData[index],
+                            onEventResponse: GetEventDetails);
+                      },
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "${EventsData[index]["Title"]}",
-                                style: TextStyle(fontWeight: FontWeight.w600),
+                            children: [
+                              Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Column(
+                                      // crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${EventsData[index]["Title"]}",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: constant
+                                                .appPrimaryMaterialColor,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                          // style: TextStyle(fontWeight: FontWeight.w600),
+                                        ),
+                                        Text(
+                                          "->${EventsData[index]["Description"]}",
+                                          style: TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.grey[600]),
+                                        ),
+                                        // Text(
+                                        //   "->All are Requested To Give Confirmation For Comming OR Not",
+                                        //   style: TextStyle(
+                                        //       fontSize: 13,
+                                        //       color: Colors.grey[600]),
+                                        // ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  // Container(
+                                  //   width: 1, // Thickness
+                                  //   height: 180,
+                                  //   color: Colors.grey[500],
+                                  // ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  Column(
+                                    children: <Widget>[
+                                      Text(
+                                        "${EventsData[index]["date"]}",
+                                        style: TextStyle(
+                                            color: Colors.grey[700],
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 12),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          EventsData[index]["Registration"]
+                                                      .length !=
+                                                  0
+                                              ? Text(
+                                                  "Total : ${EventsData[index]["Registration"][0]["noOfPerson"]}",
+                                                  style: TextStyle(
+                                                    color: constant
+                                                        .appPrimaryMaterialColor,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                )
+                                              : Container(),
+                                        ],
+                                      ),
+                                      (EventsData[index]["Registration"]
+                                                  .length ==
+                                              0)
+                                          ? Container()
+                                          : EventsData[index]["Registration"][0]
+                                                      ["response"] ==
+                                                  true
+                                              ? Text(
+                                                  "Coming",
+                                                  style: TextStyle(
+                                                    color: Colors.green,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                )
+                                              : Text(
+                                                  'Not Coming',
+                                                  style: TextStyle(
+                                                    color: Colors.red,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  // Text(
+                                  //   "->All are Requested To Give Confirmation For Comming OR Not",
+                                  //   style: TextStyle(
+                                  //     fontWeight: FontWeight.w600,
+                                  //     fontSize: 14,
+                                  //     color: Colors.grey,
+                                  //   ),
+                                  //   textAlign: TextAlign.center,
+                                  // ),
+                                ],
                               ),
+                              SizedBox(height: 20,),
                               Text(
-                                "${EventsData[index]["Description"]}\nAll are Requested To Give Confirmation For Comming OR Not",
+                                "All are Requested To Give Confirmation For Comming OR Not",
                                 style: TextStyle(
-                                    fontSize: 13, color: Colors.grey[600]),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Column(
-                          children: <Widget>[
-                            Text(
-                              "${EventsData[index]["date"]}",
-                              style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Row(
-                              children: <Widget>[
-                                EventsData[index]["Registration"].length != 0
-                                    ? Text(
-                                        "Total : ${EventsData[index]["Registration"][0]["noOfPerson"]}",
-                                        style: TextStyle(
-                                          color:
-                                              constant.appPrimaryMaterialColor,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      )
-                                    : Container(),
-                              ],
-                            ),
-                            (EventsData[index]["Registration"].length==0)?Container():EventsData[index]["Registration"][0]["response"] ==
-                                    true
-                                ? Text(
-                                    "Coming",
-                                    style: TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  )
-                                : Text(
-                                    'Not Coming',
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return Divider();
-              },
-              itemCount: EventsData.length,
-            ):Center(child: Text('No Data Found'),)
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return Divider();
+                  },
+                  itemCount: EventsData.length,
+                )
+              : Center(
+                  child: Text('No Data Found'),
+                )
           : Center(
               child: CircularProgressIndicator(),
             ),
