@@ -41,22 +41,28 @@ class _VisitorByWingState extends State<VisitorByWing> {
     setState(() {
       societyId = prefs.getString(Session.SocietyId);
     });
-    _getVisitorsOfSociety(societyId);
+    _getVisitorsOfSociety(societyId:societyId);
   }
 
-  _getVisitorsOfSociety(String societyId) async {
+  _getVisitorsOfSociety({String societyId,String fromDate,String toDate}) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
-          "societyId" : societyId
+          "societyId" : societyId,
+          "fromDate" : fromDate,
+          "toDate" : toDate
         };
-
+        print("data");
+        print(data);
         setState(() {
           isLoading = true;
         });
         Services.responseHandler(apiName: "watchman/getAllVisitorEntry",body: data).then((data) async {
-          if (data.Data != null && data.Data.length > 0) {
+          if (data.Data != null) {
+            _visitorData.clear();
+            print("data from server");
+            print(data.Data);
             setState(() {
               _visitorData = data.Data;
               isLoading = false;
@@ -184,134 +190,91 @@ class _VisitorByWingState extends State<VisitorByWing> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/Dashboard");
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Visitors",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/Dashboard");
-            },
-          ),
+    print(DateTime.now());
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Visitors",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        body: isLoading
-            ? LoadingComponent()
-            : Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      for (int i = 0; i < _wingList.length; i++) ...[
-                        GestureDetector(
-                          onTap: () {
-                            if (selectedWing != _wingList[i]["_id"].toString()) {
-                              setState(() {
-                                selectedWing = _wingList[i]["_id"].toString();
-                              });
-                              setState(() {
-                                _visitorData = [];
-                              });
-                              // getVisitorData(
-                              //     _fromDate.toString(),
-                              //     _toDate.toString(),
-                              //     _wingList[i]["Id"].toString());
-                            }
-                          },
-                          child: Container(
-                            width: selectedWing == _wingList[i]["_id"].toString()
-                                ? 60
-                                : 45,
-                            height:
-                                selectedWing == _wingList[i]["_id"].toString()
-                                    ? 60
-                                    : 45,
-                            margin: EdgeInsets.only(top: 10, left: 5, right: 5),
-                            decoration: BoxDecoration(
+        // leading: IconButton(
+        //   icon: Icon(
+        //     Icons.arrow_back,
+        //     color: Colors.white,
+        //   ),
+        //   onPressed: () {
+        //     Navigator.pushReplacementNamed(context, "/Dashboard");
+        //   },
+        // ),
+      ),
+      body: isLoading
+          ? LoadingComponent()
+          : Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    for (int i = 0; i < _wingList.length; i++) ...[
+                      GestureDetector(
+                        onTap: () {
+                          if (selectedWing != _wingList[i]["_id"].toString()) {
+                            setState(() {
+                              selectedWing = _wingList[i]["_id"].toString();
+                            });
+                            setState(() {
+                              _visitorData = [];
+                            });
+                            // getVisitorData(
+                            //     _fromDate.toString(),
+                            //     _toDate.toString(),
+                            //     _wingList[i]["Id"].toString());
+                          }
+                        },
+                        child: Container(
+                          width: selectedWing == _wingList[i]["_id"].toString()
+                              ? 60
+                              : 45,
+                          height:
+                              selectedWing == _wingList[i]["_id"].toString()
+                                  ? 60
+                                  : 45,
+                          margin: EdgeInsets.only(top: 10, left: 5, right: 5),
+                          decoration: BoxDecoration(
+                              color: selectedWing ==
+                                      _wingList[i]["_id"].toString()
+                                  ? cnst.appPrimaryMaterialColor
+                                  : Colors.white,
+                              border: Border.all(
+                                  color: cnst.appPrimaryMaterialColor),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4))),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "${_wingList[i]["wingName"]}",
+                            style: TextStyle(
                                 color: selectedWing ==
                                         _wingList[i]["_id"].toString()
-                                    ? cnst.appPrimaryMaterialColor
-                                    : Colors.white,
-                                border: Border.all(
-                                    color: cnst.appPrimaryMaterialColor),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(4))),
-                            alignment: Alignment.center,
-                            child: Text(
-                              "${_wingList[i]["wingName"]}",
-                              style: TextStyle(
-                                  color: selectedWing ==
-                                          _wingList[i]["_id"].toString()
-                                      ? Colors.white
-                                      : cnst.appPrimaryMaterialColor,
-                                  fontSize: 19),
-                            ),
+                                    ? Colors.white
+                                    : cnst.appPrimaryMaterialColor,
+                                fontSize: 19),
                           ),
                         ),
-                      ],
+                      ),
                     ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () {
-                                _showFromDatePicker();
-                              },
-                              child: Container(
-                                height: 37,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5))),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Padding(padding: EdgeInsets.only(left: 5)),
-                                    Text(
-                                      "${_fromDate.toString().substring(8, 10)}-${_fromDate.toString().substring(5, 7)}-${_fromDate.toString().substring(0, 4)}",
-                                      style: TextStyle(fontSize: 13),
-                                    ),
-                                    Padding(padding: EdgeInsets.only(left: 5)),
-                                    Container(
-                                      width: 50,
-                                      height: 55,
-                                      decoration: BoxDecoration(
-                                          color: cnst.appPrimaryMaterialColor,
-                                          borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(5),
-                                              bottomRight: Radius.circular(5))),
-                                      child: Icon(
-                                        Icons.date_range,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 5, right: 5),
-                              child: Text("To ",
-                                  style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600)),
-                            ),
-                            Container(
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              _showFromDatePicker();
+                            },
+                            child: Container(
                               height: 37,
                               decoration: BoxDecoration(
                                   color: Colors.grey[200],
@@ -323,75 +286,122 @@ class _VisitorByWingState extends State<VisitorByWing> {
                                 children: <Widget>[
                                   Padding(padding: EdgeInsets.only(left: 5)),
                                   Text(
-                                    "${_toDate.toString().substring(8, 10)}-${_toDate.toString().substring(5, 7)}-${_toDate.toString().substring(0, 4)}",
+                                    "${_fromDate.toString().substring(8, 10)}-${_fromDate.toString().substring(5, 7)}-${_fromDate.toString().substring(0, 4)}",
                                     style: TextStyle(fontSize: 13),
                                   ),
                                   Padding(padding: EdgeInsets.only(left: 5)),
-                                  GestureDetector(
-                                    onTap: () {
-                                      _showToDatePicker();
-                                    },
-                                    child: Container(
-                                      width: 50,
-                                      height: 55,
-                                      decoration: BoxDecoration(
-                                          color: cnst.appPrimaryMaterialColor,
-                                          borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(5),
-                                              bottomRight: Radius.circular(5))),
-                                      child: Icon(
-                                        Icons.date_range,
-                                        color: Colors.white,
-                                      ),
+                                  Container(
+                                    width: 50,
+                                    height: 55,
+                                    decoration: BoxDecoration(
+                                        color: cnst.appPrimaryMaterialColor,
+                                        borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(5),
+                                            bottomRight: Radius.circular(5))),
+                                    child: Icon(
+                                      Icons.date_range,
+                                      color: Colors.white,
                                     ),
                                   )
                                 ],
                               ),
                             ),
-                          ],
-                        ),
-                        Padding(padding: EdgeInsets.only(left: 4)),
-                        Expanded(
-                          child: RaisedButton(
-                              color: cnst.appPrimaryMaterialColor,
-                              child: Icon(
-                                Icons.search,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                // getVisitorData(_fromDate.toString(),
-                                //     _toDate.toString(), selectedWing);
-                              }),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(),
-                  isVisitorLoading
-                      ? Container(
-                          child: Center(
-                            child: CircularProgressIndicator(),
                           ),
-                        )
-                      : Expanded(
-                          child: _visitorData.length > 0
-                              ? Container(
-                                  child: AnimationLimiter(
-                                    child: ListView.builder(
-                                      itemCount: _visitorData.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return VisitorComponent(
-                                            _visitorData[index], index);
-                                      },
+                          Padding(
+                            padding: EdgeInsets.only(left: 5, right: 5),
+                            child: Text(
+                              "To ",
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                ),
+                            ),
+                          ),
+                          Container(
+                            height: 37,
+                            decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5))),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Padding(padding: EdgeInsets.only(left: 5)),
+                                Text(
+                                  "${_toDate.toString().substring(8, 10)}-${_toDate.toString().substring(5, 7)}-${_toDate.toString().substring(0, 4)}",
+                                  style: TextStyle(fontSize: 13),
+                                ),
+                                Padding(padding: EdgeInsets.only(left: 5)),
+                                GestureDetector(
+                                  onTap: () {
+                                    _showToDatePicker();
+                                  },
+                                  child: Container(
+                                    width: 50,
+                                    height: 55,
+                                    decoration: BoxDecoration(
+                                        color: cnst.appPrimaryMaterialColor,
+                                        borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(5),
+                                            bottomRight: Radius.circular(5))),
+                                    child: Icon(
+                                      Icons.date_range,
+                                      color: Colors.white,
                                     ),
                                   ),
                                 )
-                              : NoDataComponent(),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(padding: EdgeInsets.only(left: 4)),
+                      Expanded(
+                        child: RaisedButton(
+                            color: cnst.appPrimaryMaterialColor,
+                            child: Icon(
+                              Icons.search,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              _getVisitorsOfSociety(societyId:societyId,fromDate: _fromDate.toString().split(" ")[0].split("-")[2]+"/" +
+                                  _fromDate.toString().split(" ")[0].split("-")[1]+"/" +
+                                  _fromDate.toString().split(" ")[0].split("-")[0],toDate: _toDate.toString().split(" ")[0].split("-")[2]+"/" +
+                                  _toDate.toString().split(" ")[0].split("-")[1]+"/" +
+                                  _toDate.toString().split(" ")[0].split("-")[0]);
+                              // getVisitorData(_fromDate.toString(),
+                              //     _toDate.toString(), selectedWing);
+                            }),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(),
+                isVisitorLoading
+                    ? Container(
+                        child: Center(
+                          child: CircularProgressIndicator(),
                         ),
-                ],
-              ),
-      ),
+                      )
+                    : Expanded(
+                        child: _visitorData.length > 0
+                            ? Container(
+                                child: AnimationLimiter(
+                                  child: ListView.builder(
+                                    itemCount: _visitorData.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return VisitorComponent(
+                                          _visitorData[index], index);
+                                    },
+                                  ),
+                                ),
+                              )
+                            : Center(child: Text("No Data Found"),),
+                      ),
+              ],
+            ),
     );
   }
 }

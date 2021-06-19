@@ -207,37 +207,6 @@ class _ContactListState extends State<ContactList> {
     }
   }
 
-  AddVisitorList() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // pr.show();
-        Services.AddVisitorMultiple(_selectedContact).then((data) async {
-          // pr.hide();
-          if (data.Data != "0") {
-            Fluttertoast.showToast(
-                msg: "Visitors Added Successfully",
-                backgroundColor: Colors.green,
-                gravity: ToastGravity.TOP,
-                textColor: Colors.white);
-            Navigator.pop(context);
-          } else {
-            showMsg(data.Message);
-          }
-        }, onError: (e) {
-          // pr.hide();
-          showMsg("Try Again.");
-        });
-      } else {
-        // pr.hide();
-        showMsg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsg("No Internet Connection.");
-    }
-  }
-
   showMsg(String msg) {
     showDialog(
       context: context,
@@ -301,7 +270,6 @@ class _ContactListState extends State<ContactList> {
             _selectedContact.length > 0
                 ? GestureDetector(
               onTap: () {
-                AddVisitorList();
               },
               child: Padding(
                   padding: const EdgeInsets.all(10),

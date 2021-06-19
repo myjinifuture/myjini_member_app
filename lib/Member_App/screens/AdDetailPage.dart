@@ -1,5 +1,16 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:esys_flutter_share/esys_flutter_share.dart' as S;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:dotted_border/dotted_border.dart';
+import '../common/constant.dart' as cnst;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +32,7 @@ class AdDetailPage extends StatefulWidget {
   var data;
   var index;
 
-  AdDetailPage({this.data,this.index});
+  AdDetailPage({this.data, this.index});
 
   @override
   _AdDetailPageState createState() => _AdDetailPageState();
@@ -42,6 +53,7 @@ class _AdDetailPageState extends State<AdDetailPage> {
   var Price;
 
   List WishList = [];
+  List details = [];
   bool isLoading = true;
 
   bool flag = false;
@@ -49,7 +61,33 @@ class _AdDetailPageState extends State<AdDetailPage> {
 
   @override
   void initState() {
-    _checkWishList();
+    print(widget.data["EmailId"]);
+    print(widget.data["WebsiteURL"]);
+    print(widget.data["VideoLink"]);
+    print(widget.data["ContactNo"]);
+
+    if(widget.data["EmailId"] != "" ){
+      details.add(
+        widget.data["EmailId"]
+      );
+    }
+    if(widget.data["WebsiteURL"] != "" ){
+      details.add(
+        widget.data["WebsiteURL"]
+      );
+    }
+    if(widget.data["VideoLink"] != "" ){
+      details.add(
+        widget.data["VideoLink"]
+      );
+    }
+    if(widget.data["ContactNo"] != "" ){
+      details.add(
+        widget.data["ContactNo"]
+      );
+    }
+    print("details");
+    print(details);
     _getLocalData();
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(
@@ -58,162 +96,14 @@ class _AdDetailPageState extends State<AdDetailPage> {
         progressWidget: Container(
           padding: EdgeInsets.all(15),
           child: CircularProgressIndicator(
-            //backgroundColor: cnst.appPrimaryMaterialColor,
-          ),
+              //backgroundColor: cnst.appPrimaryMaterialColor,
+              ),
         ),
         elevation: 10.0,
         insetAnimCurve: Curves.easeInOut,
         messageTextStyle: TextStyle(
             color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
   }
-
-  _checkWishList() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        String memberid = preferences.getString(cnst.Session.Member_Id);
-        String advertisementid = widget.data["_id"].toString();
-        Future res = Services.CheckWishList(memberid, advertisementid);
-        setState(() {
-          isLoading = true;
-        });
-        res.then((data) async {
-          if (data == true) {
-            setState(() {
-              wishliststatus = data;
-              isLoading = false;
-            });
-            print("Wishliststatus=> " + wishliststatus.toString());
-          } else {
-            setState(() {
-              wishliststatus = false;
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on GetAd Data Call $e");
-          showMsg("$e");
-        });
-      } else {
-        showMsg("Something went Wrong!");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
-  }
-
-  _wishListDelete() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var data = {
-          "AdvertisementId": widget.data["_id"].toString(),
-          "MemberId": prefs.getString(cnst.Session.Member_Id),
-        };
-
-        print("WishList Delete Data = ${data}");
-        Services.WishListDelete(data).then((data) async {
-          if (data.Data != "0" && data.IsSuccess == true) {
-            _checkWishList();
-            Fluttertoast.showToast(
-                textColor: Colors.black,
-                msg: "Removed From WishList",
-                gravity: ToastGravity.TOP,
-                toastLength: Toast.LENGTH_LONG);
-
-            //Navigator.pop(context);
-            /*  Navigator.pushNamedAndRemoveUntil(
-                context, "/Dashboard", (Route<dynamic> route) => false);*/
-          } else {
-            showMsg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
-          showMsg("Try Again.");
-        });
-      } else
-        showMsg("No Internet Connection.");
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsg("No Internet Connection.");
-    }
-  }
-
-  _addToWishList() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var data = {
-          "Id": 0,
-          "MemberId": prefs.getString(constant.Session.Member_Id),
-          "AdvertisementId": widget.data["_id"],
-        };
-
-        print("AddToWishList Data = ${data}");
-        Services.AddToWishList(data).then((data) async {
-          if (data.Data != "0" && data.IsSuccess == true) {
-            _checkWishList();
-            Fluttertoast.showToast(
-                msg: "Added to WishList",
-                textColor: Colors.black,
-                gravity: ToastGravity.TOP,
-                toastLength: Toast.LENGTH_LONG);
-
-            /*  Navigator.pushNamedAndRemoveUntil(
-                context, "/Dashboard", (Route<dynamic> route) => false);*/
-          } else {
-            showMsg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
-          showMsg("Try Again.");
-        });
-      } else
-        showMsg("No Internet Connection.");
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsg("No Internet Connection.");
-    }
-  }
-
-  /* _wishListUpdate() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var data = {
-          "Id": WishList[0]["Id"],
-        };
-        print("Add Scanned Data = ${data}");
-        Services.WishListUpdate(data).then((data) async {
-          if (data.Data != "0" && data.IsSuccess == true) {
-            setState(() {
-              flag=false;
-            });
-            Fluttertoast.showToast(
-                msg: "Added to WishList",
-                textColor: Colors.black,
-                gravity: ToastGravity.TOP,
-                toastLength: Toast.LENGTH_LONG);
-            */ /*  Navigator.pushNamedAndRemoveUntil(
-                context, "/Dashboard", (Route<dynamic> route) => false);*/ /*
-          } else {
-            showMsg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
-          showMsg("Try Again.");
-        });
-      } else
-        showMsg("No Internet Connection.");
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsg("No Internet Connection.");
-    }
-  }*/
 
   showMsg(String msg, {String title = 'MYJINI'}) {
     showDialog(
@@ -226,7 +116,8 @@ class _AdDetailPageState extends State<AdDetailPage> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -258,7 +149,7 @@ class _AdDetailPageState extends State<AdDetailPage> {
         tempDate[1] = "0" + tempDate[1].toString();
       }
       final_date = "${tempDate[2].toString().substring(0, 2)}-"
-          "${tempDate[1].toString().substring(0, 2)}-${tempDate[0].toString()}"
+              "${tempDate[1].toString().substring(0, 2)}-${tempDate[0].toString()}"
           .toString();
     }
     return final_date;
@@ -346,6 +237,33 @@ class _AdDetailPageState extends State<AdDetailPage> {
     }
   }
 
+  GlobalKey _containerKey = GlobalKey();
+
+  void convertWidgetToImage() async {
+    RenderRepaintBoundary renderRepaintBoundary =
+    _containerKey.currentContext.findRenderObject();
+    ui.Image boxImage = await renderRepaintBoundary.toImage(pixelRatio: 5);
+    ByteData byteData =
+    await boxImage.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List uInt8List = byteData.buffer.asUint8List();
+    _shareImage(uInt8List);
+  }
+
+  String val = "";
+  Future<void> _shareImage(Uint8List image) async {
+    val = "";
+    for(int i=0;i<details.length;i++){
+      val +="${details[i]}\n";
+    }
+    try {
+      await S.Share.file('esys image', 'esys.png', image, 'image/png',
+          text: "*${widget.data["Title"]}*"
+              "\n${widget.data["Description"]}\n${val}");
+    } catch (e) {
+      print('error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print("widget.data");
@@ -357,28 +275,45 @@ class _AdDetailPageState extends State<AdDetailPage> {
             children: <Widget>[
               Stack(
                 children: <Widget>[
-                  FadeInImage.assetNetwork(
-                      width: MediaQuery.of(context).size.width,
-                      height: 220,
-                      fit: BoxFit.fill,
-                      placeholder: "images/Ad1.jpg",
-                      image: "${cnst.Image_Url}" + widget.data["Image"][0].toString()),
+                  RepaintBoundary(
+                    key: _containerKey,
+                    child: FadeInImage.assetNetwork(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.218,
+                        fit: BoxFit.fill,
+                        placeholder: "images/Ad1.jpg",
+                        image: "${cnst.Image_Url}" +
+                            widget.data["Image"][0].toString()),
+                  ),
                   Padding(
                     padding:
-                    const EdgeInsets.only(left: 8.0, right: 8.0, top: 3.0),
+                        const EdgeInsets.only(left: 8.0, right: 8.0, top: 3.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                                '/HomeScreen', (Route<dynamic> route) => false);
-                          },
-                          child: Icon(
+                        // GestureDetector(
+                        //   onTap: () {
+                        //     // Navigator.of(context).pushNamedAndRemoveUntil(
+                        //     //     '/HomeScreen', (Route<dynamic> route) => false);
+                        //     Navigator.pop(context);
+                        //   },
+                        //   child: Icon(
+                        //     Icons.arrow_back_ios,
+                        //     color: Colors.white,
+                        //     size: 20,
+                        //   ),
+                        // ),
+                        IconButton(
+                          icon: Icon(
                             Icons.arrow_back_ios,
                             color: Colors.white,
                             size: 20,
                           ),
+                          onPressed: () {
+                            // Navigator.of(context).pushNamedAndRemoveUntil(
+                            //     '/HomeScreen', (Route<dynamic> route) => false);
+                            Navigator.pop(context);
+                          },
                         ),
                         /* GestureDetector(
                           onTap: (){
@@ -399,14 +334,15 @@ class _AdDetailPageState extends State<AdDetailPage> {
                         ),*/
                         GestureDetector(
                           onTap: () {
-                            Share.share('Check out this exclusive AD \n' +
-                                "${cnst.Image_Url}" +
-                                widget.data["Image"][0]);
+                            // Share.share('Check out this exclusive AD \n' +
+                            //     "${cnst.Image_Url}" +
+                            //     widget.data["Image"][0]);
+                            convertWidgetToImage();
                           },
                           child: Icon(
                             Icons.share,
-                            color: Colors.white,
-                            size: 20,
+                            color: Colors.black,
+                            size: 30,
                           ),
                         ),
                       ],
@@ -417,43 +353,17 @@ class _AdDetailPageState extends State<AdDetailPage> {
               Card(
                 child: Column(
                   children: <Widget>[
-                    /*Stack(
-                      children: <Widget>[
-                      */ /*  Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 250,
-                          child: FadeInImage.assetNetwork(
-                            width: MediaQuery.of(context).size.width,
-                              height: 200,
-                              placeholder: null,
-                              image:
-                                  'https://images.unsplash.com/photo-1517030330234-94c4fb948ebc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1275&q=80'),
-                          decoration: BoxDecoration(
-                              */ /**/ /*image: DecorationImage(
-                              image: NetworkImage(
-                                  'https://images.unsplash.com/photo-1517030330234-94c4fb948ebc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1275&q=80'),
-                              fit: BoxFit.cover,
-                            ),*/ /**/ /*
-                              ),
-                        ),*/ /*
-                      ],
-                    ),*/
-                    /*   Image.asset(
-                      "images/Ad1.jpg",
-                      width: MediaQuery.of(context).size.width,
-                      height: 250,
-                    ),*/
                     Row(
                       children: <Widget>[
                         Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "${widget.data["Title"]}",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500, fontSize: 18),
-                              ),
-                            )),
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "${widget.data["Title"]}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 18),
+                          ),
+                        )),
                       ],
                     ),
                     Row(
@@ -655,43 +565,44 @@ class _AdDetailPageState extends State<AdDetailPage> {
                           Row(
                             children: <Widget>[
                               widget.data["AdvertiserAddress"] == null ||
-                                  widget.data["AdvertiserAddress"] == ""
+                                      widget.data["AdvertiserAddress"] == ""
                                   ? Text(
-                                " ",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                ),
-                              )
+                                      " ",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                    )
                                   : Expanded(
-                                child: Text(
-                                  "${widget.data["AdvertiserAddress"]}",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
+                                      child: Text(
+                                        "${widget.data["AdvertiserAddress"]}",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ),
                             ],
                           ),
                           Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: GestureDetector(
                               onTap: () {
-                                if (widget.data["AdvertiserLocation"] == "" ||
-                                    widget.data["AdvertiserLocation"] == null) {
-                                  Fluttertoast.showToast(
-                                      msg: "Location not available!!!",
-                                      toastLength: Toast.LENGTH_SHORT);
-                                } else {
-                                  var latlong = widget
-                                      .data["AdvertiserLocation"]
-                                      .toString()
-                                      .split(",");
-                                  openMap(double.parse(latlong[0]),
-                                      double.parse(latlong[1]));
-                                }
-                                print("LAT-LONG == >>>" +
-                                    widget.data["AdvertiserLocation"]
-                                        .toString());
+                                // if (widget.data["AdvertiserLocation"] == "" ||
+                                //     widget.data["AdvertiserLocation"] == null) {
+                                //   Fluttertoast.showToast(
+                                //       msg: "Location not available!!!",
+                                //       toastLength: Toast.LENGTH_SHORT);
+                                // } else {
+                                //   var latlong = widget
+                                //       .data["AdvertiserLocation"]
+                                //       .toString()
+                                //       .split(",");
+                                //   openMap(double.parse(latlong[0]),
+                                //       double.parse(latlong[1]));
+                                // }
+                                // print("LAT-LONG == >>>" +
+                                //     widget.data["AdvertiserLocation"]
+                                //         .toString());
+                                launch('${widget.data["GoogleMap"]}');
                               },
                               child: Container(
                                 width: MediaQuery.of(context).size.width / 1.3,
@@ -702,7 +613,7 @@ class _AdDetailPageState extends State<AdDetailPage> {
                                   children: <Widget>[
                                     Padding(
                                       padding:
-                                      const EdgeInsets.only(left: 15.0),
+                                          const EdgeInsets.only(left: 15.0),
                                       child: Icon(
                                         Icons.location_on,
                                         size: 25,
@@ -733,83 +644,97 @@ class _AdDetailPageState extends State<AdDetailPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          if (widget.data["EmailId"] == "" ||
-                              widget.data["EmailId"] == null) {
-                            Fluttertoast.showToast(
-                                msg: "Email not available!!!",
-                                toastLength: Toast.LENGTH_SHORT);
-                          } else {
-                            _launchURL(
-                                '${widget.data["EmailId"]}', '', '');
-                          }
-                          print("EmailId--> " + widget.data["EmailId"]);
-                        },
-                        child: Image.asset(
-                          "images/gmail.png",
-                          height: 32,
-                          width: 32,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          if (widget.data["WebsiteURL"] == "" ||
-                              widget.data["WebsiteURL"] == null) {
-                            Fluttertoast.showToast(
-                                msg: "Website Link not available!!!",
-                                toastLength: Toast.LENGTH_SHORT);
-                          } else {
-                            _launchWebsiteURL();
-                          }
-                          print("WebsiteURL--> " + widget.data["WebsiteURL"]);
-                        },
-                        child: Image.asset(
-                          "images/website.png",
-                          color: Colors.blue,
-                          height: 32,
-                          width: 32,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          if (widget.data["VideoLink"] == "" ||
-                              widget.data["VideoLink"] == null) {
-                            Fluttertoast.showToast(
-                                msg: "Youtube Link not available!!!",
-                                toastLength: Toast.LENGTH_SHORT);
-                          } else {
-                            _launchYoutubeURL();
-                          }
-                          print("VideoLink--> " + widget.data["VideoLink"]);
-                        },
-                        child: Image.asset(
-                          "images/youtube.png",
-                          height: 32,
-                          width: 32,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          if (widget.data["ContactNo"] == "" ||
-                              widget.data["ContactNo"] == null) {
-                            Fluttertoast.showToast(
-                                msg: "Mobile Number not available!!!",
-                                toastLength: Toast.LENGTH_SHORT);
-                          } else {
-                            launch('tel:${widget.data["ContactNo"]}');
-                          }
-                          print("VideoLink--> " +
-                              widget.data["ContactNo"]);
-                        },
-                        child: Image.asset(
-                          "images/telephone.png",
-                          height: 32,
-                          width: 32,
-                        ),
-                      )
+                      (widget.data["EmailId"] == "" ||
+                              widget.data["EmailId"] == null)
+                          ? Container()
+                          : GestureDetector(
+                              onTap: () {
+                                if (widget.data["EmailId"] == "" ||
+                                    widget.data["EmailId"] == null) {
+                                  Fluttertoast.showToast(
+                                      msg: "Email not available!!!",
+                                      toastLength: Toast.LENGTH_SHORT);
+                                } else {
+                                  _launchURL(
+                                      '${widget.data["EmailId"]}', '', '');
+                                }
+                                print("EmailId--> " + widget.data["EmailId"]);
+                              },
+                              child: Image.asset(
+                                "images/gmail.png",
+                                height: 32,
+                                width: 32,
+                              ),
+                            ),
+                      (widget.data["WebsiteURL"] == "" ||
+                              widget.data["WebsiteURL"] == null)
+                          ? Container()
+                          : GestureDetector(
+                              onTap: () {
+                                if (widget.data["WebsiteURL"] == "" ||
+                                    widget.data["WebsiteURL"] == null) {
+                                  Fluttertoast.showToast(
+                                      msg: "Website Link not available!!!",
+                                      toastLength: Toast.LENGTH_SHORT);
+                                } else {
+                                  _launchWebsiteURL();
+                                }
+                                print("WebsiteURL--> " +
+                                    widget.data["WebsiteURL"]);
+                              },
+                              child: Image.asset(
+                                "images/website.png",
+                                color: Colors.blue,
+                                height: 32,
+                                width: 32,
+                              ),
+                            ),
+                      (widget.data["VideoLink"] == "" ||
+                              widget.data["VideoLink"] == null)
+                          ? Container()
+                          : GestureDetector(
+                              onTap: () {
+                                if (widget.data["VideoLink"] == "" ||
+                                    widget.data["VideoLink"] == null) {
+                                  Fluttertoast.showToast(
+                                      msg: "Youtube Link not available!!!",
+                                      toastLength: Toast.LENGTH_SHORT);
+                                } else {
+                                  _launchYoutubeURL();
+                                }
+                                print(
+                                    "VideoLink--> " + widget.data["VideoLink"]);
+                              },
+                              child: Image.asset(
+                                "images/youtube.png",
+                                height: 32,
+                                width: 32,
+                              ),
+                            ),
+                      (widget.data["ContactNo"] == "" ||
+                              widget.data["ContactNo"] == null)
+                          ? Container()
+                          : GestureDetector(
+                              onTap: () {
+                                if (widget.data["ContactNo"] == "" ||
+                                    widget.data["ContactNo"] == null) {
+                                  Fluttertoast.showToast(
+                                      msg: "Mobile Number not available!!!",
+                                      toastLength: Toast.LENGTH_SHORT);
+                                } else {
+                                  launch('tel:${widget.data["ContactNo"]}');
+                                }
+                                print(
+                                    "VideoLink--> " + widget.data["ContactNo"]);
+                              },
+                              child: Image.asset(
+                                "images/telephone.png",
+                                height: 32,
+                                width: 32,
+                              ),
+                            )
                     ],
                   ),
                 ),
@@ -895,9 +820,9 @@ void _settingModalBottomSheet(context, String qr) {
               ),
               Center(
                   child: Text(
-                    "Scan QR",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  )),
+                "Scan QR",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              )),
             ],
           ),
         );

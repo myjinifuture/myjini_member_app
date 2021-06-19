@@ -331,46 +331,6 @@ class _ContinueState extends State<Continue> {
     launch(urlwithmobile);
   }
 
-  _vendorProductInquiry() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var data = {
-          "Id": 0,
-          "ProductId": widget.data["Id"],
-          "MemberId": prefs.getString(constant.Session.Member_Id),
-          "AdvertiserId": widget.advertiserid,
-          "Description": widget.desc,
-        };
-
-        print("Add Scanned Data = ${data}");
-        Services.VendorProductInquiry(data).then((data) async {
-          if (data.Data != "0" && data.IsSuccess == true) {
-            /*        Fluttertoast.showToast(
-                msg: "Data Added Successfully",
-                textColor: Colors.black,
-                gravity: ToastGravity.TOP,
-                backgroundColor: Colors.green,
-                toastLength: Toast.LENGTH_LONG);*/
-
-            Navigator.pop(context);
-            /*  Navigator.pushNamedAndRemoveUntil(
-                context, "/Dashboard", (Route<dynamic> route) => false);*/
-          } else {
-            showMsg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
-          showMsg("Try Again.");
-        });
-      } else
-        showMsg("No Internet Connection.");
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsg("No Internet Connection.");
-    }
-  }
-
   showMsg(String msg, {String title = 'MYJINI'}) {
     showDialog(
       context: context,
@@ -443,7 +403,6 @@ class _ContinueState extends State<Continue> {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                   onPressed: () {
                     Navigator.pop(context);
-                    _vendorProductInquiry();
                     launch(
                         "https://wa.me/+91${widget.mobile}?text= Product Inquiry \n \n Member Name - ${widget.membername} \n Mobile - ${widget.membermobile} \n Product - ${widget.data["Name"]} \n ");
                     //_openWhatsapp("9558821547");

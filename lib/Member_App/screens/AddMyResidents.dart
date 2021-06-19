@@ -55,6 +55,7 @@ class _AddMyResidentsState extends State<AddMyResidents> {
   void initState() {
     // getStateList();
     getState();
+    flatholdertypes.clear();
     print("widget.isUpdate");
     print(widget.isUpdate);
     widget.isUpdate == null ? null:_showDialog();
@@ -98,30 +99,14 @@ class _AddMyResidentsState extends State<AddMyResidents> {
   }
 
   getFlatType() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Future res = Services.getFlatType();
-        res.then((data) async {
-          flatholdertypes.clear();
-          if (data !=null) {
-            setState(() {
-              winglistClassList = data;
-            });
-            for(int i=0;i<winglistClassList.length;i++){
-              flatholdertypes.add(winglistClassList[i]["Type"]);
-            }
-            print("getFlatType=> " + winglistClassList.toString());
-          }
-        }, onError: (e) {
-          showMsg("$e");
-        });
-      } else {
-        showMsg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      showMsg("Something Went Wrong");
-    }
+    flatholdertypes.clear();
+    flatholdertypes.add("Owner");
+    flatholdertypes.add("Closed");
+    flatholdertypes.add("Rent");
+    flatholdertypes.add("Dead");
+    flatholdertypes.add("Shop");
+    print("flatholdertypes");
+    print(flatholdertypes);
   }
 
   TextEditingController txtSocietyId = new TextEditingController();
@@ -247,116 +232,7 @@ String selectedSocietyId = "";
     }
   }
 
-  // getCity(String stateCode,String countryCode) async {
-  //   try {
-  //     final result = await InternetAddress.lookup('google.com');
-  //     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-  //       var body = {
-  //         "countryCode" : countryCode,
-  //         "stateCode" : stateCode
-  //       };
-  //       Services.responseHandler(apiName: "admin/getCity",body: body).then((data) async {
-  //         // pr.hide();
-  //         if (data.Data != null && data.Data.length > 0) {
-  //           setState(() {
-  //             // cities = data.Data;
-  //             for(int i=0;i<data.Data.length;i++){
-  //               cities.add(data.Data[i]["name"]);
-  //             }
-  //           });
-  //         }
-  //       }, onError: (e) {
-  //         showMsg("$e");
-  //         // setState(() {
-  //         //   cityLoading = false;
-  //         // });
-  //       });
-  //     } else {
-  //       showMsg("No Internet Connection.");
-  //     }
-  //   } on SocketException catch (_) {
-  //     showMsg("Something Went Wrong");
-  //     // setState(() {
-  //     //   cityLoading = false;
-  //     // });
-  //   }
-  // }
-
-  getSocietyList() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.GetSocietyList(cityId).then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              societyData = data;
-              for (int i = 0; i < societyData.length; i++) {
-                societies.add(societyData[i]['Name']);
-                societies.sort();
-              }
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
-  }
-
   List list = [];
-
-  _getFlatNumber(wingid,societyId) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Future res = Services.GetFlatNumber(societyId, wingid);
-        setState(() {
-          isLoading = true;
-        });
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              list = data;
-              isLoading = false;
-            });
-            print("GetSocietyName => " + list.toString());
-          } else {
-            setState(() {
-              list = [];
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on GetSocietyName Data Call $e");
-          showMsg("$e");
-        });
-      } else {
-        showMsg("Something went Wrong!");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
-  }
-
 
   addMemberDetails() async {
     try {
@@ -416,6 +292,7 @@ String selectedSocietyId = "";
                 backgroundColor: Colors.green);
             // Navigator.pushReplacementNamed(context, "/ProfileDetail");
             Navigator.pop(context);
+            widget.onAddMyResidents();
           } else {
             Fluttertoast.showToast(
                 msg: "Details Already Exists!!!",
@@ -440,97 +317,6 @@ String selectedSocietyId = "";
   }
 
   List logindata=[];
-
-  _checkLogin() async {
-    if (widget.mobileNo != '') {
-      try {
-        final result = await InternetAddress.lookup('google.com');
-        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-          Services.MemberLogin(widget.mobileNo).then((data) async {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            if (data != null && data.length > 0) {
-              setState(() {
-                memberId = data[0]["Id"].toString();
-                logindata = data;
-              });
-              print('data[0]["Name"]');
-              print(data[0]["Name"]);
-              widget.isUpdate != null ? updateMemberDetails(
-                logindata[0]["SocietyId"].toString(),
-                  data[0]["Name"],
-                logindata[0]["ContactNo"],
-                logindata[0]["FlatNo"],
-                logindata[0]["WingId"].toString(),
-                selFlatHolderType,
-                logindata[0]["Id"].toString(),
-                fcmToken: ""
-              ):
-              addMemberDetails();
-            } else {
-              Fluttertoast.showToast(
-                  msg: "Incorrect Mobile Number",
-                  toastLength: Toast.LENGTH_LONG,
-                  textColor: Colors.white,
-                  gravity: ToastGravity.TOP,
-                  backgroundColor: Colors.red);
-            }
-          }, onError: (e) {
-            // pr.hide();
-            showHHMsg("Try Again.", "");
-          });
-        } else {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("No Internet Connection.", "");
-        }
-      } on SocketException catch (_) {
-        // pr.hide();
-        showHHMsg("No Internet Connection.", "");
-      }
-    } else
-      Fluttertoast.showToast(
-          msg: "Enter Your Mobile Number",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-          backgroundColor: Colors.red,
-          textColor: Colors.white);
-  }
-
-  updateMemberDetails(String societyId,String name,String mobileNo,String flatNo,String wingId,String flatType,String memberId,{String fcmToken}) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-        String mobile;
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        mobile = prefs.getString(constant.Session.session_login);
-        Services.updateMemberDetails(
-            societyId, name, mobileNo, flatNo, wingId,selFlatHolderType,memberId,fcmToken: "")
-            .then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data == "1") {
-            showHHMsg("Data Updated Successfully", "");
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
-  }
 
   showHHMsg(String title, String msg) {
     showDialog(
@@ -657,7 +443,7 @@ String selectedSocietyId = "";
             "societyId" : selectedSocietyId,
             "wingId" : wingId
           };
-          Services.responseHandler(apiName: "admin/getFlatsOfSociety",body: data).then((data) async {
+          Services.responseHandler(apiName: "admin/getFlatsOfSociety_v1",body: data).then((data) async {
             setState(() {
               isLoading = false;
             });
@@ -1436,7 +1222,7 @@ String selectedSocietyId = "";
                             },
                             //value: selCity,
                             items: flatholdertypes.map<DropdownMenuItem<String>>(
-                                    (String value) {
+                                    (dynamic value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: new Text(

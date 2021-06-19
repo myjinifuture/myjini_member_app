@@ -206,37 +206,6 @@ class _AlertDeleteState extends State<AlertDelete> {
     );
   }
 
-  _DeleteMemberVehicle(String Id) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // setState(() {
-        //   isLoading = true;
-        // });
-        Services.DeleteVehicleData(Id).then((data) async {
-          if (data.Data == "1") {
-            // setState(() {
-            //   isLoading = false;
-            // });
-            widget.onDelete();
-            // GetMyvehicleData();
-          } else {
-            // isLoading = false;
-            showHHMsg("Vehicle Is Not Deleted", "");
-          }
-        }, onError: (e) {
-          // isLoading = false;
-          showHHMsg("$e", "");
-          // isLoading = false;
-        });
-      } else {
-        showHHMsg("No Internet Connection.", "");
-      }
-    } on SocketException catch (_) {
-      showHHMsg("Something Went Wrong", "");
-    }
-  }
-
   showHHMsg(String title, String msg) {
     showDialog(
       context: context,

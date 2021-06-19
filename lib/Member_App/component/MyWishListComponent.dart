@@ -67,52 +67,12 @@ class _MyWishListComponentState extends State<MyWishListComponent> {
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
                 Navigator.of(context).pop();;
-                _wishListDelete();
               },
             ),
           ],
         );
       },
     );
-  }
-
-  _wishListDelete() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var data = {
-          "AdvertisementId": widget.WishList["Id"].toString(),
-          "MemberId": prefs.getString(cnst.Session.Member_Id),
-        };
-
-        print("WishList Delete Data = ${data}");
-        Services.WishListDelete(data).then((data) async {
-          if (data.Data != "0" && data.IsSuccess == true) {
-          //  _checkWishList();
-            Fluttertoast.showToast(
-                textColor: Colors.black,
-                msg: "Removed From WishList",
-                gravity: ToastGravity.TOP,
-                toastLength: Toast.LENGTH_LONG);
-
-            widget._onremove();
-
-            //Navigator.pop(context);
-             /* Navigator.pushNamedAndRemoveUntil(
-                context, "/MyWishList", (Route<dynamic> route) => false);*/
-          } else {
-            showMsg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
-          showMsg("Try Again.");
-        });
-      } else
-        showMsg("No Internet Connection.");
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsg("No Internet Connection.");
-    }
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {

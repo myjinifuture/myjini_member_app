@@ -47,7 +47,6 @@ class _WingFlatState extends State<WingFlat> {
     rowscolumn = int.parse(widget.floorData) * int.parse(widget.maxUnitData);
     color1 = constant.appPrimaryMaterialColor;
     getFlatIds(widget.societyId,widget.wingId);
-    getFlatType();
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(message: 'Please Wait');
     print(constant.appPrimaryMaterialColor);
@@ -351,29 +350,6 @@ class _WingFlatState extends State<WingFlat> {
   List finalDataSent = [];
   List getflatDetails = [];
 
-  getFlatType() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Future res = Services.getFlatType();
-        res.then((data) async {
-          if (data !=null) {
-            setState(() {
-              winglistClassList = data;
-            });
-            print("getFlatType=> " + winglistClassList.toString());
-          }
-        }, onError: (e) {
-          showMsg("$e");
-        });
-      } else {
-        showMsg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      showMsg("Something Went Wrong");
-    }
-  }
-
   getFlatIds(String societyId,String wingId) async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -382,7 +358,7 @@ class _WingFlatState extends State<WingFlat> {
           "societyId" : societyId,
           "wingId" : wingId
         };
-        Services.responseHandler(apiName: "admin/getFlatsOfSociety",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/getFlatsOfSociety_v1",body: data).then((data) async {
           if (data.Data !=null) {
             setState(() {
               getflatDetails = data.Data;
@@ -642,7 +618,7 @@ class _WingFlatState extends State<WingFlat> {
                     ),
                   ),
                 color:constant.appPrimaryMaterialColor,
-                  onPressed: !isSubmitPressed ? (){
+                  onPressed:(){
                     setState(() {
                       isSubmitPressed=true;
                     });
@@ -672,7 +648,7 @@ class _WingFlatState extends State<WingFlat> {
                     if(allchecked) {
                       createNewWing();
                     }
-                  }:null,
+                  },
               ),
             )
           ],

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dotted_decoration/dotted_decoration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:imei_plugin/imei_plugin.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -26,7 +27,6 @@ import 'package:smart_society_new/Member_App/screens/PreferenceScreen.dart';
 import 'package:smart_society_new/Member_App/screens/UpdateProfileScreen.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:share/share.dart';
-import 'package:unique_identifier/unique_identifier.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerProfile extends StatefulWidget {
@@ -51,6 +51,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    shareMyJINIAppDetails();
     _handleSendNotification();
     initPlatformState();
     profile();
@@ -63,6 +64,34 @@ class _CustomerProfileState extends State<CustomerProfile> {
   }
 
   String memId;
+  var shareMyJINIAppDetailsContent;
+
+  shareMyJINIAppDetails() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var body = {};
+        Services.responseHandler(apiName: "admin/shareMyJiniApp", body: body)
+            .then((data) async {
+          if (data.Data != null) {
+            setState(() {
+              shareMyJINIAppDetailsContent = data.Data;
+            });
+            print("shareMyJINIAppDetailsContent");
+            print(shareMyJINIAppDetailsContent);
+          }
+        }, onError: (e) {
+              print("this is the error");
+          showMsg("$e");
+        });
+      } else {
+        showMsg("No Internet Connection.");
+      }
+    } on SocketException catch (_) {
+      showMsg("Something Went Wrong");
+    }
+  }
+
   getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -74,17 +103,17 @@ class _CustomerProfileState extends State<CustomerProfile> {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
+        // setState(() {
+        //   isLoading = true;
+        // });
         var data = {"memberId": MemberId, "vehicleNo": VehicleNo};
         Services.responseHandler(
-            apiName: "member/deleteMemberVehicles", body: data)
+                apiName: "member/deleteMemberVehicles", body: data)
             .then((data) async {
           if (data.Data.toString() == "1") {
-            setState(() {
-              isLoading = false;
-            });
+            // setState(() {
+            //   isLoading = false;
+            // });
             Fluttertoast.showToast(
                 msg: "Vehicle Deleted Successfully!!!",
                 toastLength: Toast.LENGTH_LONG,
@@ -125,7 +154,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
       else
         ParentId = prefs.getString(constant.Session.ParentId);
     });
-    getMemberRole(MemberId,SocietyId);
+    getMemberRole(MemberId, SocietyId);
     // GetMyResidents();
   }
 
@@ -141,13 +170,15 @@ class _CustomerProfileState extends State<CustomerProfile> {
             new FlatButton(
               child: new Text("No"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
             new FlatButton(
               child: new Text("Yes"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
                 _logout();
               },
             ),
@@ -158,12 +189,11 @@ class _CustomerProfileState extends State<CustomerProfile> {
   }
 
   var playerId;
+
   void _handleSendNotification() async {
     var status = await OneSignal.shared.getPermissionSubscriptionState();
 
     playerId = status.subscriptionStatus.userId;
-    print("playerid while logout");
-    print(playerId);
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {
@@ -177,7 +207,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -186,7 +217,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
     );
   }
 
-  String uniqueId = "Unknown";
+  String uniqueId = "";
+
   Future<void> initPlatformState() async {
     String platformImei;
     String idunique;
@@ -200,35 +232,29 @@ class _CustomerProfileState extends State<CustomerProfile> {
     // } on PlatformException {
     //   platformImei = 'Failed to get platform version.';
     // }
-    String  identifier =await UniqueIdentifier.serial;
+
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    setState(() {
-      uniqueId = identifier;
-    });
-    print("uniqueid");
-    print(identifier);
+
   }
 
   _logout() async {
     try {
       final result = await InternetAddress.lookup('google.com');
+      SharedPreferences preferences = await SharedPreferences.getInstance();
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {
-          "memberId" : memId,
-          "playerId" : playerId,
-          "IMEI" : uniqueId
-        };
+        var data = {"memberId": memId, "playerId": preferences.getString('playerId'), "IMEI": uniqueId};
         print("data");
         print(data);
-        Services.responseHandler(apiName: "member/logout", body: data)
-            .then((data) async {
+        Services.responseHandler(apiName: "member/logout", body: data).then(
+            (data) async {
           if (data.Data != null && data.Data.toString() == "1") {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.clear();
+            DefaultCacheManager().emptyCache();
             Navigator.pushReplacementNamed(context, "/LoginScreen");
           } else {
             // setState(() {});
@@ -257,7 +283,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
         });
         var data = {"memberId": MemberId.toString()};
         Services.responseHandler(
-            apiName: "member/getMemberVehicles", body: data)
+                apiName: "member/getMemberVehicles", body: data)
             .then((data) async {
           setState(() {
             isLoading = false;
@@ -268,7 +294,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
             });
           } else {
             setState(() {
-              VehicleData = data.Data[0]["Vehicles"];
+              // VehicleData = data.Data[0]["Vehicles"];
               isLoading = false;
             });
           }
@@ -289,12 +315,12 @@ class _CustomerProfileState extends State<CustomerProfile> {
     showDialog(
         context: context,
         builder: (BuildContext context) => Addvehicale_dialogue(
-          onAdd: () {
-            setState(() {
-              GetMyvehicleData();
-            });
-          },
-        ));
+              onAdd: () {
+                setState(() {
+                  GetMyvehicleData();
+                });
+              },
+            ));
   }
 
   //get My Residents api
@@ -311,7 +337,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
           "memberId": memberId,
         };
         Services.responseHandler(
-            apiName: "member/getMemberProperties", body: data)
+                apiName: "member/getMemberProperties", body: data)
             .then((data) async {
           setState(() {
             isLoading = false;
@@ -389,7 +415,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
         });
         var data = {"societyId": SocietyId, "wingId": WingId, "flatId": FlatId};
         Services.responseHandler(
-            apiName: "member/getMemberResources", body: data)
+                apiName: "member/getMemberResources", body: data)
             .then((data) async {
           setState(() {
             isLoading = false;
@@ -427,7 +453,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -446,8 +473,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
         });
         Services.responseHandler(apiName: "member/getMemberRole", body: data)
             .then((data) async {
-          print("data");
-          print(data);
+              print("data.Data");
+              print(data.Data);
           if (data.Data[0]["society"]["isAdmin"].toString() == "1") {
             setState(() {
               Profile = data.Data[0]["Image"];
@@ -461,21 +488,19 @@ class _CustomerProfileState extends State<CustomerProfile> {
             });
           }
         }, onError: (e) {
-          showHHMsg("Something Went Wrong.\nPlease Try Again","");
+          showHHMsg("Something Went Wrong.\nPlease Try Again", "");
           setState(() {
             isLoading = false;
           });
         });
       }
     } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.","");
+      showHHMsg("No Internet Connection.", "");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print("data:");
-    print(MyResidentsData);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -496,651 +521,593 @@ class _CustomerProfileState extends State<CustomerProfile> {
       body: isLoading == true
           ? LoadingComponent()
           : SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // for profile
-            Padding(
-              padding:
-              const EdgeInsets.only(top: 17.0, left: 10, right: 10),
-              child: GestureDetector(
-                onTap: () {
-                  // Navigator.pushReplacement(
-                  //     context, SlideLeftRoute(page: UpdateProfile()));
-                  Navigator.pushNamed(context, '/UpdateProfile');
-                },
-                child: Container(
-                  color: Colors.grey[100],
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: CircleAvatar(
-                          backgroundImage:
-                          //  AssetImage('assets/assets/profile.png'),
-                          '$Profile' == "null" || '$Profile' == ""
-                              ? AssetImage(
-                              'assets/assets/profile.png')
-                              : NetworkImage(
-                              constant.Image_Url + '$Profile'),
-                          backgroundColor: appPrimaryMaterialColor,
-                          radius: 35,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // for profile
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 17.0, left: 10, right: 10),
+                    child: GestureDetector(
+                      onTap: () {
+                        // Navigator.pushReplacement(
+                        //     context, SlideLeftRoute(page: UpdateProfile()));
+                        Navigator.pushNamed(context, '/UpdateProfile');
+                      },
+                      child: Container(
+                        color: Colors.grey[100],
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10.0),
+                              child: ClipOval(
+                                child: Profile != "null" && Profile != ""
+                                    ? FadeInImage.assetNetwork(
+                                  placeholder:  "images/man.png",
+                                  image: constant.Image_Url + '$Profile',
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                )
+                                    : Image.asset(
+                                  "images/man.png",
+                                  width: 60,
+                                  height: 60,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 8.0, top: 4.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SingleChildScrollView(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(Name != null ? Name : "Name",
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w600)),
+                                        ],
+                                      ),
+                                      scrollDirection: Axis.horizontal,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(2.0),
+                                      child: Text(
+                                          MobileNo != null
+                                              ? MobileNo
+                                              : "MobileNo",
+                                          style: TextStyle(
+                                              fontSize: 15,
+                                              color: Colors.grey[700])),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Icon(
+                                Icons.edit_outlined,
+                                size: 30,
+                                color: Colors.grey,
+                              ),
+                            )
+                          ],
                         ),
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding:
-                          const EdgeInsets.only(left: 8.0, top: 4.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                    ),
+                  ),
+
+                  //for my residence
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20.0, right: 10, top: 20),
+                    child: Row(
+                      children: [
+                        Icon(Icons.home_work_outlined),
+                        Expanded(
+                            child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "My Residents",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w600),
+                          ),
+                        )),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                SlideLeftRoute(
+                                    page: AddMyResidents(
+                                  onAddMyResidents: GetMyResidents,
+                                )));
+                          },
+                          child: Container(
+                            //color: Colors.orange[300],
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.orange[300],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
                                 children: [
-                                  Text(Name != null ? Name : "Name",
+                                  Icon(
+                                    Icons.add,
+                                    size: 15,
+                                  ),
+                                  Text("Add  ",
                                       style: TextStyle(
-                                          fontSize: 18,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w600)),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600))
                                 ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Text(
-                                    MobileNo != null
-                                        ? MobileNo
-                                        : "MobileNo",
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        color: Colors.grey[700])),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 25.0,
+                      //bottom: 10,
+                    ),
+                    child: Container(
+                      height: 90,
+                      child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: MyResidentsData.length + 1,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index > MyResidentsData.length - 1) {
+                              return Container(
+                                width: 150,
+                                decoration: DottedDecoration(
+                                  shape: Shape.box,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: FlatButton(
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 30,
+                                    color: appPrimaryMaterialColor,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        SlideLeftRoute(
+                                            page: AddMyResidents(
+                                          onAddMyResidents: GetMyResidents,
+                                        )));
+                                  },
+                                ),
+                              );
+                            } else {
+                              return MyResidenceComponent(
+                                onDeleteProperty: GetMyResidents,
+                                resData: MyResidentsData[index],
+                                index: index,
+                              );
+                            }
+                          }),
+                    ),
+                  ),
+
+                  //for Family Member
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20.0, right: 10, top: 25),
+                    child: Row(
+                      children: [
+                        Container(
+                            height: 30,
+                            width: 30,
+                            child: Image.asset('images/familymember.png')),
+                        // Icon(Icons.family_restroom),
+                        Expanded(
+                            child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "Family Member",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w600),
+                          ),
+                        )),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context,
+                                SlideLeftRoute(page: AddFamilyMember(
+                              onAddFamily: () {
+                                setState(() {
+                                  GetFamilyDetail();
+                                });
+                              },
+                            )));
+                          },
+                          child: Container(
+                            //color: Colors.orange[300],
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.orange[300],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.add,
+                                    size: 15,
+                                  ),
+                                  Text("Add  ",
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600))
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Icon(
-                          Icons.edit_outlined,
-                          size: 30,
-                          color: Colors.grey,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            //for my residence
-            Padding(
-              padding:
-              const EdgeInsets.only(left: 20.0, right: 10, top: 20),
-              child: Row(
-                children: [
-                  Icon(Icons.home_work_outlined),
-                  Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          "My Residents",
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w600),
-                        ),
-                      )),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          SlideLeftRoute(page: AddMyResidents(
-                            onAddMyResidents: GetMyResidents,
-                          )));
-                    },
-                    child: Container(
-                      //color: Colors.orange[300],
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.orange[300],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.add,
-                              size: 15,
-                            ),
-                            Text("Add  ",
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                      ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 25.0,
-                //bottom: 10,
-              ),
-              child: Container(
-                height: 90,
-                child: ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: MyResidentsData.length + 1,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index > MyResidentsData.length - 1) {
-                        return Container(
-                          width: 150,
-                          decoration: DottedDecoration(
-                            shape: Shape.box,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: FlatButton(
-                            child: Icon(
-                              Icons.add,
-                              size: 30,
-                              color: appPrimaryMaterialColor,
-                            ),
-                            onPressed: () {
-                              Navigator.push(context,
-                                  SlideLeftRoute(page: AddMyResidents(
-                                    onAddMyResidents: GetMyResidents,
-                                  )));
-                            },
-                          ),
-                        );
-                      } else {
-                        return MyResidenceComponent(
-                          resData: MyResidentsData[index],
-                          index: index,
-                        );
-                      }
-                    }),
-              ),
-            ),
-
-            //for Family Member
-            Padding(
-              padding:
-              const EdgeInsets.only(left: 20.0, right: 10, top: 25),
-              child: Row(
-                children: [
-                  Container(
-                      height: 30,width: 30
-                      ,child: Image.asset('images/familymember.png')),
-                  // Icon(Icons.family_restroom),
-                  Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          "Family Member",
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w600),
-                        ),
-                      )),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          SlideLeftRoute(page: AddFamilyMember(
-                            onAddFamily: () {
-                              setState(() {
-                                GetFamilyDetail();
-                              });
-                            },
-                          )));
-                    },
-                    child: Container(
-                      //color: Colors.orange[300],
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.orange[300],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.add,
-                              size: 15,
-                            ),
-                            Text("Add  ",
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 25.0,
+                      //bottom: 10,
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 25.0,
-                //bottom: 10,
-              ),
-              child: Container(
-                height: 190,
-                child: isLoading == true
-                    ? LoadingComponent()
-                    : ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: FmemberData.length + 1,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index > FmemberData.length - 1) {
-                        return Container(
-                          width: 100,
-                          decoration: DottedDecoration(
-                            shape: Shape.box,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: FlatButton(
-                            child: Icon(
-                              Icons.add,
-                              size: 30,
-                              color: appPrimaryMaterialColor,
-                            ),
-                            onPressed: () {
-                              Navigator.push(context, SlideLeftRoute(
-                                  page: AddFamilyMember(
-                                    onAddFamily: () {
+                    child: Container(
+                      height: 190,
+                      child: isLoading == true
+                          ? LoadingComponent()
+                          : ListView.builder(
+                              physics: BouncingScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: FmemberData.length + 1,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                if (index > FmemberData.length - 1) {
+                                  return Container(
+                                    width: 100,
+                                    decoration: DottedDecoration(
+                                      shape: Shape.box,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: FlatButton(
+                                      child: Icon(
+                                        Icons.add,
+                                        size: 30,
+                                        color: appPrimaryMaterialColor,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.push(context, SlideLeftRoute(
+                                            page: AddFamilyMember(
+                                          onAddFamily: () {
+                                            setState(() {
+                                              GetFamilyDetail();
+                                            });
+                                          },
+                                        )));
+                                      },
+                                    ),
+                                  );
+                                } else {
+                                  return FamilyMemberComponent(
+                                    memberName: Name,
+                                    familyData: FmemberData[index],
+                                    onDelete: GetFamilyDetail,
+                                    onUpdate: () {
                                       setState(() {
                                         GetFamilyDetail();
                                       });
                                     },
-                                  )));
-                            },
+                                  );
+                                }
+                              }),
+                    ),
+                  ),
+                  //for Daily Resourse
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20.0, right: 10, top: 25),
+                    child: Row(
+                      children: [
+                        Container(
+                            height: 30,
+                            width: 30,
+                            child: Image.asset('images/dailyresource.png')),
+                        Expanded(
+                            child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "Daily Resources",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w600),
                           ),
-                        );
-                      } else {
-                        return FamilyMemberComponent(memberName: Name,
-                          familyData: FmemberData[index],
-                          onDelete: () {
-                            setState(() {
-                              FmemberData.removeAt(index);
-                            });
+                        )),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context,
+                                SlideLeftRoute(page: AddDailyResource(
+                              onAddDailyResource: () {
+                                setState(() {
+                                  GetDailyResourceDetail();
+                                });
+                              },
+                            )));
                           },
-                          onUpdate: () {
-                            setState(() {
-                              GetFamilyDetail();
-                            });
-                          },
-                        );
-                      }
-                    }),
-              ),
-            ),
-            //for Daily Resourse
-            Padding(
-              padding:
-              const EdgeInsets.only(left: 20.0, right: 10, top: 25),
-              child: Row(
-                children: [
-                  Container(
-                      height: 30,width: 30
-                      ,child: Image.asset('images/dailyresource.png')),                        Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          "Daily Resources",
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w600),
+                          child: Container(
+                            //color: Colors.orange[300],
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.orange[300],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.add,
+                                    size: 15,
+                                  ),
+                                  Text("Add  ",
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600))
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      )),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          SlideLeftRoute(page: AddDailyResource(
-                            onAddDailyResource: () {
-                              setState(() {
-                                GetDailyResourceDetail();
-                              });
-                            },
-                          )));
-                    },
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 25.0,
+                      //bottom: 10,
+                    ),
                     child: Container(
-                      //color: Colors.orange[300],
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.orange[300],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.add,
-                              size: 15,
-                            ),
-                            Text("Add  ",
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                      ),
+                      height: 190,
+                      child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: DailyResourceData.length + 1,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index > DailyResourceData.length - 1) {
+                              return Container(
+                                width: 100,
+                                decoration: DottedDecoration(
+                                  shape: Shape.box,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: FlatButton(
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 30,
+                                    color: appPrimaryMaterialColor,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(context,
+                                        SlideLeftRoute(page: AddDailyResource(
+                                      onAddDailyResource: () {
+                                        setState(() {
+                                          GetDailyResourceDetail();
+                                        });
+                                      },
+                                    )));
+                                  },
+                                ),
+                              );
+                            } else {
+                              return DailyResourseComponent(
+                                dailyResourceData: DailyResourceData[index],
+                                isAdmin: widget.isAdmin,
+                                onDelete: () {
+                                  setState(() {
+                                    DailyResourceData.removeAt(index);
+                                  });
+                                },
+                                onUpdate: () {
+                                  setState(() {
+                                    GetDailyResourceDetail();
+                                  });
+                                },
+                              );
+                            }
+                          }),
                     ),
                   ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 25.0,
-                //bottom: 10,
-              ),
-              child: Container(
-                height: 190,
-                child: ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: DailyResourceData.length + 1,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index > DailyResourceData.length - 1) {
-                        return Container(
-                          width: 100,
-                          decoration: DottedDecoration(
-                            shape: Shape.box,
-                            borderRadius: BorderRadius.circular(5),
+                  //for my vehicle
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20.0, right: 10, top: 20),
+                    child: Row(
+                      children: [
+                        Icon(Icons.home_work_outlined),
+                        Expanded(
+                            child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            "My Vehicle",
+                            style: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w600),
                           ),
-                          child: FlatButton(
-                            child: Icon(
-                              Icons.add,
-                              size: 30,
-                              color: appPrimaryMaterialColor,
+                        )),
+                        GestureDetector(
+                          onTap: () {
+                            AddVehicale();
+                          },
+                          child: Container(
+                            //color: Colors.orange[300],
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.orange[300],
                             ),
-                            onPressed: () {
-                              Navigator.push(context,
-                                  SlideLeftRoute(page: AddDailyResource(
-                                    onAddDailyResource: () {
-                                      setState(() {
-                                        GetDailyResourceDetail();
-                                      });
-                                    },
-                                  )));
-                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.add,
+                                    size: 15,
+                                  ),
+                                  Text("Add  ",
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600))
+                                ],
+                              ),
+                            ),
                           ),
-                        );
-                      } else {
-                        return DailyResourseComponent(
-                          dailyResourceData: DailyResourceData[index],
-                          isAdmin: widget.isAdmin,
-                          onDelete: () {
-                            setState(() {
-                              DailyResourceData.removeAt(index);
-                            });
-                          },
-                          onUpdate: () {
-                            setState(() {
-                              GetDailyResourceDetail();
-                            });
-                          },
-                        );
-                      }
-                    }),
-              ),
-            ),
-            //for my vehicle
-            Padding(
-              padding:
-              const EdgeInsets.only(left: 20.0, right: 10, top: 20),
-              child: Row(
-                children: [
-                  Icon(Icons.home_work_outlined),
-                  Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          "My Vehicle",
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w600),
                         ),
-                      )),
-                  GestureDetector(
-                    onTap: () {
-                      AddVehicale();
-                    },
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 25.0,
+                      //bottom: 10,
+                    ),
                     child: Container(
-                      //color: Colors.orange[300],
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.orange[300],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.add,
-                              size: 15,
-                            ),
-                            Text("Add  ",
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600))
-                          ],
+                      height: 90,
+                      child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: VehicleData.length + 1,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index > VehicleData.length - 1) {
+                              return Container(
+                                width: 150,
+                                decoration: DottedDecoration(
+                                  shape: Shape.box,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: FlatButton(
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 30,
+                                    color: appPrimaryMaterialColor,
+                                  ),
+                                  onPressed: () {
+                                    AddVehicale();
+                                  },
+                                ),
+                              );
+                            } else {
+                              return MyVehicleComponent(
+                                vehicleData: VehicleData[index],
+                                onDelete: () {
+                                    _DeleteMemberVehicle(
+                                        VehicleData[index]["vehicleNo"]);
+                                },
+                              );
+                            }
+                          }),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      Divider(),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(context,
+                              SlideLeftRoute(page: PreferenceScreen()));
+                        },
+                        leading: Icon(
+                          Icons.settings_outlined,
+                          size: 25,
+                          color: Colors.black54,
+                        ),
+                        title: Text(
+                          "Preferences",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 20,
+                          color: Colors.black,
                         ),
                       ),
-                    ),
-                  ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(context,
+                              SlideLeftRoute(page: EmergencyContactScreen()));
+                        },
+                        leading: Icon(
+                          Icons.add_ic_call_outlined,
+                          size: 25,
+                          color: Colors.black54,
+                        ),
+                        title: Text(
+                          "SOS Contacts",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 20,
+                          color: Colors.black,
+                        ),
+                      ),
+                      ListTile(
+                        onTap: () async {
+                          Share.share(shareMyJINIAppDetailsContent);
+                        },
+                        leading: Icon(
+                          Icons.share,
+                          size: 25,
+                          color: Colors.black54,
+                        ),
+                        title: Text(
+                          "Tell a friend about MYJINI",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        // trailing: Icon(
+                        //   Icons.arrow_forward_ios,
+                        //   size: 20,
+                        //   color: Colors.black,
+                        // ),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          _showConfirmDialog();
+                        },
+                        leading: Icon(
+                          Icons.logout,
+                          size: 25,
+                          color: Colors.black54,
+                        ),
+                        title: Text(
+                          "Logout",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        // trailing: Icon(
+                        //   Icons.arrow_forward_ios,
+                        //   size: 20,
+                        //   color: Colors.black,
+                        // ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
-
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 25.0,
-                //bottom: 10,
-              ),
-              child: Container(
-                height: 90,
-                child: ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: VehicleData.length + 1,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index > VehicleData.length - 1) {
-                        return Container(
-                          width: 150,
-                          decoration: DottedDecoration(
-                            shape: Shape.box,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: FlatButton(
-                            child: Icon(
-                              Icons.add,
-                              size: 30,
-                              color: appPrimaryMaterialColor,
-                            ),
-                            onPressed: () {
-                              AddVehicale();
-                            },
-                          ),
-                        );
-                      } else {
-                        return MyVehicleComponent(
-                          vehicleData: VehicleData[index],
-                          onDelete: () {
-                            _DeleteMemberVehicle(
-                                VehicleData[index]["vehicleNo"]);
-                          },
-                        );
-                      }
-                    }),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15, top: 25, bottom: 20),
-              child: Column(
-                children: [
-                  Divider(),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          SlideLeftRoute(page: PreferenceScreen()));
-                    },
-                    child: Padding(
-                      padding:
-                      const EdgeInsets.only(top: 15.0, bottom: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.settings_outlined,
-                                size: 25,
-                                color: Colors.black54,
-                              ),
-                              Padding(
-                                padding:
-                                const EdgeInsets.only(left: 18.0),
-                                child: Text(
-                                  "Preferences",
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            size: 20,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          SlideLeftRoute(page: EmergencyContactScreen()));
-                    },
-                    child: Padding(
-                      padding:
-                      const EdgeInsets.only(top: 18.0, bottom: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.add_ic_call_outlined,
-                                size: 25,
-                                color: Colors.black54,
-                              ),
-                              Padding(
-                                padding:
-                                const EdgeInsets.only(left: 12.0),
-                                child: Text(
-                                  "SOS Contacts",
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            size: 20,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 18.0, bottom: 8),
-                  //   child: Row(
-                  //     children: [
-                  //       Icon(
-                  //         Icons.feedback_outlined,
-                  //         size: 25,
-                  //         color: Colors.black54,
-                  //       ),
-                  //       Padding(
-                  //         padding: const EdgeInsets.only(left: 12.0),
-                  //         child: Text(
-                  //           "Support & Feedback",
-                  //           style: TextStyle(fontSize: 16),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  //   ),
-                  // ),
-                  GestureDetector(
-                    onTap: () async {
-                      Share.share(
-                          "Download MyJini App now to manage your society security, maintenance, staffing & operations and more:\n http://myjini.in/\n\nDownload the App from the below link\nhttp://tinyurl.com/wz2aeao");
-                    },
-                    child: Padding(
-                      padding:
-                      const EdgeInsets.only(top: 18.0, bottom: 8),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.share,
-                            size: 25,
-                            color: Colors.black54,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 12.0),
-                            child: Text(
-                              "Tell a friend about MYJINI",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _showConfirmDialog();
-                    },
-                    child: Padding(
-                      padding:
-                      const EdgeInsets.only(top: 18.0, bottom: 8),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.logout,
-                            size: 25,
-                            color: Colors.black54,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 12.0),
-                            child: Text(
-                              "Logout",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
     );
   }
 }
@@ -1169,7 +1136,7 @@ class VehicleRadio extends StatelessWidget {
               height: 55,
               width: 55,
               color:
-              _vehiclelistData.isSelected ? Colors.green[400] : Colors.grey,
+                  _vehiclelistData.isSelected ? Colors.green[400] : Colors.grey,
             ),
             Padding(
               padding: const EdgeInsets.only(left: 50.0),
@@ -1212,7 +1179,6 @@ class _Addvehicale_dialogueState extends State<Addvehicale_dialogue> {
     setState(() {
       MemberId = prefs.getString(constant.Session.Member_Id);
     });
-
   }
 
   TextEditingController CodeControler = new TextEditingController();
@@ -1236,7 +1202,7 @@ class _Addvehicale_dialogueState extends State<Addvehicale_dialogue> {
             };
             // pr.show();
             Services.responseHandler(
-                apiName: "member/addMemberVehicles", body: data)
+                    apiName: "member/addMemberVehicles", body: data)
                 .then((data) async {
               // pr.hide();
               if (data.Data != "0" && data.IsSuccess == true) {
@@ -1281,7 +1247,7 @@ class _Addvehicale_dialogueState extends State<Addvehicale_dialogue> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -1377,7 +1343,7 @@ class _Addvehicale_dialogueState extends State<Addvehicale_dialogue> {
                 splashColor: Colors.white,
                 child: Text("Save Data",
                     style:
-                    TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 onPressed: () {
                   _AddvehicleDetail();
                 },

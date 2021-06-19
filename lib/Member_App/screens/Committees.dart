@@ -17,44 +17,6 @@ class _CommitteesState extends State<Committees> {
   List _committeeData = new List();
   bool isLoading = false;
 
-  @override
-  void initState() {
-    // _getCommittees(); // ask monil to make committee members api - 7 number
-  }
-
-  _getCommittees() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.GetCommittees().then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              _committeeData = data;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
-  }
-
   showHHMsg(String title, String msg) {
     showDialog(
       context: context,

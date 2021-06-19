@@ -19,46 +19,6 @@ class _StatisticsState extends State<Statistics> {
     // getSocietyStatistics(); // ask monil to make service for statistics - 8 number
   }
 
-  getSocietyStatistics() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        String SocietyId =
-            await preferences.getString(constant.Session.SocietyId);
-        Future res = Services.GetSocietyStatistics(SocietyId);
-        setState(() {
-          isLoading = true;
-        });
-
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              NewList = data;
-              isLoading = false;
-            });
-            print("==================" + NewList.toString());
-          } else {
-            setState(() {
-              NewList = [];
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on NewLead Data Call $e");
-          showMsg("$e");
-        });
-      } else {
-        showMsg("Something went Wrong!");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
-  }
-
   showMsg(String msg, {String title = 'MYJINI'}) {
     showDialog(
       context: context,

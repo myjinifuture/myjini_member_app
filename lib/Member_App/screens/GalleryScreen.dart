@@ -20,7 +20,7 @@ class GalleryScreen extends StatefulWidget {
 class _GalleryScreenState extends State<GalleryScreen> {
   List EventData = [];
   bool isLoading = true;
-  String SocietyId;
+  String SocietyId,wingId;
 
   @override
   void initState() {
@@ -31,6 +31,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
   _getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     SocietyId = prefs.getString(constant.Session.SocietyId);
+    wingId = prefs.getString(constant.Session.WingId);
+
   }
 
   GetGallaryData() async {
@@ -42,25 +44,27 @@ class _GalleryScreenState extends State<GalleryScreen> {
         });
         SharedPreferences prefs = await SharedPreferences.getInstance();
         var data = {
-          "societyId": SocietyId
+          "societyId": SocietyId,
+          "wingId" : wingId
         };
-        Services.responseHandler(apiName: "admin/getGallery",body: data).then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          await prefs.setString(
-              constant.Session.EventId, data.Data[0]["_id"].toString());
+        Services.responseHandler(apiName: "admin/getGallery", body: data).then(
+                (data) async {
+              setState(() {
+                isLoading = false;
+              });
+              await prefs.setString(
+                  constant.Session.EventId, data.Data[0]["_id"].toString());
 
-          if (data.Data != null && data.Data.length > 0) {
-            setState(() {
-              EventData = data.Data;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
+              if (data.Data != null && data.Data.length > 0) {
+                setState(() {
+                  EventData = data.Data;
+                });
+              } else {
+                setState(() {
+                  isLoading = false;
+                });
+              }
+            }, onError: (e) {
           setState(() {
             isLoading = false;
           });
@@ -104,7 +108,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       },
       child: Padding(
         padding:
-            const EdgeInsets.only(left: 8.0, right: 8.0, top: 6, bottom: 3),
+        const EdgeInsets.only(left: 8.0, right: 8.0, top: 6, bottom: 3),
         child: ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(6.0)),
           child: Container(
@@ -134,24 +138,24 @@ class _GalleryScreenState extends State<GalleryScreen> {
               ),
               Container(
                   child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Text('${EventData[index]["title"]}',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16)),
-                    Text("${EventData[index]["image"].length} Photos",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16)),
-                  ],
-                ),
-              ))
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Text('${EventData[index]["title"]}',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16)),
+                        Text("${EventData[index]["image"].length} Photos",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16)),
+                      ],
+                    ),
+                  ))
             ]),
           ),
         ),
@@ -161,172 +165,202 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
-              }),
-          centerTitle: true,
-          title: Text(
-            'Gallery',
-            style: TextStyle(fontSize: 18),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(10),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pushNamedAndRemoveUntil(
+        //           context, '/HomeScreen', (route) => false);              }),
+        centerTitle: true,
+        title: Text(
+          'Gallery',
+          style: TextStyle(fontSize: 18),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(10),
           ),
         ),
-        body: isLoading
-            ? LoadingComponent()
-            : EventData.length > 0
-            ? Container(
-            color: Colors.grey[100],
-            child: AnimationLimiter(
-              child: ListView.builder(
-                itemBuilder: (BuildContext context, int index) {
-                  print(Image_Url + EventData[index]["image"][0]);
-                  print(EventData);
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom:16.0),
-                    child: AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 475),
-                      child: SlideAnimation(
-                        verticalOffset: 50.0,
-                        child: FadeInAnimation(
-                          child: GestureDetector(
-                            // onTap: () { // ANIRUDH HAS DOUBT
-                            //   Navigator.pushReplacement(
-                            //       context,
-                            //       MaterialPageRoute(
-                            //           builder: (context) => EventGallary(
-                            //                 eventId:
-                            //                     "${_galleryData[index]["_id"].toString()}",
-                            //               )));
-                            // },
-                            child: Padding(
-                              padding: const EdgeInsets.all(7),
-                              child:
-                              Container(
-                                height: 170,
-                                child: Stack(children: <Widget>[
-                                  // _galleryData[index]["image"].length >0
-                                  //
-                                  //     ?
-                                  CarouselSlider(
-                                    height: 180,
-                                    viewportFraction: 1.0,
-                                    autoPlayAnimationDuration: Duration(milliseconds: 1000),
-                                    reverse: false,
-                                    autoPlayCurve: Curves.fastOutSlowIn,
-                                    autoPlay: true,
-                                    items: EventData[index]["image"].map<Widget>((i) {
-                                      return Builder(builder: (BuildContext context) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    AllImagesInGallery(data:EventData[index]),
-                                              ),
-                                            );
-                                          },
-                                          child: Container(
-                                              width: MediaQuery.of(context).size.width,
-                                              child: Image.network(
-                                                  Image_Url + i,
-                                                  fit: BoxFit.fill)),
-                                        );
-                                      });
-                                    }).toList(),
-                                  ),
-                                  // Image.network(
-                                  //   Image_Url +
-                                  //                  _galleryData[index]
-                                  //                    ["image"][0],
-                                  //   fit: BoxFit.fitWidth,
-                                  //   width: MediaQuery.of(context).size.width,
-                                  // height: 170,
-                                  // ),FadeInImage.assetNetwork(
-                                  //   placeholder: "",
-                                  //   image:
-                                  //   Image_Url +
-                                  //           _galleryData[index]
-                                  //               ["image"][0],
-                                  //   width: MediaQuery.of(context)
-                                  //       .size
-                                  //       .width,
-                                  //   fit: BoxFit.cover,
-                                  // ),
-                                  //       ),
-                                  // : Image.asset(
-                                  //     "images/no_image2.png",
-                                  //     height: 130,
-                                  //     width: MediaQuery.of(context)
-                                  //         .size
-                                  //         .width,
-                                  //   ),
-                                  // Container(
-                                  //   decoration: BoxDecoration(
-                                  //     gradient: LinearGradient(
-                                  //         begin: Alignment.topCenter,
-                                  //         end: Alignment.bottomCenter,
-                                  //         colors: [
-                                  //           Color.fromRGBO(0, 0, 0, 0.0),
-                                  //           Color.fromRGBO(0, 0, 0, 0.5),
-                                  //           Color.fromRGBO(0, 0, 0, 0.7),
-                                  //           Color.fromRGBO(0, 0, 0, 1)
-                                  //         ]),
-                                  //   ),
-                                  // ),
-                                  Container(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.end,
-                                          children: <Widget>[
-                                            Text(
-                                                '${EventData[index]["title"]}',
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                    FontWeight.w700,
-                                                    fontSize: 16)),
-                                            Text(
-                                                "${EventData[index]["dateTime"][0]}",
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                    FontWeight.w400,
-                                                    fontSize: 16)),
-                                          ],
+      ),
+      body: isLoading
+          ? LoadingComponent()
+          : EventData.length > 0
+          ? Container(
+          color: Colors.grey[100],
+          child: AnimationLimiter(
+            child: ListView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                print(Image_Url + EventData[index]["image"][0]);
+                print(EventData);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom:16.0),
+                  child: AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 475),
+                    child: SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(
+                        child: GestureDetector(
+                          // onTap: () { // ANIRUDH HAS DOUBT
+                          //   Navigator.pushReplacement(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //           builder: (context) => EventGallary(
+                          //                 eventId:
+                          //                     "${_galleryData[index]["_id"].toString()}",
+                          //               )));
+                          // },
+                          child: Padding(
+                            padding: const EdgeInsets.all(7),
+                            child:
+                            Container(
+                              height: 170,
+                              child: Stack(children: <Widget>[
+                                // _galleryData[index]["image"].length >0
+                                //
+                                //     ?
+                                CarouselSlider(
+                                  height: 180,
+                                  viewportFraction: 1.0,
+                                  autoPlayAnimationDuration: Duration(milliseconds: 1000),
+                                  reverse: false,
+                                  autoPlayCurve: Curves.fastOutSlowIn,
+                                  autoPlay: true,
+                                  items: EventData[index]["image"].map<Widget>((i) {
+                                    return Builder(builder: (BuildContext context) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AllImagesInGallery(data:EventData[index]),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                            width: MediaQuery.of(context).size.width,
+                                            child: Image.network(
+                                                Image_Url + i,
+                                                fit: BoxFit.fill)),
+                                      );
+                                    });
+                                  }).toList(),
+                                ),
+                                // Image.network(
+                                //   Image_Url +
+                                //                  _galleryData[index]
+                                //                    ["image"][0],
+                                //   fit: BoxFit.fitWidth,
+                                //   width: MediaQuery.of(context).size.width,
+                                // height: 170,
+                                // ),FadeInImage.assetNetwork(
+                                //   placeholder: "",
+                                //   image:
+                                //   Image_Url +
+                                //           _galleryData[index]
+                                //               ["image"][0],
+                                //   width: MediaQuery.of(context)
+                                //       .size
+                                //       .width,
+                                //   fit: BoxFit.cover,
+                                // ),
+                                //       ),
+                                // : Image.asset(
+                                //     "images/no_image2.png",
+                                //     height: 130,
+                                //     width: MediaQuery.of(context)
+                                //         .size
+                                //         .width,
+                                //   ),
+                                // Container(
+                                //   decoration: BoxDecoration(
+                                //     gradient: LinearGradient(
+                                //         begin: Alignment.topCenter,
+                                //         end: Alignment.bottomCenter,
+                                //         colors: [
+                                //           Color.fromRGBO(0, 0, 0, 0.0),
+                                //           Color.fromRGBO(0, 0, 0, 0.5),
+                                //           Color.fromRGBO(0, 0, 0, 0.7),
+                                //           Color.fromRGBO(0, 0, 0, 1)
+                                //         ]),
+                                //   ),
+                                // ),
+                                // Container(
+                                //     child: Padding(
+                                //       padding: const EdgeInsets.all(8.0),
+                                //       child: Column(
+                                //         crossAxisAlignment:
+                                //         CrossAxisAlignment.start,
+                                //         mainAxisAlignment:
+                                //         MainAxisAlignment.end,
+                                //         children: <Widget>[
+                                //           Text(
+                                //               '${EventData[index]["title"]}',
+                                //               style: TextStyle(
+                                //                   color: Colors.white,
+                                //                   fontWeight:
+                                //                   FontWeight.w700,
+                                //                   fontSize: 16)),
+                                //           Text(
+                                //               "${EventData[index]["dateTime"][0]}",
+                                //               style: TextStyle(
+                                //                   color: Colors.white,
+                                //                   fontWeight:
+                                //                   FontWeight.w400,
+                                //                   fontSize: 16)),
+                                //         ],
+                                //       ),
+                                //     )),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Card(color: Colors.white.withOpacity(0.8),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                            children: <Widget>[
+                                              Text(
+                                                  '${EventData[index]["title"]}',
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                      FontWeight.w700,
+                                                      fontSize: 16)),
+                                              Text(
+                                                  "${EventData[index]["dateTime"][0]}",
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                      FontWeight.w400,
+                                                      fontSize: 16)),
+                                            ],
+                                          ),
                                         ),
-                                      )),
-                                ]),
-                              ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ]),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  );
-                },
-                itemCount: EventData.length,
-              ),
-            ))
-            : NoDataComponent(),
-      ),
+                  ),
+                );
+              },
+              itemCount: EventData.length,
+            ),
+          ))
+          : Center(child: Text('No Data Found'),),
     );
   }
 }

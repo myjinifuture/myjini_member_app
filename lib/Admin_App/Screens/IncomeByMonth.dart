@@ -207,7 +207,7 @@ class _IncomeByMonthState extends State<IncomeByMonth> {
                           ),
                         ),
                       )
-                    : NoDataComponent(),
+                    : Center(child: Text('No Data Found'),),
                 _incomeData.length > 0
                     ? Container(
                         height: 50,

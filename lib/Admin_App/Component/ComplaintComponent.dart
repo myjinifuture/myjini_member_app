@@ -331,7 +331,8 @@ class _ComplaintComponentState extends State<ComplaintComponent> {
                   ),
                   Padding(padding: EdgeInsets.only(top: 10)),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: widget.complaintData["complainStatus"].toString() == "0"
+                        ? MainAxisAlignment.spaceEvenly : MainAxisAlignment.center,
                     children: <Widget>[
                       widget.complaintData["complainStatus"].toString() == "0"
                           ? Container(
@@ -384,7 +385,8 @@ class _ComplaintComponentState extends State<ComplaintComponent> {
                                 ],
                               ),
                             ),
-                      Container(
+                      widget.complaintData["complainStatus"].toString() == "0"
+                          ? Container(
                         width: MediaQuery.of(context).size.width / 2.4,
                         margin: EdgeInsets.only(top: 10),
                         child: MaterialButton(
@@ -402,7 +404,7 @@ class _ComplaintComponentState extends State<ComplaintComponent> {
                                 fontWeight: FontWeight.w600),
                           ),
                         ),
-                      ),
+                      ):Container(),
                     ],
                   ),
                 ],

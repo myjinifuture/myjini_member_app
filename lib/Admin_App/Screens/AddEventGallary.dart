@@ -129,11 +129,11 @@ class _AddEventGallaryState extends State<AddEventGallary> {
         showMsg("No Internet Connection.");
       }
     } else
-      Fluttertoast.showToast(
-          msg: "Please Select Any Image",
-          backgroundColor: Colors.red,
-          gravity: ToastGravity.TOP,
-          textColor: Colors.white);
+        Fluttertoast.showToast(
+            msg: "Please Select Any Image",
+            backgroundColor: Colors.red,
+            gravity: ToastGravity.TOP,
+            textColor: Colors.white);
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {

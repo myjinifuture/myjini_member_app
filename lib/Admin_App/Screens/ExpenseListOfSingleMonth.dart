@@ -383,7 +383,7 @@ class _ExpenseListOfSingleMonthState extends State<ExpenseListOfSingleMonth> {
                     )
                   ],
                 )
-              : NoDataComponent(),
+              : Center(child: Text('No Data Found'),),
     );
   }
 }

@@ -66,18 +66,27 @@ class _DailyResourseComponentState extends State<DailyResourseComponent> {
                           onTap: () {
                             _settingModalBottomSheet();
                           },
-                          child: Container(
+                          child: widget.dailyResourceData['staffImage']==''?Container(
                               decoration: BoxDecoration(
                                   color: Colors.grey[200],
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(100.0))),
+                                  BorderRadius.all(Radius.circular(100.0))),
                               width: 80,
                               height: 80,
                               child: Padding(
                                 padding: const EdgeInsets.all(25.0),
                                 child: Image.asset("images/family.png",
                                     width: 40, color: Colors.grey[400]),
-                              )),
+                              ),):ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                                child: FadeInImage.assetNetwork(
+                                placeholder: '',
+                                image: constant.Image_Url +
+                                    "${widget.dailyResourceData['staffImage']}",
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.fill),
+                              ),
                         ),
                         Text(
                           "${widget.dailyResourceData['Name']}",
@@ -160,39 +169,6 @@ class _DailyResourseComponentState extends State<DailyResourseComponent> {
         );
       },
     );
-  }
-
-  DeleteDailyResource(String Id) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // setState(() {
-        //   isLoading = true;
-        // });
-        Services.DeleteFamilyMember(Id).then((data) async {
-          if (data.Data == "1") {
-            // setState(() {
-            //   isLoading = false;
-            // });
-
-            // Navigator.pushReplacement(
-            //     context, SlideLeftRoute(page: CustomerProfile()));
-            widget.onDelete();
-          } else {
-            // isLoading = false;
-            showHHMsg("Member Is Not Deleted", "");
-          }
-        }, onError: (e) {
-          //isLoading = false;
-          showHHMsg("$e", "");
-          //isLoading = false;
-        });
-      } else {
-        showHHMsg("No Internet Connection.", "");
-      }
-    } on SocketException catch (_) {
-      showHHMsg("Something Went Wrong", "");
-    }
   }
 
   showHHMsg(String title, String msg) {
@@ -455,6 +431,14 @@ class _DailyResourseComponentState extends State<DailyResourseComponent> {
                                       color: Colors.black,
                                     ),
                                   ),
+                                  widget.dailyResourceData["isMapped"]  ? Text(
+                                    "${widget.dailyResourceData["entryNo"].toString().split("-")[1]}",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black,
+                                    ),
+                                  ):Container(),
                                 ],
                               ),
                             ),
@@ -608,46 +592,45 @@ class _AlertDeleteState extends State<AlertDelete> {
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           onPressed: () {
-            DeleteDailyResource(widget.deleteId, SocietyId, FlatId, WingId);
-            Navigator.of(context).pop();;
+            deleteDailyResource(widget.deleteId);
+            Navigator.of(context).pop();
           },
         ),
       ],
     );
   }
 
-  DeleteDailyResource(
-      String staffId, String societyId, String flatId, String wingId) async {
+  deleteDailyResource(String staffId) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // setState(() {
-        //   isLoading = true;
-        // });
-        Services.DeleteDailyResource(staffId, societyId, flatId, wingId).then(
-            (data) async {
-          if (data.Data == "1") {
-            // setState(() {
-            //   isLoading = false;
-            // });
-
-            // Navigator.pushReplacement(
-            //     context, SlideLeftRoute(page: CustomerProfile()));
-            widget.onDelete();
-          } else {
-            // isLoading = false;
-            showHHMsg("Daily Resource Is Not Deleted", "");
-          }
-        }, onError: (e) {
-          //isLoading = false;
-          showHHMsg("$e", "");
-          //isLoading = false;
+        // String SocietyId = preferences.getString(Session.SocietyId);
+        // for (int i = 0; i < wingsList.length; i++) {
+        //   if (selectedWing == wingsList[i]["wingName"]) {
+        //     selectedWingId = wingsList[i]["_id"];
+        //   }
+        // }
+        var data = {"staffId": staffId};
+        Services.responseHandler(apiName: "admin/deleteStaff", body: data).then(
+                (data) async {
+              if (data.Data != null && data.IsSuccess == true) {
+                print("data.Data");
+                print(data.Data);
+                Fluttertoast.showToast(
+                    msg: "Staff deleted Successfully!!!",
+                    backgroundColor: Colors.red,
+                    gravity: ToastGravity.TOP,
+                    textColor: Colors.white);
+                widget.onDelete();
+              } else {
+                showHHMsg(data.Message,  "Error");
+              }
+            }, onError: (e) {
+          showHHMsg("Try Again.","");
         });
-      } else {
-        showHHMsg("No Internet Connection.", "");
       }
     } on SocketException catch (_) {
-      showHHMsg("Something Went Wrong", "");
+      showHHMsg("No Internet Connection.","");
     }
   }
 

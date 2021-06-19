@@ -19,7 +19,6 @@ class _MyServiceRequestsState extends State<MyServiceRequests> {
 
   @override
   void initState() {
-    _getMyLeadsList();
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(
         message: "Please Wait..",
@@ -34,45 +33,6 @@ class _MyServiceRequestsState extends State<MyServiceRequests> {
         insetAnimCurve: Curves.easeInOut,
         messageTextStyle: TextStyle(
             color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
-  }
-
-  _getMyLeadsList() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        String MemberId = await preferences.getString(cnst.Session.Member_Id);
-        Future res = Services.GetLeadsByMember(MemberId);
-        setState(() {
-          isLoading = true;
-        });
-
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              NewList = data;
-              isLoading = false;
-            });
-            print("New123=> " + NewList.toString());
-          } else {
-            setState(() {
-              NewList = [];
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on NewLead Data Call $e");
-          showMsg("$e");
-        });
-      } else {
-        showMsg("Something went Wrong!");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {

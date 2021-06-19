@@ -10,7 +10,8 @@ import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 
 class EventDetail extends StatefulWidget {
   Map EventsData={};
-  EventDetail({this.EventsData});
+  Function onEventResponse;
+  EventDetail({this.EventsData,this.onEventResponse});
   @override
   _EventDetailState createState() => _EventDetailState();
 }
@@ -18,6 +19,7 @@ class EventDetail extends StatefulWidget {
 class _EventDetailState extends State<EventDetail> {
   String dropdownValue,MemberId="";
   ProgressDialog pr;
+  bool memberResponse;
 
   @override
   void initState() {
@@ -65,6 +67,7 @@ class _EventDetailState extends State<EventDetail> {
   }
 
   _RegisterForEvent() async {
+    print("dropdownValue");
     print(dropdownValue);
         try {
           final result = await InternetAddress.lookup('google.com');
@@ -73,18 +76,21 @@ class _EventDetailState extends State<EventDetail> {
             var data = {
               "eventId" : widget.EventsData["_id"],
               "memberId" : MemberId,
-              "noOfPerson" : dropdownValue.toString()
+              "noOfPerson" : memberResponse==false?"0":dropdownValue.toString(),
+              "response":memberResponse==true?true:false,
             };
             Services.responseHandler(apiName: "admin/eventRegistration",body: data).then((data) async {
               // pr.hide();
               if (data.Data != "0" && data.IsSuccess == true) {
                 Fluttertoast.showToast(
-                    msg: "Data Addedd Successfully!!",
+                    msg: "Data Added Successfully!!",
                     toastLength: Toast.LENGTH_LONG,
                     gravity: ToastGravity.TOP,
                     backgroundColor: Colors.green,
                     textColor: Colors.white);
-                Navigator.pushReplacementNamed(context, "/Events");
+                // Navigator.pushReplacementNamed(context, "/Events");
+                Navigator.pop(context);
+                widget.onEventResponse();
               } else {
                 showHHMsg("${data.Message}", "");
                 // pr.hide();
@@ -129,6 +135,7 @@ class _EventDetailState extends State<EventDetail> {
                 fontSize: 16,
                 color: constant.appPrimaryMaterialColor,
               ),
+              textAlign: TextAlign.center,
             ),
             leading: Icon(
               Icons.title,
@@ -165,7 +172,7 @@ class _EventDetailState extends State<EventDetail> {
           Padding(
             padding: const EdgeInsets.only(left:15.0,right: 15,top: 10,bottom: 5),
             child: Text(
-              "Number Of Member attaining the event:",
+              "Number Of Member attending the event:",
               style: TextStyle(
                 color: appPrimaryMaterialColor,
                 fontSize: 15
@@ -186,7 +193,7 @@ class _EventDetailState extends State<EventDetail> {
                 child: DropdownButton(
                   hint: dropdownValue == null
                       ? Text(
-                          "Select Number of Member",
+                          "Select Number of Members",
                           style: TextStyle(
                             color: Colors.black,
                           ),
@@ -251,14 +258,17 @@ class _EventDetailState extends State<EventDetail> {
                         onPressed: () {
                           if(dropdownValue==null){
                             Fluttertoast.showToast(
-                                msg: "Please select number of member",
+                                msg: "Please select Number of Members",
                                 toastLength: Toast.LENGTH_LONG,
                                 gravity: ToastGravity.TOP,
                                 backgroundColor: Colors.red,
                                 textColor: Colors.white);
                           }
                           else{
-                            _RegisterForEvent();
+                            setState(() {
+                              memberResponse=true;
+                              _RegisterForEvent();
+                            });
                           }
                         },
                       ),
@@ -275,7 +285,11 @@ class _EventDetailState extends State<EventDetail> {
                         padding: EdgeInsets.only(
                             left: 8, right: 8, top: 5, bottom: 5),
                         onPressed: () {
-                          dropdownValue = "0";
+                          setState(() {
+                            memberResponse=false;
+                            // dropdownValue = "0";
+                            _RegisterForEvent();
+                          });
                           // _RegisterForEvent();
                         },
                       )

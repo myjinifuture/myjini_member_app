@@ -69,8 +69,6 @@ class _AdvertisementRenewState extends State<AdvertisementRenew> {
   }
 
   setData() async {
-    await getPackages();
-    await getPaymentDetails();
     setState(() {
       edtTitle.text = widget.data["title"];
       edtDescription.text = widget.data["desc"];
@@ -93,118 +91,6 @@ class _AdvertisementRenewState extends State<AdvertisementRenew> {
       _selectedCheckList.add(int.parse(selectedLocations[i].trim()));
     }
     print("->>>" + _selectedCheckList.toString());
-  }
-
-  getPackages() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Future res = Services.GetPackages();
-        setState(() {
-          isLoading = true;
-        });
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              _packageAllList = data;
-              isLoading = false;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-              _packageAllList = data;
-            });
-          }
-        }, onError: (e) {
-          showMsg("Something Went Wrong.\nPlease Try Again");
-          setState(() {
-            isLoading = false;
-          });
-        });
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
-  }
-
-  getPaymentDetails() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Future res = Services.GetPaymentDetails();
-        setState(() {
-          isLoading = true;
-        });
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              _paymentDetails = data;
-              isLoading = false;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-              _paymentDetails = data;
-            });
-          }
-        }, onError: (e) {
-          showMsg("Something Went Wrong.\nPlease Try Again");
-          setState(() {
-            isLoading = false;
-          });
-        });
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
-  }
-
-  getLocationData(String selectedType) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        if (selectedType == "For Society")
-          setState(() {
-            selectedLocationType = "Society";
-          });
-        else if (selectedType == "For Area")
-          setState(() {
-            selectedLocationType = "Area";
-          });
-        else if (selectedType == "For City")
-          setState(() {
-            selectedLocationType = "City";
-          });
-        else if (selectedType == "For State")
-          setState(() {
-            selectedLocationType = "State";
-          });
-
-        Future res = Services.GetAdvertiseFor(selectedLocationType);
-        // pr.show();
-        res.then((data) async {
-          // pr.hide();
-          if (data != null && data.length > 0) {
-            setState(() {
-              _locationsData = data;
-            });
-            setPackage();
-          } else {
-            setState(() {
-              _locationsData = data;
-            });
-          }
-        }, onError: (e) {
-          // pr.hide();
-          showMsg("Something Went Wrong.\nPlease Try Again");
-        });
-      } else {
-        showMsg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-      // pr.hide();
-    }
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {
@@ -635,7 +521,6 @@ class _AdvertisementRenewState extends State<AdvertisementRenew> {
                                       _locationsData.clear();
                                       _selectedCheckList.clear();
                                     });
-                                    getLocationData(newValue);
                                   },
                                   items: <String>[
                                     'For Society',

@@ -124,8 +124,8 @@ class _NotificationPopupState extends State<NotificationPopup> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              },
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              },
             ),
           ],
         );
@@ -235,8 +235,8 @@ class _NotificationPopupState extends State<NotificationPopup> {
                 ),
                 onPressed: () {
                   // Get.back();
-                  Navigator.pushReplacementNamed(context, '/HomeScreen');
-                },
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/HomeScreen', (route) => false);                },
               ),
             ),
           ),
@@ -245,19 +245,28 @@ class _NotificationPopupState extends State<NotificationPopup> {
     );
   }
 
+  var recieverWingId = "";
   memberToMemberCalling(bool isVideoCall) async {
     try {
       print("tapped");
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+
+        if(widget.data["watchmanWingId"].length > 0){
+          recieverWingId = widget.data["watchmanWingId"][0];
+        }
+        else{
+          recieverWingId = widget.data["watchmanWingId"];
+        }
+
         var data = {
           "societyId": prefs.getString(Session.SocietyId),
           "callerMemberId": prefs.getString(Session.Member_Id),
           "callerWingId": prefs.getString(Session.WingId),
           "callerFlatId": prefs.getString(Session.FlatId),
           "watchmanId": widget.data["watchmanId"].toString(),
-          "receiverWingId": widget.data["watchmanWingId"].toString(),
+          "receiverWingId": recieverWingId,
           // "receiverFlatId" : widget.MemberData["FlatData"][0]["_id"].toString(),
           "contactNo": widget.data["watchmanContact"].toString(),
           "AddedBy": "Member",
@@ -286,6 +295,7 @@ class _NotificationPopupState extends State<NotificationPopup> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => JoinPage(
+                    againPreviousScreen : true,
                       fromMemberData: widget.data,
                       unknownEntry : widget.unknownEntry,
                       entryIdWhileGuestEntry: widget.data["EntryId"],
@@ -297,6 +307,7 @@ class _NotificationPopupState extends State<NotificationPopup> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => JoinPage(
+                      againPreviousScreen : true,
                       fromMemberData: widget.data,
                       unknownEntry : widget.unknownEntry,
                       entryIdWhileGuestEntry: data.Data[0]["_id"],
@@ -357,7 +368,7 @@ class _NotificationPopupState extends State<NotificationPopup> {
                       child: Row(
                         children: [
                           Text(
-                              "${widget.data["MemberWing"]} - ${widget.data["data"]["MemberFlat"]}"),
+                              "${widget.data["MemberWing"]} - ${widget.data["MemberFlat"]}"),
                         ],
                       ),
                     ),
@@ -621,8 +632,8 @@ class _NotificationPopupState extends State<NotificationPopup> {
                   onTap: () {
                     log("//=================#${_notifcationReplylist[0]}");
                     NotificationReply("1");
-                    Navigator.pushReplacementNamed(context, '/HomeScreen');
-                  },
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/HomeScreen', (route) => false);                  },
                   child: Column(
                     children: [
                       CircleAvatar(
@@ -686,8 +697,8 @@ class _NotificationPopupState extends State<NotificationPopup> {
                 child: GestureDetector(
                   onTap: () {
                     NotificationReply("2");
-                    Navigator.pushReplacementNamed(context, '/HomeScreen');
-                  },
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/HomeScreen', (route) => false);                  },
                   child: Column(
                     children: [
                       CircleAvatar(

@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class PreferenceScreen extends StatefulWidget {
   @override
@@ -16,21 +18,21 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
   bool isDOBSwitched = false;
   bool isAnniversarySwitched = false;
   bool isMuteNotificationsSwitched = false;
-  bool isLoading=false;
+  bool isLoading = false;
   String fcmToken;
-  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
-    // _firebaseMessaging.getToken().then((token) {
-    //   setState(() {
-    //     fcmToken = token;
-    //     getMemberPreferences();
-    //   });
-    //   print("Preference Screen");
-    //   print('FCM----------->' + '${token}');
-    // });
+    _firebaseMessaging.getToken().then((token) {
+      setState(() {
+        fcmToken = token;
+        getMemberPreferences();
+      });
+      _handleSendNotification();
+      print("Preference Screen");
+      print('FCM----------->' + '${token}');
+    });
   }
 
   void toggleEmailSwitch(bool value) {
@@ -95,11 +97,13 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
     if (isMuteNotificationsSwitched == false) {
       setState(() {
         isMuteNotificationsSwitched = true;
+        setMemberPreferences();
       });
       print('Switch Button is ON');
     } else {
       setState(() {
         isMuteNotificationsSwitched = false;
+        setMemberPreferences();
       });
       print('Switch Button is OFF');
     }
@@ -113,24 +117,29 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
           isLoading = true;
         });
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        String memberId=prefs.getString(constant.Session.Member_Id);
-        var data = {
-          "memberId": memberId,
-          "fcmToken": fcmToken
-        };
-        Services.responseHandler(apiName: "member/getMemberPreferences",body: data).then((data) async {
+        String memberId = prefs.getString(constant.Session.Member_Id);
+        var data = {"memberId": memberId, "playerId": playerId};
+        Services.responseHandler(
+                apiName: "member/getMemberPreferences", body: data)
+            .then((data) async {
           setState(() {
             isLoading = false;
           });
-          if (data.Data != null && data.Data.length  > 0) {
+          if (data.Data != null && data.Data.length > 0) {
             setState(() {
               isEmailSwitched = data.Data[0]["Private"]["EmailId"];
               isContactSwitched = data.Data[0]["Private"]["ContactNo"];
               isDOBSwitched = data.Data[0]["Private"]["DOB"];
-              isAnniversarySwitched = data.Data[0]["Private"]["AnniversaryDate"];
-              isMuteNotificationsSwitched = data.Data[0]["MemberTokens"][0]["muteNotificationAudio"];
+              isAnniversarySwitched =
+                  data.Data[0]["Private"]["AnniversaryDate"];
+              for(int i=0;i<data.Data[0]["MemberTokens"].length;i++){
+                if(data.Data[0]["MemberTokens"][i]["playerId"] == playerId){
+                  isMuteNotificationsSwitched =
+                  data.Data[0]["MemberTokens"][i]["muteNotificationAudio"];
+                }
+              }
             });
-           } else {
+          } else {
             setState(() {
               isLoading = false;
             });
@@ -146,7 +155,14 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
       showHHMsg("No Internet Connection.", "");
     }
   }
+  var playerId;
+  void _handleSendNotification() async {
+    var status = await OneSignal.shared.getPermissionSubscriptionState();
 
+    playerId = status.subscriptionStatus.userId;
+    print("playerid");
+    print(playerId);
+  }
   setMemberPreferences() async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -155,21 +171,23 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
         //   isLoading = true;
         // });
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        String memberId=prefs.getString(constant.Session.Member_Id);
+        String memberId = prefs.getString(constant.Session.Member_Id);
         var data = {
           "memberId": memberId,
           "muteNotificationAudio": isMuteNotificationsSwitched,
-          "fcmToken": fcmToken,
-        "Email": isEmailSwitched,
+          "playerId": playerId,
+          "Email": isEmailSwitched,
           "Contact": isContactSwitched,
           "DateOfBirth": isDOBSwitched,
           "AnniversaryDate": isAnniversarySwitched
         };
-        Services.responseHandler(apiName: "member/setMemberPreferences",body: data).then((data) async {
+        Services.responseHandler(
+                apiName: "member/setMemberPreferences", body: data)
+            .then((data) async {
           // setState(() {
           //   isLoading = false;
           // });
-          if (data.Data != null && data.Data==1) {
+          if (data.Data != null && data.Data == 1) {
             // showHHMsg("Data Updated", "");
           } else {
             // setState(() {
@@ -199,7 +217,8 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -232,13 +251,14 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
           ),
         ),
       ),
-      body: isLoading==false?SingleChildScrollView(
-        child: Padding(
-          padding:
-              const EdgeInsets.only(left: 15, top: 20, bottom: 20, right: 15),
-          child: Column(
-            children: [
-              /*Row(
+      body: isLoading == false
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 15, top: 20, bottom: 20, right: 15),
+                child: Column(
+                  children: [
+                    /*Row(
                 children: [
                   Expanded(
                     child: Column(
@@ -277,48 +297,90 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                       )),
                 ],
               ),*/
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Row(
                         children: [
-                          Text(
-                            "Contact",
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600
-                                //fontWeight: FontWeight.bold
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Contact",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600
+                                      //fontWeight: FontWeight.bold
+                                      ),
                                 ),
-                          ),
-                          Text(
-                            "Choose to Hide Contact Details",
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black,
+                                Text(
+                                  "Choose to Hide Contact Details",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+                          Transform.scale(
+                              scale: 1.3,
+                              child: Switch(
+                                onChanged: toggleContactSwitch,
+                                value: isContactSwitched,
+
+                                activeColor: appPrimaryMaterialColor,
+                                activeTrackColor: appPrimaryMaterialColor[200],
+
+                                // inactiveThumbColor: Colors.redAccent,
+                                // inactiveTrackColor: Colors.orange,
+                              )),
                         ],
                       ),
                     ),
-                    Transform.scale(
-                        scale: 1.3,
-                        child: Switch(
-                          onChanged: toggleContactSwitch,
-                          value: isContactSwitched,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Notifications",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600
+                                      //fontWeight: FontWeight.bold
+                                      ),
+                                ),
+                                Text(
+                                  "Choose to Mute Notifications",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Transform.scale(
+                              scale: 1.3,
+                              child: Switch(
+                                onChanged: toggleMuteNotificationSwitch,
+                                value: isMuteNotificationsSwitched,
 
-                          activeColor: appPrimaryMaterialColor,
-                          activeTrackColor: appPrimaryMaterialColor[200],
+                                activeColor: appPrimaryMaterialColor,
+                                activeTrackColor: appPrimaryMaterialColor[200],
 
-                          // inactiveThumbColor: Colors.redAccent,
-                          // inactiveTrackColor: Colors.orange,
-                        )),
-                  ],
-                ),
-              ),
+                                // inactiveThumbColor: Colors.redAccent,
+                                // inactiveTrackColor: Colors.orange,
+                              )),
+                        ],
+                      ),
+                    ),
 /*              Padding(
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Row(
@@ -444,24 +506,29 @@ class _PreferenceScreenState extends State<PreferenceScreen> {
                   ],
                 ),
               ),*/
-              SizedBox(height: 10,),
-              // RaisedButton(
-              //   child: Text(
-              //     'Update',
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //     ),
-              //   ),
-              //   color: appPrimaryMaterialColor,
-              //   onPressed: (){
-              //     print('Update Preferences Clicked');
-              //     setMemberPreferences();
-              //   },
-              // ),
-            ],
-          ),
-        ),
-      ):Center(child: CircularProgressIndicator(),),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    // RaisedButton(
+                    //   child: Text(
+                    //     'Update',
+                    //     style: TextStyle(
+                    //       color: Colors.white,
+                    //     ),
+                    //   ),
+                    //   color: appPrimaryMaterialColor,
+                    //   onPressed: (){
+                    //     print('Update Preferences Clicked');
+                    //     setMemberPreferences();
+                    //   },
+                    // ),
+                  ],
+                ),
+              ),
+            )
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 }

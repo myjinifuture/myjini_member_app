@@ -19,7 +19,7 @@ class Notice extends StatefulWidget {
 class _NoticeState extends State<Notice> {
   bool isLoading = true;
   List noticeData = new List();
-  String SocietyId;
+  String SocietyId,wingId;
 
   @override
   void initState() {
@@ -30,6 +30,7 @@ class _NoticeState extends State<Notice> {
   _getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     SocietyId = prefs.getString(Session.SocietyId);
+    wingId = prefs.getString(Session.WingId);
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {
@@ -58,7 +59,8 @@ class _NoticeState extends State<Notice> {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
-          "societyId" : SocietyId
+          "societyId" : SocietyId,
+          "wingId" : wingId
         };
         setState(() {
           isLoading = true;
@@ -90,59 +92,54 @@ class _NoticeState extends State<Notice> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/Dashboard");
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          title: Text(
-            'Notices',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/Dashboard");
-            },
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        title: Text(
+          'Notices',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            //Navigator.pushNamed(context, "/AddNotice");
-            Navigator.pushReplacementNamed(context, '/AddNotice');
-          },
-          child: Icon(Icons.add, color: Colors.white),
-          backgroundColor: cnst.appPrimaryMaterialColor,
-        ),
-        body: Container(
-          color: Colors.grey[200],
-          child: isLoading
-              ? LoadingComponent()
-              : noticeData.length > 0
-                  ? AnimationLimiter(
-                      child: ListView.builder(
-                      itemCount: noticeData.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return NoticeComponent(noticeData[index], index,
-                            (type) {
-                          if (type == "false")
-                            setState(() {
-                              getNotice();
-                            });
-                          else if (type == "loading")
-                            setState(() {
-                              isLoading = true;
-                            });
-                        });
-                      },
-                    ))
-                  : NoDataComponent(),
-        ),
+        // leading: IconButton(
+        //   icon: Icon(
+        //     Icons.arrow_back,
+        //     color: Colors.white,
+        //   ),
+        //   onPressed: () {
+        //     Navigator.pushReplacementNamed(context, "/Dashboard");
+        //   },
+        // ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          //Navigator.pushNamed(context, "/AddNotice");
+          Navigator.pushReplacementNamed(context, '/AddNotice');
+        },
+        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: cnst.appPrimaryMaterialColor,
+      ),
+      body: Container(
+        color: Colors.grey[200],
+        child: isLoading
+            ? LoadingComponent()
+            : noticeData.length > 0
+                ? AnimationLimiter(
+                    child: ListView.builder(
+                    itemCount: noticeData.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return NoticeComponent(noticeData[index], index,
+                          (type) {
+                        if (type == "false")
+                          setState(() {
+                            getNotice();
+                          });
+                        else if (type == "loading")
+                          setState(() {
+                            isLoading = true;
+                          });
+                      });
+                    },
+                  ))
+                : Center(child: Text('No Data Found'),),
       ),
     );
   }

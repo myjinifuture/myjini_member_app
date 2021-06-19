@@ -12,15 +12,22 @@ import 'package:smart_society_new/Member_App/common/constant.dart';
 import 'package:smart_society_new/Member_App/screens/fromMemberScreen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:smart_society_new/Admin_App/Common/Constants.dart' as cnst;
-import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:esys_flutter_share/esys_flutter_share.dart' as S;
 import 'package:smart_society_new/Member_App/common/Services.dart';
+import 'package:share/share.dart';
 
 class DirectoryMemberComponent extends StatefulWidget {
-  var MemberData;
+  var MemberData, search, wingName;
+  Function onAdminUpdate;
 
   int index;
 
-  DirectoryMemberComponent(this.MemberData, this.index);
+  DirectoryMemberComponent(
+      {this.MemberData,
+      this.index,
+      this.onAdminUpdate,
+      this.search,
+      this.wingName});
 
   @override
   _DirectoryMemberComponentState createState() =>
@@ -42,7 +49,7 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
           .getUrl(Uri.parse("http://smartsociety.itfuturz.com/${ImgUrl}"));
       var response = await request.close();
       Uint8List bytes = await consolidateHttpClientResponseBytes(response);
-      await Share.files('Share Profile', {'eyes.vcf': bytes}, 'image/pdf');
+      await S.Share.files('Share Profile', {'eyes.vcf': bytes}, 'image/pdf');
     }
   }
 
@@ -55,46 +62,13 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
   }
 
   String Member_Id;
+
   getLocalData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       Member_Id = prefs.getString(Session.Member_Id);
     });
-  }
-
-  GetVcard() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.GetVcardofMember(widget.MemberData['_id'].toString()).then(
-            (data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null) {
-            setState(() {
-              Data = data;
-            });
-            shareFile('${Data}');
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
+    shareMyAddress();
   }
 
   showHHMsg(String title, String msg) {
@@ -108,7 +82,8 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -116,64 +91,113 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
       },
     );
   }
+  var shareMyAddressContent;
 
-  memberToMemberCalling(bool isVideoCall) async {
+  shareMyAddress() async {
     try {
-      print("tapped");
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      String name = prefs.getString(Session.Name);
+      String flatNo = prefs.getString(Session.FlatNo);
+      String wing = prefs.getString(Session.Wing);
+      String mapLink = prefs.getString(Session.mapLink);
+      String address = prefs.getString(Session.Address);
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-
-        var data = {
-          "societyId" : prefs.getString(Session.SocietyId),
-          "callerMemberId" : prefs.getString(Session.Member_Id),
-          "callerWingId" : prefs.getString(Session.WingId),
-          "callerFlatId" : prefs.getString(Session.FlatId),
-          "receiverMemberId" : widget.MemberData["_id"].toString(),
-          "receiverWingId" : widget.MemberData["WingData"][0]["_id"].toString(),
-          "receiverFlatId" : widget.MemberData["FlatData"][0]["_id"].toString(),
-          "contactNo" : widget.MemberData["ContactNo"].toString(),
-          "AddedBy" : "Member",
-          "isVideoCall" : isVideoCall,
-          "callFor" : 0,
-          "deviceType" : Platform.isAndroid ? "Android" : "IOS"
+        var body = {
+          "name": name,
+          "flatNo": flatNo,
+          "wing": wing,
+          "mapLink": mapLink,
+          "address": address,
         };
-
-        print("memberToMemberCalling Data = ${data}");
-        Services.responseHandler(apiName: "member/memberCalling",body: data).then((data) async {
-          if (data.Data.length > 0 && data.IsSuccess == true) {
-            SharedPreferences preferences =
-            await SharedPreferences.getInstance();
-            // await preferences.setString('data', data.Data);
-            // await for camera and mic permissions before pushing video page
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FromMemberScreen(fromMemberData: widget.MemberData,isVideoCall:isVideoCall.toString()),
-              ),
-            );
-            /*Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => JoinPage(),
-                    ),
-                  );*/
-          } else {
-
+        print("body55");
+        print(body);
+        Services.responseHandler(
+            apiName: "admin/shareMemberSocietyDetails", body: body)
+            .then((data) async {
+          if (data.Data!=null) {
+            setState(() {
+              shareMyAddressContent=data.Data;
+            });
           }
         }, onError: (e) {
-          showHHMsg("Try Again.","MyJini");
+          showHHMsg("$e","");
         });
-      } else
-        showHHMsg("No Internet Connection.","MyJini");
+      } else {
+        showHHMsg("No Internet Connection.","");
+      }
     } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.","MyJini");
+      showHHMsg("Something Went Wrong","");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     print(widget.MemberData);
+    memberToMemberCalling(bool isVideoCall) async {
+      try {
+        print("tapped");
+        final result = await InternetAddress.lookup('google.com');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          var data = {
+            "societyId": prefs.getString(Session.SocietyId),
+            "callerMemberId": prefs.getString(Session.Member_Id),
+            "callerWingId": prefs.getString(Session.WingId),
+            "callerFlatId": prefs.getString(Session.FlatId),
+            "receiverMemberId": widget.MemberData["_id"].toString(),
+            "receiverWingId":
+                widget.MemberData["WingData"][0]["_id"].toString(),
+            "receiverFlatId":
+                widget.MemberData["FlatData"][0]["_id"].toString(),
+            "contactNo": widget.MemberData["ContactNo"].toString(),
+            "AddedBy": "Member",
+            "isVideoCall": isVideoCall,
+            "callFor": 0,
+            "deviceType": Platform.isAndroid ? "Android" : "IOS"
+          };
+
+          print("memberToMemberCalling Data = ${data}");
+          Services.responseHandler(apiName: "member/memberCalling", body: data)
+              .then((data) async {
+            if (data.Data.length > 0 && data.IsSuccess == true) {
+              SharedPreferences preferences =
+                  await SharedPreferences.getInstance();
+              // await preferences.setString('data', data.Data);
+              // await for camera and mic permissions before pushing video page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FromMemberScreen(
+                      fromMemberData: widget.MemberData,
+                      id: data.Data[0]["_id"],
+                      isVideoCall: isVideoCall.toString()),
+                ),
+              );
+              /*Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => JoinPage(),
+                    ),
+                  );*/
+            } else if (data.Data.length == 0) {
+              Fluttertoast.showToast(
+                  msg: data.Message.toString(),
+                  toastLength: Toast.LENGTH_LONG,
+                  textColor: Colors.white,
+                  gravity: ToastGravity.TOP,
+                  backgroundColor: Colors.red);
+            } else {}
+          }, onError: (e) {
+            showHHMsg("Try Again.", "MyJini");
+          });
+        } else
+          showHHMsg("No Internet Connection.", "MyJini");
+      } on SocketException catch (_) {
+        showHHMsg("No Internet Connection.", "MyJini");
+      }
+    }
+
     return AnimationConfiguration.staggeredList(
       position: widget.index,
       duration: const Duration(milliseconds: 450),
@@ -187,14 +211,13 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-
                       ClipOval(
                         child: widget.MemberData["Image"] != '' &&
                                 widget.MemberData["Image"] != null
                             ? FadeInImage.assetNetwork(
                                 placeholder: '',
-                                image: Image_Url +
-                                    "${widget.MemberData["Image"]}",
+                                image:
+                                    Image_Url + "${widget.MemberData["Image"]}",
                                 width: 50,
                                 height: 50,
                                 fit: BoxFit.fill)
@@ -214,8 +237,7 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                                 ),
                               ),
                       ),
-
-        Expanded(
+                      Expanded(
                         child: Padding(
                           padding:
                               const EdgeInsets.only(left: 8.0, bottom: 6.0),
@@ -229,27 +251,37 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                                       color: Colors.grey[700])),
                               Row(
                                 children: <Widget>[
-                                  // Text("${widget.MemberData["WingData"][0]["wingName"]}".toUpperCase()),
-                                  // Text(" - "),
-                                  Text("${widget.MemberData["FlatData"][0]["flatNo"]}".toUpperCase()),
+                                  widget.search == null
+                                      ? Container()
+                                      : Text(
+                                          "${widget.wingName}".toUpperCase()),
+                                  widget.search == null
+                                      ? Container()
+                                      : Text(" - "),
+                                  Text(
+                                      "${widget.MemberData["FlatData"][0]["flatNo"]}"
+                                          .toUpperCase()),
                                 ],
                               ),
                               widget.MemberData["Private"]["ContactNo"]
-                              .toString() == "true" ?
-                              Text("********"+"${widget.MemberData["ContactNo"]}".substring(8,10),
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.purple
-                              ),
-                              ):
-                              Text("${widget.MemberData["ContactNo"]}",
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.purple
-                                ),
-                              )
+                                          .toString() ==
+                                      "true"
+                                  ? Text(
+                                      "********" +
+                                          "${widget.MemberData["ContactNo"]}"
+                                              .substring(8, 10),
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.purple),
+                                    )
+                                  : Text(
+                                      "${widget.MemberData["ContactNo"]}",
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.purple),
+                                    )
                             ],
                           ),
                         ),
@@ -278,27 +310,26 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                       //       launch("tel:" + widget.memberData["ContactNo"]);
                       //     }),
                       GestureDetector(
-                        onTap: (){
-                          if(Member_Id == widget.MemberData["_id"]){
+                        onTap: () {
+                          if (Member_Id == widget.MemberData["_id"]) {
                             Fluttertoast.showToast(
                               msg: "You cannot call to yourself",
                               backgroundColor: Colors.red,
                               textColor: Colors.white,
                               gravity: ToastGravity.TOP,
                             );
-                          }
-                          else {
-    // if(widget.MemberData["Private"]["ContactNo"]
-    //     .toString() == "true"){
-    // Fluttertoast.showToast(
-    // msg: "Profile is Private",
-    // backgroundColor: Colors.red,
-    // textColor: Colors.white,
-    // );
-    // }
-    // else {
-      memberToMemberCalling(true);
-    // }
+                          } else {
+                            // if(widget.MemberData["Private"]["ContactNo"]
+                            //     .toString() == "true"){
+                            // Fluttertoast.showToast(
+                            // msg: "Profile is Private",
+                            // backgroundColor: Colors.red,
+                            // textColor: Colors.white,
+                            // );
+                            // }
+                            // else {
+                            memberToMemberCalling(true);
+                            // }
                           }
                         },
                         child: Icon(
@@ -308,28 +339,27 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: (){
-    if(Member_Id == widget.MemberData["_id"]){
-    Fluttertoast.showToast(
-    msg: "You cannot call to yourself",
-    backgroundColor: Colors.red,
-    textColor: Colors.white,
-    gravity: ToastGravity.TOP,
-    );
-    }
-    else {
-      // if(widget.MemberData["Private"]["ContactNo"]
-      //     .toString() == "true"){
-      //   Fluttertoast.showToast(
-      //     msg: "Profile is Private",
-      //     backgroundColor: Colors.red,
-      //     textColor: Colors.white,
-      //   );
-      // }
-      // else{
-        memberToMemberCalling(false);
-      // }
-    }
+                        onTap: () {
+                          if (Member_Id == widget.MemberData["_id"]) {
+                            Fluttertoast.showToast(
+                              msg: "You cannot call to yourself",
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              gravity: ToastGravity.TOP,
+                            );
+                          } else {
+                            // if(widget.MemberData["Private"]["ContactNo"]
+                            //     .toString() == "true"){
+                            //   Fluttertoast.showToast(
+                            //     msg: "Profile is Private",
+                            //     backgroundColor: Colors.red,
+                            //     textColor: Colors.white,
+                            //   );
+                            // }
+                            // else{
+                            memberToMemberCalling(false);
+                            // }
+                          }
                         },
                         child: Icon(
                           Icons.call_end,
@@ -345,15 +375,21 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => MemberProfile(
+                                          // onAdminUpdate: widget.onAdminUpdate,
                                           memberData: widget.MemberData,
-                                      isContactNumberPrivate:widget.MemberData["Private"]["ContactNo"]
-                                          .toString(),
+                                          isContactNumberPrivate: widget
+                                              .MemberData["Private"]
+                                                  ["ContactNo"]
+                                              .toString(),
                                         )));
                           }),
                       IconButton(
                           icon: Icon(Icons.share),
                           onPressed: () {
-                            GetVcard(); // need to tell arpit sir to explain this to monil
+                            print("shareMyAddressContent");
+                            print(shareMyAddressContent);
+                            Share.share(
+                                shareMyAddressContent);
                           }),
                     ],
                   ),

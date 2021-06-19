@@ -20,7 +20,6 @@ class _DirectoryProfileFamilyState extends State<DirectoryProfileFamily> {
 
   @override
   void initState() {
-    GetFamilyDetail();
     _getLocaldata();
   }
 
@@ -44,39 +43,6 @@ class _DirectoryProfileFamilyState extends State<DirectoryProfileFamily> {
      });
   }
 
-  GetFamilyDetail() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.GetFamilyMember(ParentId, MemberId).then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              FmemberData = data;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
-  }
-
   showHHMsg(String title, String msg) {
     showDialog(
       context: context,
@@ -89,67 +55,6 @@ class _DirectoryProfileFamilyState extends State<DirectoryProfileFamily> {
               child: new Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();;
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  _DeleteFamilyMember(String Id) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-        Services.DeleteFamilyMember(Id).then((data) async {
-          if (data.Data == "1") {
-            setState(() {
-              isLoading = false;
-            });
-            GetFamilyDetail();
-          } else {
-            isLoading = false;
-            showHHMsg("Member Is Not Deleted", "");
-          }
-        }, onError: (e) {
-          isLoading = false;
-          showHHMsg("$e", "");
-          isLoading = false;
-        });
-      } else {
-        showHHMsg("No Internet Connection.", "");
-      }
-    } on SocketException catch (_) {
-      showHHMsg("Something Went Wrong", "");
-    }
-  }
-
-  void _showConfirmDialog(String Id) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("MYJINI"),
-          content: new Text("Are You Sure You Want To Delete this Member ?"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("No",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w600)),
-              onPressed: () {
-                Navigator.of(context).pop();;
-              },
-            ),
-            new FlatButton(
-              child: new Text("Yes",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w600)),
-              onPressed: () {
-                Navigator.of(context).pop();;
-                _DeleteFamilyMember(Id);
               },
             ),
           ],

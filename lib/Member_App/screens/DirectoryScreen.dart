@@ -7,12 +7,20 @@ import 'package:smart_society_new/Admin_App/Common/Constants.dart' as cnst;
 import 'package:smart_society_new/Admin_App/Component/DirectoryMemberComponent.dart';
 import 'package:smart_society_new/Admin_App/Component/LoadingComponent.dart';
 import 'package:smart_society_new/Admin_App/Component/NoDataComponent.dart';
+import 'package:smart_society_new/Mall_App/transitions/slide_route.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
+
+import 'HomeScreen.dart';
 
 
 // this is member directory - takes lots of time to search
 class DirecotryScreen extends StatefulWidget {
+
+  var searchMemberName;
+
+  DirecotryScreen({this.searchMemberName});
+
   @override
   _DirecotryScreenState createState() => _DirecotryScreenState();
 }
@@ -32,7 +40,7 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
 
   List searchMemberData = new List();
   bool _isSearching = false, isfirst = false;
-  String selectedWing = "";
+  String selectedWing = "",wingName = "";
 
   Icon icon = new Icon(
     Icons.search,
@@ -65,7 +73,8 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
   }
 
   String SocietyId,MobileNo;
-  _getDirectoryListing(String seletecedWing) async {
+  bool lengthIsZero = false;
+  _getDirectoryListing({String seletecedWing}) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -80,12 +89,34 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               // memberData = data.Data;
-              for(int i=0;i<data.Data.length;i++){
-                if(data.Data[i]["society"]["wingId"] == selectedWing){
-                  memberData.add(data.Data[i]);
+              if(widget.searchMemberName!=null){
+                for(int i=0;i<data.Data.length;i++){
+                  if(data.Data[i]["Name"].toString().split(" ")[0].toUpperCase()
+                      .contains(widget.searchMemberName.split(" ")[0]) ||
+                      data.Data[i]["ContactNo"].toString().toUpperCase().
+                      contains(widget.searchMemberName.toUpperCase().trim().replaceAll(" ", ""))||
+                      data.Data[i]["BloodGroup"].toString().toUpperCase().
+                      contains(widget.searchMemberName.toUpperCase().trim().replaceAll(" ", ""))||
+                      data.Data[i]["Vehicles"].toString().toUpperCase().replaceAll("-", "")
+                      .contains(widget.searchMemberName.replaceAll(" ", "").replaceAll("-",""))  ||
+                      (data.Data[i]["WingData"][0]["wingName"] + data.Data[i]["FlatData"][0]["flatNo"])
+                          .toString().toUpperCase().replaceAll("-", "")
+                          .contains(widget.searchMemberName.replaceAll(" ", ""))){
+                    selectedWing = data.Data[i]["society"]["wingId"].toString();
+                    wingName = data.Data[i]["WingData"][0]["wingName"].toString();
+                    memberData.add(data.Data[i]);
+                  }
                 }
               }
-              // isLoading = false;
+              else{
+                for(int i=0;i<data.Data.length;i++){
+                  if(data.Data[i]["society"]["wingId"] == selectedWing){
+                    memberData.add(data.Data[i]);
+                  }
+                }
+              }
+              isLoading = false;
+              lengthIsZero = true;
             });
             print("memberData");
             print(memberData);
@@ -113,7 +144,6 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
         var data = {
           "societyId" : societyId
         };
-
         // setState(() {
         //   isLoading = true;
         // });
@@ -124,11 +154,18 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
                 if(data.Data[i]["totalFloor"].toString()!="0"){
                   _wingList.add(data.Data[i]);
                 }
-              };
+              }
               isLoading = false;
-              selectedWing = data.Data[0]["_id"].toString();
+              if(widget.searchMemberName==null) {
+                selectedWing = data.Data[0]["_id"].toString();
+              }
             });
-            _getDirectoryListing(selectedWing);
+            if(widget.searchMemberName==null){
+              _getDirectoryListing(seletecedWing: selectedWing);
+            }
+            else{
+              _getDirectoryListing();
+            }
             // _getotherListing(SocietyId,_fromDate.toString(),_toDate.toString());
             // S.Services.getStaffData(DateTime.now().toString(), DateTime.now().toString(),
             //     data[0]["Id"].toString());
@@ -155,7 +192,7 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
       MobileNo = prefs.getString(Session.session_login);
       SocietyId = prefs.getString(Session.SocietyId);
     });
-    _getWing(SocietyId);
+      _getWing(SocietyId);
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {
@@ -182,9 +219,12 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
   //Members can see this directory
   @override
   Widget build(BuildContext context) {
+    print("lengthIsZero");
+    print(lengthIsZero);
     return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
+      onWillPop: (){
+        print("pressed");
+        Navigator.pushNamedAndRemoveUntil(context, '/HomeScreen', (route) => false);
       },
       child: Scaffold(
         appBar: buildAppBar(context),
@@ -192,148 +232,64 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
             ? LoadingComponent()
             : Column(
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                for (int i = 0; i < _wingList.length; i++) ...[
-                  GestureDetector(
-                    onTap: () {
-                      if (selectedWing != _wingList[i]["_id"].toString()) {
-                        setState(() {
-                          selectedWing = _wingList[i]["_id"].toString();
-                          _getDirectoryListing(selectedWing);
-                        });
-                        setState(() {
-                          memberData = [];
-                          filterMemberData = [];
-                          searchMemberData = [];
-                          isFilter = false;
-                          _isSearching = false;
-                        });
-                      }
-                    },
-                    child: Container(
-                      width: selectedWing == _wingList[i]["_id"].toString()
-                          ? 60
-                          : 45,
-                      height:
-                      selectedWing == _wingList[i]["_id"].toString()
-                          ? 60
-                          : 45,
-                      margin: EdgeInsets.only(top: 10, left: 5, right: 5),
-                      decoration: BoxDecoration(
-                          color: selectedWing ==
-                              _wingList[i]["_id"].toString()
-                              ? cnst.appPrimaryMaterialColor
-                              : Colors.white,
-                          border: Border.all(
-                              color: cnst.appPrimaryMaterialColor),
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(4))),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "${_wingList[i]["wingName"]}",
-                        style: TextStyle(
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  for (int i = 0; i < _wingList.length; i++) ...[
+                    GestureDetector(
+                      onTap: () {
+                        if (selectedWing != _wingList[i]["_id"].toString()) {
+                          setState(() {
+                            selectedWing = _wingList[i]["_id"].toString();
+                            _getDirectoryListing(seletecedWing: selectedWing);
+                          });
+                          // setState(() {
+                          //   memberData = [];
+                          //   filterMemberData = [];
+                          //   searchMemberData = [];
+                          //   // isFilter = false;
+                          //   // _isSearching = false;
+                          // });
+                        }
+                      },
+                      child: Container(
+                        width: selectedWing == _wingList[i]["_id"].toString()
+                            ? 60
+                            : 45,
+                        height:
+                        selectedWing == _wingList[i]["_id"].toString()
+                            ? 60
+                            : 45,
+                        margin: EdgeInsets.only(top: 10, left: 5, right: 5),
+                        decoration: BoxDecoration(
                             color: selectedWing ==
                                 _wingList[i]["_id"].toString()
-                                ? Colors.white
-                                : cnst.appPrimaryMaterialColor,
-                            fontSize: 19),
+                                ? cnst.appPrimaryMaterialColor
+                                : Colors.white,
+                            border: Border.all(
+                                color: cnst.appPrimaryMaterialColor),
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(4))),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "${_wingList[i]["wingName"]}",
+                          style: TextStyle(
+                              color: selectedWing ==
+                                  _wingList[i]["_id"].toString()
+                                  ? Colors.white
+                                  : cnst.appPrimaryMaterialColor,
+                              fontSize: 19),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
-            ),
-            // Align(
-            //   alignment: Alignment.centerRight,
-            //   child: FlatButton(
-            //     child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.end,
-            //       mainAxisSize: MainAxisSize.min,
-            //       children: <Widget>[
-            //         Text(
-            //           "Filter",
-            //           style: TextStyle(
-            //               fontSize: 16,
-            //               color: cnst.appPrimaryMaterialColor,
-            //               fontWeight: FontWeight.bold),
-            //         ),
-            //         SizedBox(
-            //           width: 6,
-            //         ),
-            //         Icon(
-            //           Icons.filter_list,
-            //           size: 19,
-            //           color: cnst.appPrimaryMaterialColor,
-            //         ),
-            //       ],
-            //     ),
-            //     onPressed: () {
-            //       showDialog(
-            //           context: context,
-            //           builder: (context) {
-            //             return showFilterDailog(
-            //               onSelect: (gender, isOwned, isOwner, isRented) {
-            //                 String owned = isOwned ? "Owned" : "";
-            //                 String owner = isOwner ? "Owner" : "";
-            //                 String rented = isRented ? "Rented" : "";
-            //                 setState(() {
-            //                   isFilter = true;
-            //                   filterMemberData.clear();
-            //                 });
-            //                 for (int i = 0; i < memberData.length; i++) {
-            //                   if (memberData[i]["Gender"] ==
-            //                           gender ||
-            //                       memberData[i]["MemberData"]
-            //                               ["ResidenceType"] ==
-            //                           owned ||
-            //                       memberData[i]["MemberData"]
-            //                               ["ResidenceType"] ==
-            //                           owner ||
-            //                       memberData[i]["MemberData"]
-            //                               ["ResidenceType"] ==
-            //                           rented) {
-            //                     print("matched");
-            //                     filterMemberData.add(memberData[i]);
-            //                   }
-            //                 }
-            //                 setState(() {});
-            //               },
-            //             );
-            //           });
-            //     },
-            //   ),
-            // ),
-            isMemberLoading
-                ? Container(
-              child: Center(
-                child: CircularProgressIndicator(),
               ),
-            )
-                : Expanded(
-              child: isFilter
-                  ? filterMemberData.length == 0 ? Center(
-                child: CircularProgressIndicator(),
-              ):
-              filterMemberData.length > 0
-                  ? AnimationLimiter(
-                child: ListView.builder(
-                  padding: EdgeInsets.all(0),
-                  itemCount: filterMemberData.length,
-                  itemBuilder:
-                      (BuildContext context, int index) {
-                    return DirectoryMemberComponent(
-                        filterMemberData[index],
-                        index);
-                  },
-                ),
-              )
-                  : Container(
-                child: Center(
-                    child: Text("No Member Found")),
-              )
-                  : memberData.length > 0 && memberData != null
+            ),
+            Expanded(
+              child: memberData.length > 0 && memberData != null
                   ? searchMemberData.length != 0
                   ? AnimationLimiter(
                 child: ListView.builder(
@@ -342,8 +298,10 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
                   itemBuilder: (BuildContext context,
                       int index) {
                     return DirectoryMemberComponent(
-                        searchMemberData[index],
-                        index);
+                        MemberData:searchMemberData[index],
+                        search : widget.searchMemberName,
+                        wingName : wingName,
+                        index:index);
                   },
                 ),
               )
@@ -357,8 +315,10 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
                       (BuildContext context,
                       int index) {
                     return DirectoryMemberComponent(
-                        searchMemberData[index],
-                        index);
+                        search : widget.searchMemberName,
+                        wingName : wingName,
+                        MemberData:searchMemberData[index],
+                        index:index);
                   },
                 ),
               )
@@ -370,12 +330,14 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
                       (BuildContext context,
                       int index) {
                     return DirectoryMemberComponent(
-                        memberData[index],
-                        index);
+                        search : widget.searchMemberName,
+                        wingName : wingName,
+                        MemberData:memberData[index],
+                        index:index);
                   },
                 ),
               )
-                  : Center(child: CircularProgressIndicator(),),
+                  : lengthIsZero ? Center(child: Text("No Data Found"),) :!isLoading ? Container()  :Container(),
             ),
           ],
         ),
@@ -385,43 +347,43 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
 
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
-      title: appBarTitle,
+      title: appBarTitle,centerTitle: true,
       leading: IconButton(
         icon: Icon(
           Icons.arrow_back,
           color: Colors.white,
         ),
         onPressed: () {
-          Navigator.pushReplacementNamed(context, "/HomeScreen");
+          Navigator.pushNamedAndRemoveUntil(context, '/HomeScreen', (route) => false);
         },
       ),
-      actions: <Widget>[
-        new IconButton(
-          icon: icon,
-          onPressed: () {
-            if (this.icon.icon == Icons.search) {
-              this.icon = new Icon(
-                Icons.close,
-                color: Colors.white,
-              );
-              this.appBarTitle = new TextField(
-                controller: _controller,
-                style: new TextStyle(
-                  color: Colors.white,
-                ),
-                decoration: new InputDecoration(
-                    prefixIcon: new Icon(Icons.search, color: Colors.white),
-                    hintText: "Search...",
-                    hintStyle: new TextStyle(color: Colors.white)),
-                onChanged: searchOperation,
-              );
-              _handleSearchStart();
-            } else {
-              _handleSearchEnd();
-            }
-          },
-        ),
-      ],
+      // actions: <Widget>[
+      //   new IconButton(
+      //     icon: icon,
+      //     onPressed: () {
+      //       if (this.icon.icon == Icons.search) {
+      //         this.icon = new Icon(
+      //           Icons.close,
+      //           color: Colors.white,
+      //         );
+      //         this.appBarTitle = new TextField(
+      //           controller: _controller,
+      //           style: new TextStyle(
+      //             color: Colors.white,
+      //           ),
+      //           decoration: new InputDecoration(
+      //               prefixIcon: new Icon(Icons.search, color: Colors.white),
+      //               hintText: "Search...",
+      //               hintStyle: new TextStyle(color: Colors.white)),
+      //           onChanged: searchOperation,
+      //         );
+      //         _handleSearchStart();
+      //       } else {
+      //         _handleSearchEnd();
+      //       }
+      //     },
+      //   ),
+      // ],
     );
   }
 

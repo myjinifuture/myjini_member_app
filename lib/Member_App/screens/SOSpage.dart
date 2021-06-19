@@ -1,18 +1,19 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_sms/flutter_sms.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:twilio_flutter/twilio_flutter.dart';
+
 import '../common/constant.dart' as cnst;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 List flats=[];
 
@@ -30,14 +31,18 @@ class SOSpage extends StatefulWidget {
 }
 
 class _SOSpageState extends State<SOSpage> {
+
+  static const platform = const MethodChannel('sendSms');
+
   int isSelected = -1;
 
-  List titles = ["Fire", "Accident", "Criminal", "Kids Alert"];
+  List titles = ["Fire", "Accident", "Criminal", "Kids Alert","Lift Stuck"];
   List imageUrls = [
     'https://image.flaticon.com/icons/png/128/785/785116.png',
     'https://image.flaticon.com/icons/png/128/2474/2474058.png',
     'https://image.flaticon.com/icons/png/128/2861/2861240.png',
-    'https://image.flaticon.com/icons/png/128/4072/4072108.png'
+    'https://image.flaticon.com/icons/png/128/4072/4072108.png',
+    "https://image.flaticon.com/icons/png/512/1256/1256284.png",
   ];
 
   List flatDetails=[];
@@ -87,6 +92,7 @@ class _SOSpageState extends State<SOSpage> {
     GetWatchmenDetail();
     _getEmergencyContacts();
     _getLocation();
+    sendSms();
   }
 
   List emergencyContact = [];
@@ -106,7 +112,7 @@ class _SOSpageState extends State<SOSpage> {
               emergencyContact = data.Data;
             });
             for(int i=0;i<emergencyContact.length;i++){
-              sendSms("+91" + emergencyContact[i]["contactNo"]);
+              sendSms();
             }
           } else {}
         }, onError: (e) {
@@ -291,6 +297,16 @@ class _SOSpageState extends State<SOSpage> {
     }
   }
 
+  Future<Null> sendSms()async {
+    print("SendSMS");
+    try {
+      final String result = await platform.invokeMethod('send',<String,dynamic>{"phone":"+919879208321","msg":"Hello! I'm sent programatically."}); //Replace a 'X' with 10 digit phone number
+      print(result);
+    } on PlatformException catch (e) {
+      print(e.toString());
+    }
+  }
+
   sendSos(List watchmen,List flat,List family) async {
     try {
       print(watchmen);
@@ -454,7 +470,6 @@ class _SOSpageState extends State<SOSpage> {
               gravity: ToastGravity.TOP,
               textColor: Colors.white,
             );
-            Navigator.pop(context);
           }
           // else {
           //   Fluttertoast.showToast(
@@ -493,7 +508,7 @@ class _SOSpageState extends State<SOSpage> {
           "societyId" : societyId,
           "wingId" : wingId
         };
-        Services.responseHandler(apiName: "member/getOccupiedFlats",body: data).then((data) async {
+        Services.responseHandler(apiName: "member/getOccupiedFlats_v2",body: data).then((data) async {
           if (data.Data !=null) {
             flats.clear();
             flatsToMakeSort.clear();
@@ -535,16 +550,17 @@ class _SOSpageState extends State<SOSpage> {
 
   bool isButtonPressed = false;
 
-  void sendSms(String mobileno) async {
-    twilioFlutter.sendSMS(toNumber: mobileno, messageBody: "Emergency help needed location : https://www.google.com/maps?q=<${_lat}>,<${_long}>");
-  }
+  // void sendSms(String mobileno) async {
+  //   twilioFlutter.sendSMS(toNumber: mobileno, messageBody: "Emergency help needed location : https://www.google.com/maps?q=<${_lat}>,<${_long}>");
+  // }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushNamed(context, '/HomeScreen');
-      },
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);
+        },
       child: Scaffold(
         // resizeToAvoidBottomPadding: false,
         appBar: AppBar(
@@ -555,8 +571,9 @@ class _SOSpageState extends State<SOSpage> {
           ),
           leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();;
-            },
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/HomeScreen', (route) => false);
+              },
             icon: Icon(
               Icons.arrow_back,
               color: Colors.white,
@@ -624,12 +641,16 @@ class _SOSpageState extends State<SOSpage> {
                                     fit: BoxFit.fill),
                               ),
                             ),
-                            Text(
-                              titles[index],
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: cnst.appPrimaryMaterialColor,
-                                fontSize: 20,
+                            Padding(
+                              padding: const EdgeInsets.only(top:8.0),
+                              child: Text(
+                                titles[index],
+                                style: TextStyle(
+                                  // fontWeight: FontWeight.bold,
+                                  fontFamily: 'OpenSans',
+                                  color: cnst.appPrimaryMaterialColor,
+                                  fontSize: 18,
+                                ),
                               ),
                             ),
                           ],
@@ -640,49 +661,49 @@ class _SOSpageState extends State<SOSpage> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.03,
               ),
-              Container(
-                height: 0.5,
-                color: Colors.black,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                      child: TextFormField(
-                    autovalidateMode: AutovalidateMode.always,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      icon: Icon(Icons.location_pin),
-                      hintText: 'Where is the emergency ?',
-                    ),
-                    onSaved: (String value) {
-                      // This optional block of code can be used to run
-                      // code when the user saves the form.
-                    },
-                    validator: (String value) {
-                      return value.contains('@')
-                          ? 'Do not use the @ char.'
-                          : null;
-                    },
-                  )),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: RaisedButton(
-                      //     disabledColor: Colors.red,
-                      // disabledTextColor: Colors.black,
-                      textColor: Colors.white,
-                      color: cnst.appPrimaryMaterialColor,
-                      onPressed: () {},
-                      child: Text('MY LOCATION'),
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                height: 0.5,
-                color: Colors.black,
-              ),
+              // Container(
+              //   height: 0.5,
+              //   color: Colors.black,
+              // ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     Expanded(
+              //         child: TextFormField(
+              //       autovalidateMode: AutovalidateMode.always,
+              //       decoration: const InputDecoration(
+              //         border: InputBorder.none,
+              //         icon: Icon(Icons.location_pin),
+              //         hintText: 'Where is the emergency ?',
+              //       ),
+              //       onSaved: (String value) {
+              //         // This optional block of code can be used to run
+              //         // code when the user saves the form.
+              //       },
+              //       validator: (String value) {
+              //         return value.contains('@')
+              //             ? 'Do not use the @ char.'
+              //             : null;
+              //       },
+              //     )),
+              //     Padding(
+              //       padding: const EdgeInsets.only(right: 8.0),
+              //       child: RaisedButton(
+              //         //     disabledColor: Colors.red,
+              //         // disabledTextColor: Colors.black,
+              //         textColor: Colors.white,
+              //         color: cnst.appPrimaryMaterialColor,
+              //         onPressed: () {},
+              //         child: Text('MY LOCATION'),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              // Container(
+              //   height: 0.5,
+              //   color: Colors.black,
+              // ),
               Column(
                 children: [
                   CheckboxListTile(
@@ -732,21 +753,21 @@ class _SOSpageState extends State<SOSpage> {
                   //   },
                   //   title: Text('Flats'),
                   // ),
-                  CheckboxListTile(
-                    value: selSOSContacts,
-                    onChanged: (bool value) {
-                      setState(() {
-                        selSOSContacts = !selSOSContacts;
-                      });
-                      if(value){
-                        _getEmergencyContacts();
-                      }
-                      else{
-                        emergencyContact.clear();
-                      }
-                    },
-                    title: Text('SOS Contacts'),
-                  ),
+                  // CheckboxListTile(
+                  //   value: selSOSContacts,
+                  //   onChanged: (bool value) {
+                  //     setState(() {
+                  //       selSOSContacts = !selSOSContacts;
+                  //     });
+                  //     if(value){
+                  //       _getEmergencyContacts();
+                  //     }
+                  //     else{
+                  //       emergencyContact.clear();
+                  //     }
+                  //   },
+                  //   title: Text('SOS Contacts'),
+                  // ),
                   selFlats==true?MultiSelectDialogField(
                     items: flatsToMakeSort
                         .map((val) => MultiSelectItem<dynamic>(val, val))
@@ -759,21 +780,6 @@ class _SOSpageState extends State<SOSpage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text("Flats"),
-                        // FlatButton(
-                        //   color: Colors.red,
-                        //   child: Text('SELECT ALL',
-                        //   style: TextStyle(
-                        //     color: Colors.white,
-                        //     fontWeight: FontWeight.bold,
-                        //   ),
-                        //   ),
-                        //
-                        //   onPressed: () {
-                        //     // setState(() {
-                        //     //   txt='FlatButton tapped';
-                        //     // });
-                        //   },
-                        // ),
                       ],
                     ),
                     selectedColor: Colors.purple,
@@ -817,7 +823,7 @@ class _SOSpageState extends State<SOSpage> {
                       print(allFlatMembersId.remove(null));
                       print("allWatchmens");
                       print(allWatchmenIds);
-                      if(allWatchmenIds.length==0 && allFamilyIds.length == 0 && !selFlats){
+                      if(allWatchmenIds.length==0 && allFamilyIds.length == 0){
                         Fluttertoast.showToast(
                             msg: "No Watchmen Found",
                             backgroundColor: Colors.red,

@@ -9,7 +9,7 @@ import 'package:smart_society_new/Admin_App/Component/LoadingComponent.dart';
 import 'package:smart_society_new/Admin_App/Component/NoDataComponent.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
-
+//member directory in admin member app
 class DirectoryMember extends StatefulWidget {
   @override
   _DirectoryMemberState createState() => _DirectoryMemberState();
@@ -53,7 +53,8 @@ class _DirectoryMemberState extends State<DirectoryMember> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -62,24 +63,26 @@ class _DirectoryMemberState extends State<DirectoryMember> {
     );
   }
 
-  String SocietyId,MobileNo;
+  String SocietyId, MobileNo;
+  bool dataFound = false;
+
   _getDirectoryListing(String seletecedWing) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {
-          "societyId" : SocietyId
-        };
+        var data = {"societyId": SocietyId};
         // setState(() {
         //   isLoading = true;
         // });
-        Services.responseHandler(apiName: "admin/directoryListing",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/directoryListing", body: data)
+            .then((data) async {
           memberData.clear();
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
+              dataFound = true;
               // memberData = data.Data;
-              for(int i=0;i<data.Data.length;i++){
-                if(data.Data[i]["society"]["wingId"] == selectedWing){
+              for (int i = 0; i < data.Data.length; i++) {
+                if (data.Data[i]["society"]["wingId"] == selectedWing) {
                   memberData.add(data.Data[i]);
                 }
               }
@@ -93,14 +96,14 @@ class _DirectoryMemberState extends State<DirectoryMember> {
             // });
           }
         }, onError: (e) {
-          showHHMsg("Something Went Wrong Please Try Again","");
+          showHHMsg("Something Went Wrong Please Try Again", "");
           setState(() {
             isLoading = false;
           });
         });
       }
     } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.","");
+      showHHMsg("No Internet Connection.", "");
     }
   }
 
@@ -108,18 +111,18 @@ class _DirectoryMemberState extends State<DirectoryMember> {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {
-          "societyId" : societyId
-        };
+        var data = {"societyId": societyId};
 
         setState(() {
           isLoading = true;
         });
-        Services.responseHandler(apiName: "admin/getAllWingOfSociety",body: data).then((data) async {
+        Services.responseHandler(
+                apiName: "admin/getAllWingOfSociety", body: data)
+            .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
-              for(int i=0;i<data.Data.length;i++){
-                if(data.Data[i]["totalFloor"].toString()!="0"){
+              for (int i = 0; i < data.Data.length; i++) {
+                if (data.Data[i]["totalFloor"].toString() != "0") {
                   _wingList.add(data.Data[i]);
                 }
               };
@@ -169,7 +172,8 @@ class _DirectoryMemberState extends State<DirectoryMember> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -180,23 +184,22 @@ class _DirectoryMemberState extends State<DirectoryMember> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/Dashboard");
-      },
-      child: Scaffold(
-        appBar: buildAppBar(context),
-        body: isLoading
-            ? LoadingComponent()
-            : Column(
-                children: <Widget>[
-                  Row(
+    return Scaffold(
+      appBar: buildAppBar(context),
+      body: isLoading
+          ? LoadingComponent()
+          : Column(
+              children: <Widget>[
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       for (int i = 0; i < _wingList.length; i++) ...[
                         GestureDetector(
                           onTap: () {
-                            if (selectedWing != _wingList[i]["_id"].toString()) {
+                            if (selectedWing !=
+                                _wingList[i]["_id"].toString()) {
                               setState(() {
                                 selectedWing = _wingList[i]["_id"].toString();
                                 _getDirectoryListing(selectedWing);
@@ -211,9 +214,10 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                             }
                           },
                           child: Container(
-                            width: selectedWing == _wingList[i]["_id"].toString()
-                                ? 60
-                                : 45,
+                            width:
+                                selectedWing == _wingList[i]["_id"].toString()
+                                    ? 60
+                                    : 45,
                             height:
                                 selectedWing == _wingList[i]["_id"].toString()
                                     ? 60
@@ -243,153 +247,138 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                       ],
                     ],
                   ),
-                  // Align(
-                  //   alignment: Alignment.centerRight,
-                  //   child: FlatButton(
-                  //     child: Row(
-                  //       mainAxisAlignment: MainAxisAlignment.end,
-                  //       mainAxisSize: MainAxisSize.min,
-                  //       children: <Widget>[
-                  //         Text(
-                  //           "Filter",
-                  //           style: TextStyle(
-                  //               fontSize: 16,
-                  //               color: cnst.appPrimaryMaterialColor,
-                  //               fontWeight: FontWeight.bold),
-                  //         ),
-                  //         SizedBox(
-                  //           width: 6,
-                  //         ),
-                  //         Icon(
-                  //           Icons.filter_list,
-                  //           size: 19,
-                  //           color: cnst.appPrimaryMaterialColor,
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     onPressed: () {
-                  //       showDialog(
-                  //           context: context,
-                  //           builder: (context) {
-                  //             return showFilterDailog(
-                  //               onSelect: (gender, isOwned, isOwner, isRented) {
-                  //                 String owned = isOwned ? "Owned" : "";
-                  //                 String owner = isOwner ? "Owner" : "";
-                  //                 String rented = isRented ? "Rented" : "";
-                  //                 setState(() {
-                  //                   isFilter = true;
-                  //                   filterMemberData.clear();
-                  //                 });
-                  //                 for (int i = 0; i < memberData.length; i++) {
-                  //                   if (memberData[i]["Gender"] ==
-                  //                           gender ||
-                  //                       memberData[i]["MemberData"]
-                  //                               ["ResidenceType"] ==
-                  //                           owned ||
-                  //                       memberData[i]["MemberData"]
-                  //                               ["ResidenceType"] ==
-                  //                           owner ||
-                  //                       memberData[i]["MemberData"]
-                  //                               ["ResidenceType"] ==
-                  //                           rented) {
-                  //                     print("matched");
-                  //                     filterMemberData.add(memberData[i]);
-                  //                   }
-                  //                 }
-                  //                 setState(() {});
-                  //               },
-                  //             );
-                  //           });
-                  //     },
-                  //   ),
-                  // ),
-                  isMemberLoading
-                      ? Container(
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        )
-                      : Expanded(
-                          child: isFilter
-                              ? filterMemberData.length > 0
-                                  ? AnimationLimiter(
-                                      child: ListView.builder(
-                                        padding: EdgeInsets.all(0),
-                                        itemCount: filterMemberData.length,
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return DirectoryMemberComponent(
-                                              filterMemberData[index],
-                                              index);
-                                        },
-                                      ),
-                                    )
-                                  : Container(
-                                      child: Center(
-                                          child: Text("No Member Found")),
-                                    )
-                              : memberData.length > 0 && memberData != null
-                                  ? searchMemberData.length != 0
-                                      ? AnimationLimiter(
-                                          child: ListView.builder(
-                                            padding: EdgeInsets.all(0),
-                                            itemCount: searchMemberData.length,
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              return DirectoryMemberComponent(
-                                                  searchMemberData[index],
-                                                  index);
-                                            },
-                                          ),
-                                        )
-                                      : _isSearching && isfirst
-                                          ? AnimationLimiter(
-                                              child: ListView.builder(
-                                                padding: EdgeInsets.all(0),
-                                                itemCount:
-                                                    searchMemberData.length,
-                                                itemBuilder:
-                                                    (BuildContext context,
-                                                        int index) {
-                                                  return DirectoryMemberComponent(
-                                                      searchMemberData[index],
-                                                      index);
-                                                },
-                                              ),
-                                            )
-                                          : AnimationLimiter(
-                                              child: ListView.builder(
-                                                padding: EdgeInsets.all(0),
-                                                itemCount: memberData.length,
-                                                itemBuilder:
-                                                    (BuildContext context,
-                                                        int index) {
-                                                  return DirectoryMemberComponent(
-                                                      memberData[index],
-                                                      index);
-                                                },
-                                              ),
-                                            )
-                                  : Center(child: CircularProgressIndicator(),),
+                ),
+                // Align(
+                //   alignment: Alignment.centerRight,
+                //   child: FlatButton(
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.end,
+                //       mainAxisSize: MainAxisSize.min,
+                //       children: <Widget>[
+                //         Text(
+                //           "Filter",
+                //           style: TextStyle(
+                //               fontSize: 16,
+                //               color: cnst.appPrimaryMaterialColor,
+                //               fontWeight: FontWeight.bold),
+                //         ),
+                //         SizedBox(
+                //           width: 6,
+                //         ),
+                //         Icon(
+                //           Icons.filter_list,
+                //           size: 19,
+                //           color: cnst.appPrimaryMaterialColor,
+                //         ),
+                //       ],
+                //     ),
+                //     onPressed: () {
+                //       showDialog(
+                //           context: context,
+                //           builder: (context) {
+                //             return showFilterDailog(
+                //               onSelect: (gender, isOwned, isOwner, isRented) {
+                //                 String owned = isOwned ? "Owned" : "";
+                //                 String owner = isOwner ? "Owner" : "";
+                //                 String rented = isRented ? "Rented" : "";
+                //                 setState(() {
+                //                   isFilter = true;
+                //                   filterMemberData.clear();
+                //                 });
+                //                 for (int i = 0; i < memberData.length; i++) {
+                //                   if (memberData[i]["Gender"] ==
+                //                           gender ||
+                //                       memberData[i]["MemberData"]
+                //                               ["ResidenceType"] ==
+                //                           owned ||
+                //                       memberData[i]["MemberData"]
+                //                               ["ResidenceType"] ==
+                //                           owner ||
+                //                       memberData[i]["MemberData"]
+                //                               ["ResidenceType"] ==
+                //                           rented) {
+                //                     print("matched");
+                //                     filterMemberData.add(memberData[i]);
+                //                   }
+                //                 }
+                //                 setState(() {});
+                //               },
+                //             );
+                //           });
+                //     },
+                //   ),
+                // ),
+                isMemberLoading
+                    ? Container(
+                        child: Center(
+                          child: CircularProgressIndicator(),
                         ),
-                ],
-              ),
-      ),
+                      )
+                    : Expanded(
+                        child:memberData.length > 0 && memberData != null
+                                ? searchMemberData.length != 0
+                                    ? AnimationLimiter(
+                                        child: ListView.builder(
+                                          padding: EdgeInsets.all(0),
+                                          itemCount: searchMemberData.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return DirectoryMemberComponent(
+                                                MemberData:searchMemberData[index],
+                                                index:index);
+                                          },
+                                        ),
+                                      )
+                                    : _isSearching && isfirst
+                                        ? AnimationLimiter(
+                                            child: ListView.builder(
+                                              padding: EdgeInsets.all(0),
+                                              itemCount:
+                                                  searchMemberData.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return DirectoryMemberComponent(
+                                                    MemberData:searchMemberData[index],
+                                                    index:index);
+                                              },
+                                            ),
+                                          )
+                                        : AnimationLimiter(
+                                            child: ListView.builder(
+                                              padding: EdgeInsets.all(0),
+                                              itemCount: memberData.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return DirectoryMemberComponent(
+                                                    MemberData:memberData[index],index: index);
+                                              },
+                                            ),
+                                          )
+                                : !dataFound ? Container(
+                          child: Center(),
+                        ) : Center(
+                                    child: Text('No Data Found'),
+                                  ),
+                      ),
+              ],
+            ),
     );
   }
 
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
       title: appBarTitle,
-      leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          Navigator.pushReplacementNamed(context, "/Dashboard");
-        },
-      ),
+      // leading: IconButton(
+      //   icon: Icon(
+      //     Icons.arrow_back,
+      //     color: Colors.white,
+      //   ),
+      //   onPressed: () {
+      //     Navigator.pushReplacementNamed(context, "/Dashboard");
+      //   },
+      // ),
       actions: <Widget>[
         new IconButton(
           icon: icon,
@@ -433,7 +422,7 @@ class _DirectoryMemberState extends State<DirectoryMember> {
         color: Colors.white,
       );
       this.appBarTitle = new Text(
-        'Member Directory'  ,
+        'Member Directory',
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
       );
       _isSearching = false;
@@ -455,8 +444,8 @@ class _DirectoryMemberState extends State<DirectoryMember> {
         String wing = memberData[i]["WingData"][0]["wingName"].toString();
         String contactNo = memberData[i]["ContactNo"].toString();
         if (name.toLowerCase().contains(searchText.toLowerCase()) ||
-            flat.toLowerCase().contains(searchText.toLowerCase())  ||
-            wing.toLowerCase().contains(searchText.toLowerCase())||
+            flat.toLowerCase().contains(searchText.toLowerCase()) ||
+            wing.toLowerCase().contains(searchText.toLowerCase()) ||
             contactNo.toLowerCase().contains(searchText.toLowerCase())) {
           searchMemberData.add(memberData[i]);
         }

@@ -90,6 +90,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       Gender = prefs.getString(constant.Session.Gender);
       Address = prefs.getString(constant.Session.Address);
       DOB = prefs.getString(constant.Session.DOB);
+      DOB.replaceAll('00:00:00.000', '');
       _isPrivate = prefs.getString(constant.Session.isPrivate);
       MemberId = prefs.getString(constant.Session.Member_Id);
       // Profile = prefs.getString(constant.Session.Profile);
@@ -97,7 +98,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     });
 
     print("profile" + CompanyName);
-    print("dodsdssx");
+    print("date of birth");
     print(DOB);
   }
 
@@ -264,15 +265,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
-      },
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);      },
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
-              }),
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              }),
           actions: <Widget>[
             GestureDetector(
               onTap: () {
@@ -365,36 +366,36 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  // Navigator.pushNamed(context, "/RegistrationDC");
-                  Navigator.pushNamed(context, "/DashBoard1");
-                },
-                child: Container(
-                  margin: EdgeInsets.only(top: 15, right: 15),
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      color: constant.appPrimaryMaterialColor,
-                      borderRadius: BorderRadius.all(Radius.circular(5))),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(
-                        Icons.person,
-                        size: 15,
-                        color: Colors.white,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "My Digital Card",
-                        style: TextStyle(fontSize: 12, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ).alignAtEnd(),
+              // GestureDetector(
+              //   onTap: () {
+              //     // Navigator.pushNamed(context, "/RegistrationDC");
+              //     Navigator.pushNamed(context, "/DashBoard1");
+              //   },
+              //   child: Container(
+              //     margin: EdgeInsets.only(top: 15, right: 15),
+              //     padding: EdgeInsets.all(8),
+              //     decoration: BoxDecoration(
+              //         color: constant.appPrimaryMaterialColor,
+              //         borderRadius: BorderRadius.all(Radius.circular(5))),
+              //     child: Row(
+              //       mainAxisSize: MainAxisSize.min,
+              //       children: <Widget>[
+              //         Icon(
+              //           Icons.person,
+              //           size: 15,
+              //           color: Colors.white,
+              //         ),
+              //         SizedBox(
+              //           width: 5,
+              //         ),
+              //         Text(
+              //           "My Digital Card",
+              //           style: TextStyle(fontSize: 12, color: Colors.white),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ).alignAtEnd(),
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: Stack(
@@ -402,7 +403,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     ClipOval(
                       child: Profile != "null" && Profile != ""
                           ? FadeInImage.assetNetwork(
-                              placeholder: "images/image_loading.gif",
+                              placeholder:  "images/man.png",
                               image: constant.Image_Url + '$Profile',
                               width: 100,
                               height: 100,
@@ -670,7 +671,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 leading: Image.asset('images/Cake.png',
                     width: 22, height: 22, color: Colors.grey[500]),
                 title:
-                    Text(DOB != "null" && DOB != null ? "${(DOB)}" : ""),
+                    Text(DOB != "null" && DOB != null ? "${(DOB.replaceAll("00:00:00.000", ""))}" : ""),
                 subtitle: Text("DOB"),
               ),
               Padding(

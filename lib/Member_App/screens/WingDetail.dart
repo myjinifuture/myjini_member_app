@@ -75,7 +75,12 @@ class _WingDetailState extends State<WingDetail> {
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
-              wingDetails=data.Data;
+              for(int i=0;i<data.Data.length;i++){
+                if(data.Data[i]["totalFloor"].toString()!="0"){
+                  wingDetails.add(data.Data[i]);
+                }
+              }
+              // wingDetails=data.Data;
             });
             for(int i=0;i<wingDetails.length;i++){
               if(wingDetails[i]['wingName']==widget.wingName){
@@ -138,58 +143,58 @@ class _WingDetailState extends State<WingDetail> {
     return Container(
       height: 300.0, // Change as per your requirement
       width: 300.0,
-        child: Stack(
-          children: [
-            ListView.builder(
-              padding: EdgeInsets.all(0),
-              shrinkWrap: true,
-              // physics: NeverScrollableScrollPhysics(),
-              itemCount: _optionList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  height: 45,
-                  margin: EdgeInsets.only(
-                      top: 5, left: 5, right: 5),
-                  child: TextFormField(
-                    controller: _optionList[index],
-                    scrollPadding: EdgeInsets.all(0),
-                    decoration: InputDecoration(
-                        border: new OutlineInputBorder(
-                            borderSide: new BorderSide(
-                                color: Colors.black),
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10))),
-                        hintText: "Option ${index + 1}",
-                        hintStyle: TextStyle(
-                          fontSize: 13,
-                        )),
-                    keyboardType: TextInputType.text,
-                    style: TextStyle(color: Colors.black),
-                  ),
-                );
-              },
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: RaisedButton(
-                elevation: 3,
-                onPressed: () {
-                  Navigator.of(context).pop();;
-                },
-                color: constant.appPrimaryMaterialColor,
-                child: Text(
-                  'Submit',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
+      child: Stack(
+        children: [
+          ListView.builder(
+            padding: EdgeInsets.all(0),
+            shrinkWrap: true,
+            // physics: NeverScrollableScrollPhysics(),
+            itemCount: _optionList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                height: 45,
+                margin: EdgeInsets.only(
+                    top: 5, left: 5, right: 5),
+                child: TextFormField(
+                  controller: _optionList[index],
+                  scrollPadding: EdgeInsets.all(0),
+                  decoration: InputDecoration(
+                      border: new OutlineInputBorder(
+                          borderSide: new BorderSide(
+                              color: Colors.black),
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(10))),
+                      hintText: "Option ${index + 1}",
+                      hintStyle: TextStyle(
+                        fontSize: 13,
+                      )),
+                  keyboardType: TextInputType.text,
+                  style: TextStyle(color: Colors.black),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+              );
+            },
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: RaisedButton(
+              elevation: 3,
+              onPressed: () {
+                Navigator.of(context).pop();;
+              },
+              color: constant.appPrimaryMaterialColor,
+              child: Text(
+                'Submit',
+                style: TextStyle(
+                  color: Colors.white,
                 ),
               ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -698,55 +703,55 @@ class _showTextFieldState extends State<showTextField> {
     print("widget.txtUnit.length");
     print(widget.txtUnit.length);
     return AlertDialog(
-          title: new Text("Delete Confirmation"),
-          content: new Container(
-            height: 50.0 * widget.txtUnit.length,
-            child: ListView.builder(
-              padding: EdgeInsets.all(0),
-              shrinkWrap: true,
-              // physics: NeverScrollableScrollPhysics(),
-              itemCount: widget.txtUnit.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  height: 45,
-                  margin: EdgeInsets.only(
-                      top: 5, left: 5, right: 5),
-                  child: TextFormField(
-                    controller: _optionList[index],
-                    scrollPadding: EdgeInsets.all(0),
-                    decoration: InputDecoration(
-                        border: new OutlineInputBorder(
-                            borderSide: new BorderSide(
-                                color: Colors.black),
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10))),
-                        hintText: "Option ${index + 1}",
-                        hintStyle: TextStyle(
-                          fontSize: 13,
-                        )),
-                    keyboardType: TextInputType.text,
-                    style: TextStyle(color: Colors.black),
-                  ),
-                );
-              },
-            ),
-          ),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Ok"),
-              onPressed: () {
-                // DeleteOffer();
-                Navigator.of(context).pop();;
-              },
-            ),
-            new FlatButton(
-              child: new Text("Close"),
-              onPressed: () {
-                Navigator.of(context).pop();;
-              },
-            ),
-          ],
-        );
+      title: new Text("Delete Confirmation"),
+      content: new Container(
+        height: 50.0 * widget.txtUnit.length,
+        child: ListView.builder(
+          padding: EdgeInsets.all(0),
+          shrinkWrap: true,
+          // physics: NeverScrollableScrollPhysics(),
+          itemCount: widget.txtUnit.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              height: 45,
+              margin: EdgeInsets.only(
+                  top: 5, left: 5, right: 5),
+              child: TextFormField(
+                controller: _optionList[index],
+                scrollPadding: EdgeInsets.all(0),
+                decoration: InputDecoration(
+                    border: new OutlineInputBorder(
+                        borderSide: new BorderSide(
+                            color: Colors.black),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(10))),
+                    hintText: "Option ${index + 1}",
+                    hintStyle: TextStyle(
+                      fontSize: 13,
+                    )),
+                keyboardType: TextInputType.text,
+                style: TextStyle(color: Colors.black),
+              ),
+            );
+          },
+        ),
+      ),
+      actions: <Widget>[
+        // usually buttons at the bottom of the dialog
+        new FlatButton(
+          child: new Text("Ok"),
+          onPressed: () {
+            // DeleteOffer();
+            Navigator.of(context).pop();;
+          },
+        ),
+        new FlatButton(
+          child: new Text("Close"),
+          onPressed: () {
+            Navigator.of(context).pop();;
+          },
+        ),
+      ],
+    );
   }
 }

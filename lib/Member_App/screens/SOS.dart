@@ -38,45 +38,6 @@ class _SOSState extends State<SOS> {
     print(widget.data);
   }
 
-  NotificationReply(String Msg, String EntryId, String WatchmanId) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.NotificationReply(Msg, EntryId, WatchmanId).then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          log("=============Notification${data.Message}");
-          if (data.Data == "1" && data.IsSuccess == true) {
-            Fluttertoast.showToast(
-                msg: "Success !",
-                backgroundColor: Colors.green,
-                textColor: Colors.white,
-                gravity: ToastGravity.TOP,
-                toastLength: Toast.LENGTH_SHORT);
-
-            log("=============Notification${data.Message}");
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
-  }
-
   showHHMsg(String title, String msg) {
     showDialog(
       context: context,
@@ -88,8 +49,8 @@ class _SOSState extends State<SOS> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              },
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              },
             ),
           ],
         );
@@ -101,8 +62,8 @@ class _SOSState extends State<SOS> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);      },
       child: Scaffold(
         body: Stack(
           children: [
@@ -142,8 +103,8 @@ class _SOSState extends State<SOS> {
                     size: 30,
                   ),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/HomeScreen');
-},
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '/HomeScreen', (route) => false);},
                 ),
               ),
             ),
@@ -233,6 +194,7 @@ class _SOSState extends State<SOS> {
                   ),
                 ),
                 onPressed: (){
+                  print(widget.data);
                   launch(widget.data["GoogleMap"]);
                 },
               ),

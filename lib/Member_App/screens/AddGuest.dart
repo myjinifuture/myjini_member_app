@@ -322,7 +322,7 @@ class _AddGuestState extends State<AddGuest> {
   }
 
   checkValidation() {
-    if (txtVisitorName.text != "" && txtMobile.text != "" && purposeSelected!=null) {
+    if (txtVisitorName.text != "" && txtMobile.text != "" && purposeSelected!=null && selectedGuestCategory!=null) {
       _AddVisitor();
       // Navigator.push(
       //     context,
@@ -346,8 +346,8 @@ class _AddGuestState extends State<AddGuest> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.of(context).pop();
-
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/HomeScreen', (route) => false);
       },
       child: RepaintBoundary(
         key: _containerKey,

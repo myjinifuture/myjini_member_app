@@ -28,6 +28,7 @@ class _MaidComponentState extends State<MaidComponent> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.maidData);
     return Card(
       elevation: 1,
       child: Container(
@@ -37,7 +38,7 @@ class _MaidComponentState extends State<MaidComponent> {
             Row(
               children: <Widget>[
                 widget.maidData["StaffData"][0]["staffImage"] != null &&
-                    widget.maidData["StaffData"][0]["staffImage"] != ""
+                        widget.maidData["StaffData"][0]["staffImage"] != ""
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ClipOval(
@@ -62,13 +63,25 @@ class _MaidComponentState extends State<MaidComponent> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text("${widget.maidData["StaffData"][0]["Name"]}".toUpperCase(),
+                      Text(
+                          "${widget.maidData["StaffData"][0]["Name"]}"
+                              .toUpperCase(),
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w600)),
+                      widget.maidData["StaffData"][0]["FlatData"].isEmpty==false?Padding(
+                        padding: const EdgeInsets.only(top: 5.0),
+                        child: Text(
+                          "${widget.maidData["StaffData"][0]["FlatData"][0]["WingData"][0]["wingName"].toString()}-${widget.maidData["StaffData"][0]["FlatData"][0]["flatNo"].toString()}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ):Container(),
                       Row(
                         children: <Widget>[
-                          Text("${widget.maidData["StaffData"][0]["staffCategory"]}",
+                          Text(
+                              "${widget.maidData["StaffData"][0]["staffCategory"]}",
                               style: TextStyle(color: Colors.black)),
                           Padding(
                             padding: const EdgeInsets.only(
@@ -104,9 +117,11 @@ class _MaidComponentState extends State<MaidComponent> {
                                                 Radius.circular(6.0))),
                                       )
                                 : Container(),
-                          )
+                          ),
+
                         ],
                       ),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[

@@ -23,47 +23,12 @@ class _EventPhotosState extends State<EventPhotos> {
 
   @override
   void initState() {
-    EventPhotos();
     _getLocaldata();
   }
 
   _getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     SocietyId = prefs.getString(constant.Session.SocietyId);
-  }
-
-  EventPhotos() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.EventPhotolist(widget.EventData["_id"].toString()).then(
-            (data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              ImageList = data;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
   }
 
   showHHMsg(String title, String msg) {

@@ -234,8 +234,8 @@ class _SOSDailogState extends State<SOSDailog> {
                   backgroundColor: Colors.green,
                   gravity: ToastGravity.TOP,
                 );
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
-              });
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              });
             } else {
               setState(() {
                 isLoading = false;
@@ -272,34 +272,6 @@ class _SOSDailogState extends State<SOSDailog> {
         );
       },
     );
-  }
-
-  _addSOS() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        String MemberId = prefs.getString(constant.Session.Member_Id);
-        var data = {
-          "Id": MemberId,
-          "": txtMsg.text,
-        };
-        // pr.show();
-        Services.AddSOS(data).then((data) async {
-          // pr.hide();
-          if (data.Data != "0" && data.IsSuccess == true) {
-          } else {
-            showMsg("Something Went Wrong", "");
-            // pr.hide();
-          }
-        }, onError: (e) {
-          // pr.hide();
-          showMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.", "");
-    }
   }
 
   showMsg(String title, String msg) {

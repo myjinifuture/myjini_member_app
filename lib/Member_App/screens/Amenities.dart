@@ -90,160 +90,159 @@ class _AmenitiesState extends State<Amenities> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/HomeScreen");
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          title: Text(
-            'Amenities',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/HomeScreen");
-            },
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        title: Text(
+          'Amenities',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        body: isLoading
-            ? LoadingComponent()
-            : _aminitiesData.length > 0
-                ? Container(
-                    child: Swiper(
-                      itemBuilder: (BuildContext, int index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              FadeInImage.assetNetwork(
-                                placeholder: "images/placeholder.png",
-                                image: _aminitiesData[index]["images"].length ==
-                                        0
-                                    ? ""
-                                    : Image_Url +
-                                        '${_aminitiesData[index]["images"][0]}',
-                                width: MediaQuery.of(context).size.width,
-                                height: 200,
-                              ),
-                              Padding(padding: EdgeInsets.only(top: 15)),
-                              Text(
-                                "${_aminitiesData[index]["amenityName"]}",
+        centerTitle: true,
+
+        // leading: IconButton(
+        //   icon: Icon(
+        //     Icons.arrow_back,
+        //     color: Colors.white,
+        //   ),
+        //   onPressed: () {
+        //     Navigator.pushReplacementNamed(context, "/HomeScreen");
+        //   },
+        // ),
+      ),
+      body: isLoading
+          ? LoadingComponent()
+          : _aminitiesData.length > 0
+              ? Container(
+                  child: Swiper(
+                    itemBuilder: (BuildContext, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            FadeInImage.assetNetwork(
+                              placeholder: "images/placeholder.png",
+                              image: _aminitiesData[index]["images"].length ==
+                                      0
+                                  ? ""
+                                  : Image_Url +
+                                      '${_aminitiesData[index]["images"][0]}',
+                              width: MediaQuery.of(context).size.width,
+                              height: 200,
+                            ),
+                            Padding(padding: EdgeInsets.only(top: 15)),
+                            Text(
+                              "${_aminitiesData[index]["amenityName"]}",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: constant.appPrimaryMaterialColor,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 17.0, left: 30, right: 30),
+                              /*child: Text(
+                                "A swimming pool, swimming bath, wading pool, paddling pool, or simply pool is a structure designed to hold water to enable swimming or other leisure activities",
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    fontSize: 20,
-                                    color: constant.appPrimaryMaterialColor,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 17.0, left: 30, right: 30),
-                                /*child: Text(
-                                  "A swimming pool, swimming bath, wading pool, paddling pool, or simply pool is a structure designed to hold water to enable swimming or other leisure activities",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: constant.appprimarycolors[400],
-                                  ),
-                                ),*/
-                              ),
-                              Container(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 12.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      _aminitiesData[index]["isPaid"] == true
-                                          ? Text("Paid",
-                                              style: TextStyle(
-                                                  color: Colors.orange,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w700))
-                                          : Text("Free",
-                                              style: TextStyle(
-                                                  color: Colors.green,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w700)),
-                                      Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: Icon(Icons.verified_user,
-                                            size: 18,
-                                            color: _aminitiesData[index]
-                                                        ["isPaid"] ==
-                                                    true
-                                                ? Colors.green
-                                                : Colors.orange),
-                                      )
-                                    ],
-                                  ),
+                                  color: constant.appprimarycolors[400],
                                 ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                      new Radius.circular(10.0)),
-                                ),
-                              ),
-                              Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    '₹${_aminitiesData[index]["Amount"].toString()}',
-                                  ),
-                                ),
-                              ),
-                              Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: _aminitiesData[index]["description"] ==
-                                              "" ||
-                                          _aminitiesData[index]
-                                                  ["description"] ==
-                                              null
-                                      ? Container()
-                                      : Text(
-                                          _aminitiesData[index]["description"],
-                                        ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 25),
-                                child: Column(
+                              ),*/
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 12.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    Text(
-                                      "Available Timing",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black54,
-                                      ),
-                                    ),
-                                    Text(
-                                      "${_aminitiesData[index]["fromTime"]}" +
-                                          " - " +
-                                          "${_aminitiesData[index]["toTime"]}",
-                                      style: TextStyle(color: Colors.black),
+                                    _aminitiesData[index]["isPaid"] == true
+                                        ? Text("Paid",
+                                            style: TextStyle(
+                                                color: Colors.orange,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w700))
+                                        : Text("Free",
+                                            style: TextStyle(
+                                                color: Colors.green,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w700)),
+                                    Padding(
+                                      padding: const EdgeInsets.all(2.0),
+                                      child: Icon(Icons.verified_user,
+                                          size: 18,
+                                          color: _aminitiesData[index]
+                                                      ["isPaid"] ==
+                                                  true
+                                              ? Colors.green
+                                              : Colors.orange),
                                     )
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
-                        );
-                      },
-                      itemCount: _aminitiesData.length,
-                      pagination: new SwiperPagination(
-                          builder: DotSwiperPaginationBuilder(
-                        color: Colors.grey[400],
-                      )),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                    new Radius.circular(10.0)),
+                              ),
+                            ),
+                            _aminitiesData[index]
+                            ["isPaid"] ==
+                                true?Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  '₹${_aminitiesData[index]["Amount"].toString()}',
+                                ),
+                              ),
+                            ):Container(),
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: _aminitiesData[index]["description"] ==
+                                            "" ||
+                                        _aminitiesData[index]
+                                                ["description"] ==
+                                            null
+                                    ? Container()
+                                    : Text(
+                                        _aminitiesData[index]["description"],
+                                      ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 25),
+                              child: Column(
+                                children: <Widget>[
+                                  Text(
+                                    "Available Timing",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${_aminitiesData[index]["fromTime"]}" +
+                                        " - " +
+                                        "${_aminitiesData[index]["toTime"]}",
+                                    style: TextStyle(color: Colors.black),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    itemCount: _aminitiesData.length,
+                    pagination: new SwiperPagination(
+                        builder: DotSwiperPaginationBuilder(
+                      color: Colors.grey[400],
+                    )),
 //                      control: new SwiperControl(size: 17),
-                    ),
-                  )
-                : Container(
-                    child: Center(child: Text("No Data Found")),
                   ),
-      ),
+                )
+              : Container(
+                  child: Center(child: Text("No Data Found")),
+                ),
     );
   }
 }

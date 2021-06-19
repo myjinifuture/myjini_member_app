@@ -23,94 +23,6 @@ class _OtpScreenState extends State<OtpScreen> {
   var rndnumber = "";
   bool isLoading = false;
 
-  @override
-  void initState() {
-    _getLocaldata();
-  }
-
-  _getLocaldata() async {
-    _sendVerificationCode(widget.MobileNo);
-  }
-
-  _sendVerificationCode(String Mobile) async {
-    try {
-      var rnd = new Random();
-      setState(() {
-        rndnumber = "";
-      });
-      for (var i = 0; i < 4; i++) {
-        rndnumber = rndnumber + rnd.nextInt(9).toString();
-      }
-      print(rndnumber);
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-        Services.SendVerficationCode(Mobile, rndnumber).then((data) async {
-          if (data.Data == "ok" && data.IsSuccess == true) {
-            setState(() {
-              isLoading = false;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-            showMsg("MYJINI ", "Try again");
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on otp $e");
-          showMsg("MYJINI ", "Try again");
-          setState(() {});
-        });
-      } else {
-        showMsg("MYJINI ", "No internet connection");
-      }
-    } on SocketException catch (_) {
-      showMsg("MYJINI ", "No internet connection");
-    }
-  }
-
-  _MemberVerification() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-        Services.Checkverification(widget.Id).then((data) async {
-          if (data.Data == "1" && data.IsSuccess == true) {
-            setState(() {
-              isLoading = false;
-            });
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setString(constant.Session.IsVerified, "true");
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                '/HomeScreen', (Route<dynamic> route) => false);
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-            showMsg("MYJINI ", "Try again");
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on otp $e");
-          showMsg("MYJINI ", "Try again");
-          setState(() {});
-        });
-      } else {
-        showMsg("MYJINI ", "No internet connection");
-      }
-    } on SocketException catch (_) {
-      showMsg("MYJINI ", "No internet connection");
-    }
-  }
 
   showMsg(String title, String msg) {
     showDialog(
@@ -200,9 +112,6 @@ class _OtpScreenState extends State<OtpScreen> {
                             style: TextStyle(fontSize: 16),
                           ),
                           GestureDetector(
-                            onTap: () {
-                              _sendVerificationCode(widget.MobileNo);
-                            },
                             child: Text(" Resend",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w900,
@@ -239,7 +148,6 @@ class _OtpScreenState extends State<OtpScreen> {
                         onTap: () {
                           if (controller.text == rndnumber) {
                             widget.onsuccess();
-                            _MemberVerification();
                           } else
                             Fluttertoast.showToast(
                                 msg: "Wrong OTP..",

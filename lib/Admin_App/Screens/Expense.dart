@@ -314,7 +314,7 @@ class _ExpenseState extends State<Expense> {
                                 ),
                               ),
                             )
-                          : NoDataComponent(),
+                          : Center(child: Text('No Data Found'),),
                       _expenseData.length > 0
                           ? Container(
                               height: 50,
@@ -359,7 +359,7 @@ class _ExpenseState extends State<Expense> {
                           : Container(),
                     ],
                   )
-                : NoDataComponent(),
+                : Center(child: Text('No Data Found'),),
       ),
     );
   }

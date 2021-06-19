@@ -17,13 +17,61 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string></string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.653223090945-b9s6o5lf1kilnjjq93u780t5oltvstil</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+		<string>whatsapp</string>
+		<string>tel</string>
+		<string>mailto</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Myjini needs microphone permission.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Myjini needs Calendar permission.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Myjini needs camera permission for profile picture selection</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Myjini needs Contacts permission for share app to other users.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Myjini needs Location permission.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Myjini needs Location permission.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Myjini needs microphone permission.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Myjini needs Motion permission.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Myjini needs gallery permission for profile picture selection</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Myjini needs microphone permission.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

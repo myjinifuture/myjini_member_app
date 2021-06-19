@@ -48,7 +48,7 @@ class _MemberServicesState extends State<MemberServices> {
                                         snapshot.data[index]);
                                   },
                                 )
-                              : NoDataComponent()
+                              : Center(child: Text('No Data Found'),)
                           : LoadinComponent();
                     },
                   ))

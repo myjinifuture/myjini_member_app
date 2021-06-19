@@ -20,7 +20,7 @@ class EventsAdmin extends StatefulWidget {
 class _EventsAdminState extends State<EventsAdmin> {
   List EventsData = new List();
   bool isLoading = false;
-  String SocietyId, MemberId, ParentId;
+  String SocietyId, MemberId, ParentId,wingId;
   ProgressDialog pr;
 
   @override
@@ -34,6 +34,7 @@ class _EventsAdminState extends State<EventsAdmin> {
   _getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     SocietyId = prefs.getString(constant.Session.SocietyId);
+    wingId = prefs.getString(constant.Session.WingId);
     MemberId = prefs.getString(constant.Session.Member_Id);
     if (prefs.getString(constant.Session.ParentId) == "null" ||
         prefs.getString(constant.Session.ParentId) == "")
@@ -69,8 +70,10 @@ class _EventsAdminState extends State<EventsAdmin> {
         setState(() {
           isLoading = true;
         });
-        var data = {"societyId": SocietyId};
-        Services.responseHandler(apiName: "admin/getSocietyEvent", body: data)
+        var data = {"societyId": SocietyId,
+        "wingId" : wingId
+        };
+        Services.responseHandler(apiName: "admin/getSocietyEvent_v2", body: data)
             .then((data) async {
           setState(() {
             isLoading = false;
@@ -169,22 +172,45 @@ class _EventsAdminState extends State<EventsAdmin> {
     }
   }
 
+  List<Widget> wingDetails = [];
+
+  wings(int index){
+    wingDetails.clear();
+      for (int i = 0; i < EventsData[index]["WingData"].length; i++) {
+        if(!wingDetails.contains(Text(
+          "WING-" + '${EventsData[index]["WingData"][i]["wingName"]}'
+              .toUpperCase(),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
+        ))) {
+          wingDetails.add(Text(
+            "WING-" + '${EventsData[index]["WingData"][i]["wingName"]}'
+                .toUpperCase(),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+          ));
+        }
+      }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("EventsData data:");
+    print(EventsData);
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "Events",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        // leading: IconButton(
-        //     icon: Icon(Icons.arrow_back),
-        //     onPressed: () {
-        //       Navigator.pushReplacementNamed(context, "/Dashboard");
-        //     }),
       ),
       body: ListView.separated(
         itemBuilder: (context, index) {
+          wings(index);
           return GestureDetector(
             onTap: () {
               // Navigator.push(
@@ -219,8 +245,23 @@ class _EventsAdminState extends State<EventsAdmin> {
                     SizedBox(
                       width: 8,
                     ),
-                    Column(
+                    SingleChildScrollView(
+                      child: Column(
+                        children: wingDetails,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Column(crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
+                        // Text(
+                        //   "${EventsData[index]["WingData"][0]["wingName"]}",
+                        //   style: TextStyle(
+                        //       color: Colors.grey[700],
+                        //       fontWeight: FontWeight.w600,
+                        //       fontSize: 12),
+                        // ),
                         Text(
                           "${EventsData[index]["date"]}",
                           style: TextStyle(
@@ -228,14 +269,11 @@ class _EventsAdminState extends State<EventsAdmin> {
                               fontWeight: FontWeight.w600,
                               fontSize: 12),
                         ),
-                        SizedBox(
-                          height: 5,
-                        ),
                         Row(
                           children: <Widget>[
                             EventsData[index]["Registration"].length > 0
                                 ? Text(
-                                    "Total : ${EventsData[index]["Registration"][0]["Count"]}",
+                                    "Total : ${EventsData[index]["ComingMemberCount"]}",
                                     style: TextStyle(
                                       color: constant.appPrimaryMaterialColor,
                                       fontSize: 16,

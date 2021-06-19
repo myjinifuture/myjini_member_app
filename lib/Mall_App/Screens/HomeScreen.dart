@@ -43,6 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String CustomerName;
 
   Future<bool> onWillPop() {
+    print("exit called");
+    exit(0);
     DateTime now = DateTime.now();
     if (currentBackPressTime == null ||
         now.difference(currentBackPressTime) > Duration(seconds: 2)) {

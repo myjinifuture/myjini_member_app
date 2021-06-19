@@ -16,7 +16,7 @@ class NoticeScreen extends StatefulWidget {
 class _NoticeScreenState extends State<NoticeScreen> {
   List NoticeData = new List();
   bool isLoading = false;
-  String SocietyId;
+  String SocietyId,wingId;
 
   @override
   void initState() {
@@ -27,6 +27,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
   _getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     SocietyId = prefs.getString(constant.Session.SocietyId);
+    wingId = prefs.getString(constant.Session.WingId);
   }
 
   String setDate(String date) {
@@ -64,7 +65,8 @@ class _NoticeScreenState extends State<NoticeScreen> {
           isLoading = true;
         });
         var data = {
-          "societyId" : SocietyId
+          "societyId" : SocietyId,
+          "wingId" : wingId
         };
         Services.responseHandler(apiName: "admin/getSocietyNotice",body: data).then((data) async {
           setState(() {
@@ -126,7 +128,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
-                    child: Text("${NoticeData[index]["Title"]}",
+                    child: Text("${NoticeData[NoticeData.length- 1 -index]["Title"]}",
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -143,7 +145,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.all(Radius.circular(100.0))),
                     child: Center(
-                      child: Text(NoticeData[index]["dateTime"][0],
+                      child: Text(NoticeData[NoticeData.length- 1 -index]["dateTime"][0],
                           style: TextStyle(
                               color: Colors.black54,
                               fontWeight: FontWeight.w600,
@@ -169,7 +171,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
                         padding: const EdgeInsets.only(
                             top: 10.0, left: 12.0, right: 12.0, bottom: 8.0),
                         child: Text(
-                          "${NoticeData[index]["Description"]}",
+                          "${NoticeData[NoticeData.length- 1 -index]["Description"]}",
                           overflow: TextOverflow.fade,
                           textAlign: TextAlign.left,
                           style: TextStyle(
@@ -181,13 +183,13 @@ class _NoticeScreenState extends State<NoticeScreen> {
                     ],
                   ),
                   Container(
-                    child: NoticeData[index]["FileAttachment"] != ""
+                    child: NoticeData[NoticeData.length- 1 -index]["FileAttachment"] != ""
                         ? Padding(
                             padding: const EdgeInsets.only(top: 15, bottom: 8),
                             child: GestureDetector(
                               onTap: () {
                                 _launchURL(Image_Url +
-                                    "${NoticeData[index]["FileAttachment"]}");
+                                    "${NoticeData[NoticeData.length- 1 -index]["FileAttachment"]}");
                               },
                               child: Container(
                                   width: 150,
@@ -230,56 +232,51 @@ class _NoticeScreenState extends State<NoticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
-              }),
-          centerTitle: true,
-          title: Text('Notice', style: TextStyle(fontSize: 18)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(10),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pushReplacementNamed(context, "/HomeScreen");
+        //     }),
+        centerTitle: true,
+        title: Text('Notice', style: TextStyle(fontSize: 18)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(10),
           ),
         ),
-        body: Container(
-          color: Colors.grey[100],
-          child: isLoading
-              ? Container(
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              : NoticeData.length > 0
-                  ? AnimationLimiter(
-                      child: ListView.builder(
-                        itemBuilder: _NoticeCard,
-                        itemCount: NoticeData.length,
-                      ),
-                    )
-                  : Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset("images/no_data.png",
-                              width: 50, height: 50, color: Colors.grey),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text("No Notice Found",
-                                style: TextStyle(
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.w600)),
-                          )
-                        ],
-                      ),
+      ),
+      body: Container(
+        color: Colors.grey[100],
+        child: isLoading
+            ? Container(
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : NoticeData.length > 0
+                ? AnimationLimiter(
+                    child: ListView.builder(
+                      itemBuilder: _NoticeCard,
+                      itemCount: NoticeData.length,
                     ),
-        ),
+                  )
+                : Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset("images/no_data.png",
+                            width: 50, height: 50, color: Colors.grey),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text("No Notice Found",
+                              style: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w600)),
+                        )
+                      ],
+                    ),
+                  ),
       ),
     );
   }

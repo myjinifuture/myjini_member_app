@@ -93,7 +93,7 @@ class _ShareHistoryState extends State<ShareHistory> {
                                     shareClass[index], index);
                               },
                             )
-                  : NoDataComponent(),
+                  : Center(child: Text('No Data Found'),),
         ));
   }
 

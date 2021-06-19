@@ -43,8 +43,6 @@ class _GetAMCState extends State<GetAMC> {
   @override
   void initState() {
     print("hhh==>> "+ widget.ServiceData.toString());
-    _getServicePackage();
-    _getVendorDataDropDown();
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(
         message: "Please Wait",
@@ -59,154 +57,6 @@ class _GetAMCState extends State<GetAMC> {
         insetAnimCurve: Curves.easeInOut,
         messageTextStyle: TextStyle(
             color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
-  }
-
-  _serviceRequestAMC() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // pr.show();
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var data = {
-          "Id": 0,
-          "MemberId": prefs.getString(cnst.Session.Member_Id),
-          "ServiceId": widget.ServiceData["ServiceId"],
-          "ServicePackageId":  widget.ServiceData["Id"],
-          "VendorId": _vendorlistClass.id,
-          "ServicePackagePriceID": _servicelistClass.id
-        };
-
-        print("Save Vendor Data = ${data}");
-        Services.ServiceRequestAMC(data).then((data) async {
-          // pr.hide();
-
-          if (data.Data != "0" && data.IsSuccess == true) {
-            Fluttertoast.showToast(
-                msg: "AMC Paid Successfully !",
-                textColor: Colors.black,
-                toastLength: Toast.LENGTH_LONG);
-
-              Navigator.pushNamedAndRemoveUntil(
-                context, "/HomeScreen", (Route<dynamic> route) => false);
-          } else {
-            showMsg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
-          // pr.hide();
-          showMsg("Try Again.");
-        });
-      } else
-        showMsg("No Internet Connection.");
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsg("No Internet Connection.");
-    }
-  }
-
-  _getServicePackage() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          servicelistLoading = true;
-        });
-        String id = widget.ServiceData["Id"].toString();
-        Future res = Services.GetServicePackageDropdown(id);
-        res.then((data) async {
-          setState(() {
-            servicelistLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              servicelistClassList = data;
-            });
-            print("servicelisttt=> " + servicelistClassList.toString());
-          }
-        }, onError: (e) {
-          showMsg("$e");
-          setState(() {
-            servicelistLoading = false;
-          });
-        });
-      } else {
-        showMsg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      showMsg("Something Went Wrong");
-      setState(() {
-        servicelistLoading = false;
-      });
-    }
-  }
-
-  _getVendorDataDropDown() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          vendorlistLoading = true;
-        });
-        String id = widget.ServiceData["ServiceId"].toString();
-        Future res = Services.GetVendorDataDropDown(id);
-        res.then((data) async {
-          setState(() {
-            vendorlistLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              vendorlistClassList = data;
-            });
-            print("vendorlisttt=> " + vendorlistClassList.toString());
-          }
-        }, onError: (e) {
-          showMsg("$e");
-          setState(() {
-            vendorlistLoading = false;
-          });
-        });
-      } else {
-        showMsg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      showMsg("Something Went Wrong");
-      setState(() {
-        vendorlistLoading = false;
-      });
-    }
-  }
-
-  _getAmcDetails(id) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-        print("helooooo--");
-        Services.GetAmcDetails(id).then((Data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (Data != null && Data.length > 0) {
-            setState(() {
-              AMCList = Data;
-            });
-            print("AMCList=> " + AMCList.toString());
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
   }
 
   showHHMsg(String title, String msg) {
@@ -319,7 +169,6 @@ class _GetAMCState extends State<GetAMC> {
                           _servicelistDropdownError = null;
                         });
                         print("ServicePackagePriceID=>" + newValue.id);
-                        _getAmcDetails(newValue.id);
                       },
                       items: servicelistClassList.map((servicelistClass value) {
                         return DropdownMenuItem<servicelistClass>(
@@ -571,7 +420,6 @@ class _GetAMCState extends State<GetAMC> {
                                 }
                               });
                               if (isValidate) {
-                                _serviceRequestAMC();
                               }
 
                             }),

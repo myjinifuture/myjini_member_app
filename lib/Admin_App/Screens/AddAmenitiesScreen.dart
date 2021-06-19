@@ -181,7 +181,6 @@ class _AddAmenitiesScreenState extends State<AddAmenitiesScreen> {
           "fromTime": txtTime1.text,
           "toTime": txtTime2.text,
           "adminId": adminId,
-
         });
 
         Services.responseHandler(

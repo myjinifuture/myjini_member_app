@@ -21,13 +21,15 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
     _getVisitor("");
   }
 
-  String societyId,memberId;
+  String societyId,memberId,wingId,flatId;
   bool isLoading = true;
   getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       societyId = prefs.getString(Session.SocietyId);
       memberId = prefs.getString(Session.Member_Id);
+      wingId = prefs.getString(Session.WingId);
+      flatId = prefs.getString(Session.FlatId);
     });
   }
 
@@ -43,8 +45,8 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              },
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              },
             ),
           ],
         );
@@ -57,7 +59,8 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
-          "societyId" : societyId
+          "societyId" : societyId,
+          "wingId" : wingId,
           // "societyId" : "60630c2c86c69d00229fe13d"
         };
        if(done != "done") {
@@ -65,7 +68,7 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
            isLoading = true;
          });
        }
-        Services.responseHandler(apiName : "admin/getMemberApprovalList", body :data).then((data) async {
+        Services.responseHandler(apiName : "admin/getMemberApprovalList_v1", body :data).then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               pendingApprovals = data.Data;
@@ -95,7 +98,7 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
     }
   }
 
-  _memberApproval(bool isverified,String memberid) async {
+  _memberApproval(bool isverified,String memberid,String wing,String flat) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -104,12 +107,14 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
           "societyId" : societyId,
           "isVerify" : isverified,
           "deviceType" : Platform.isAndroid ? "Android" : "IOS",
-          "adminId" : memberId
+          "adminId" : memberId,
+          "wingId" : wing,
+          "flatId" : flat
         };
         setState(() {
           isLoading = true;
         });
-        Services.responseHandler(apiName : "admin/memberApproval", body :data).then((data) async {
+        Services.responseHandler(apiName : "admin/memberApproval_v1", body :data).then((data) async {
           if (data.Data.toString()=="1") {
             setState(() {
               Fluttertoast.showToast(
@@ -149,99 +154,100 @@ class _getPendingApprovalsState extends State<getPendingApprovals> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () {
-          Navigator.pushReplacementNamed(context, '/HomeScreen');
-        },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Pending Approvals"),
-          // leading: IconButton(
-          //     icon: Icon(Icons.arrow_back),
-          //     onPressed: () {
-          //       Navigator.pushReplacementNamed(context, "/HomeScreen");
-          //     }),
-        ),
-        body: isLoading ? Center(
-          child: CircularProgressIndicator(),
-        ) : ListView.builder(
-            itemCount: pendingApprovals.length,
-            itemBuilder: (BuildContext ctxt, int index) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 10.0, right: 10, top: 5),
-                child: new Container(
-                  color: Colors.white,
-                  child: Column(
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Padding(
-                                    padding:
-                                    const EdgeInsets.only(left: 8.0, bottom: 6.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text("${pendingApprovals[index]["Name"]}",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.grey[700])),
-                                        Row(
-                                          children: <Widget>[
-                                            Text("Flat No:"),
-                                            Text("${pendingApprovals[index]["FlatData"][0]["flatNo"]}"),
-                                            SizedBox(
-                                              width: 40,
-                                            ),
-                                            RaisedButton(
-                                              color: Colors.white,
-                                              child:  Text('Approve',
-                                                style: TextStyle(
-                                                    color: Colors.green,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                ),
-                                              ),
-                                              onPressed: () => _memberApproval(true,pendingApprovals[index]["_id"]),
-                                            ),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            RaisedButton(
-                                              color: Colors.white,
-                                              child:  Text('Reject',
-                                                style: TextStyle(
-                                                    color: Colors.red,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15
-                                                ),
-                                              ),
-                                              onPressed: () => _memberApproval(false,pendingApprovals[index]["_id"]),
-                                            ),
-                                          ],
-                                        ),
-                                        Text("${pendingApprovals[index]["ContactNo"]}",
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Pending Approvals"),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/HomeScreen', (route) => false);            }),
+      ),
+      body: isLoading ? Center(
+        child: CircularProgressIndicator(),
+      ) : ListView.builder(
+          itemCount: pendingApprovals.length,
+          itemBuilder: (BuildContext ctxt, int index) {
+            return Padding(
+              padding: const EdgeInsets.only(left: 10.0, right: 10, top: 5),
+              child: new Container(
+                color: Colors.white,
+                child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Padding(
+                                  padding:
+                                  const EdgeInsets.only(left: 8.0, bottom: 6.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text("${pendingApprovals[index]["Name"]}",
                                           style: TextStyle(
                                               fontSize: 15,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.purple
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.grey[700])),
+                                      Row(
+                                        children: <Widget>[
+                                          Text("${pendingApprovals[index]["WingData"][0]["wingName"]}" + " - "),
+                                          Text("${pendingApprovals[index]["FlatData"][0]["flatNo"]}"),
+                                          SizedBox(
+                                            width: 80,
                                           ),
-                                        )
+                                          RaisedButton(
+                                            color: Colors.white,
+                                            child:  Text('Approve',
+                                              style: TextStyle(
+                                                  color: Colors.green,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15,
+                                              ),
+                                            ),
+                                            onPressed: () => _memberApproval(true,pendingApprovals[index]["_id"],
+                                                pendingApprovals[index]["society"]["wingId"],
+                                              pendingApprovals[index]["society"]["flatId"],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          RaisedButton(
+                                            color: Colors.white,
+                                            child:  Text('Reject',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15
+                                              ),
+                                            ),
+                                            onPressed: () => _memberApproval(false,pendingApprovals[index]["_id"],
+                                              pendingApprovals[index]["society"]["wingId"],
+                                              pendingApprovals[index]["society"]["flatId"],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Text("${pendingApprovals[index]["ContactNo"]}",
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.purple
+                                        ),
+                                      )
 
-                                      ],
-                                    ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
-                      ),
-                ),
-              );
-            }),
+                              ),
+                            ],
+                          ),
+                        ],
+                    ),
+              ),
+            );
+          }),
 
-      ),
     );
   }
 }

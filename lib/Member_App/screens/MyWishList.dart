@@ -37,47 +37,6 @@ class _MyWishListState extends State<MyWishList> {
             color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
   }
 
-
-
-  _getWishList() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        String id = preferences.getString(cnst.Session.Member_Id);
-        Future res = Services.GetWishListData(id);
-        setState(() {
-          isLoading = true;
-        });
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              WishList = data;
-              isLoading = false;
-            });
-            print("Helo=> " + WishList.toString());
-            print("Helo=> " + WishList.length.toString());
-          } else {
-            setState(() {
-              WishList = [];
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on GetAd Data Call $e");
-          showMsg("$e");
-        });
-      } else {
-        showMsg("Something went Wrong!");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
-  }
-
   showMsg(String msg, {String title = 'MYJINI'}) {
     showDialog(
       context: context,
@@ -126,8 +85,6 @@ class _MyWishListState extends State<MyWishList> {
                               return SingleChildScrollView(
                                   child: MyWishListComponent(WishList[index],(){
                                     setState(() {
-                                      _getWishList();
-                                     // WishList.removeAt(index);
                                     });
                                   }));
                             }),

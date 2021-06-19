@@ -47,49 +47,6 @@ class updateFamilyMemberFormState extends State<updateFamilyMemberForm> {
   TextEditingController txtname = new TextEditingController();
   TextEditingController txtmobile = new TextEditingController();
 
-  _UpdateFamilyMember() async {
-    if (txtname.text != "" && txtmobile.text != "") {
-      if (Relation != null) {
-        try {
-          final result = await InternetAddress.lookup('google.com');
-          if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-            var data = {
-              'MemberId': FamilyMemberId,
-              'Name': txtname.text.trim(),
-              'ContactNo': txtmobile.text.trim(),
-              'Gender': Gender,
-              'Relation': Relation,
-            };
-            // pr.show();
-            Services.UpdateFamilyMember(data).then((data) async {
-              // pr.hide();
-              if (data.Data != "0" && data.IsSuccess == true) {
-                showHHMsg("Update Successfully", "");
-                widget.onUpdate();
-              } else {
-                showHHMsg("Try Again", "");
-              }
-            }, onError: (e) {
-              // pr.hide();
-              showHHMsg("Try Again.", "");
-            });
-          } else {
-            // pr.hide();
-            showHHMsg("No Internet Connection.", "");
-          }
-        } on SocketException catch (_) {
-          showHHMsg("No Internet Connection.", "");
-        }
-      } else {
-        Fluttertoast.showToast(
-            msg: "Please Select Relation", toastLength: Toast.LENGTH_LONG);
-      }
-    } else {
-      Fluttertoast.showToast(
-          msg: "Please fill all Fields", toastLength: Toast.LENGTH_LONG);
-    }
-  }
-
   showHHMsg(String title, String msg) {
     showDialog(
       context: context,
@@ -319,7 +276,6 @@ class updateFamilyMemberFormState extends State<updateFamilyMemberForm> {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w600)),
                     onPressed: () {
-                      _UpdateFamilyMember(); // ask monil to make updatefamilymemberservice 14 - number
                     },
                   ),
                 ),

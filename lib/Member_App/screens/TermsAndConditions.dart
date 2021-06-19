@@ -14,41 +14,6 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
   List _termsAndConditionData = [];
   bool isLoading = false;
 
-  @override
-  void initState() {
-    GetTermsandCondition();
-  }
-
-  GetTermsandCondition() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        String SocietyId = prefs.getString(constant.Session.SocietyId);
-        Services.GetTermsAndCondition(SocietyId).then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              _termsAndConditionData = data;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
-  }
-
   showHHMsg(String title, String msg) {
     showDialog(
       context: context,

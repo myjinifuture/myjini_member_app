@@ -288,7 +288,7 @@ class _BalanceSheetState extends State<BalanceSheet> {
                       ],
                     ),
                   )
-                : NoDataComponent(),
+                : Center(child: Text('No Data Found'),),
       ),
     );
   }

@@ -44,41 +44,6 @@ class _GlobalMemberComponentState extends State<GlobalMemberComponent> {
   bool isLoading = false;
   String Data = "";
 
-  GetVcard() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.GetVcardofMember(widget.MemberData["Id"].toString()).then(
-            (data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null) {
-            setState(() {
-              Data = data;
-            });
-            shareFile('${Data}');
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
-  }
-
   showHHMsg(String title, String msg) {
     showDialog(
       context: context,
@@ -224,22 +189,22 @@ class _GlobalMemberComponentState extends State<GlobalMemberComponent> {
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: Colors.grey[700])),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.business_center,
-                        color: Colors.grey[400],
-                        size: 15,
-                      ),
-                      Text(
-                        "Business",
-                        style: TextStyle(
-                            fontSize: 11,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.grey[400]),
-                      ),
-                    ],
-                  )
+                  // Row(
+                  //   children: <Widget>[
+                  //     Icon(
+                  //       Icons.business_center,
+                  //       color: Colors.grey[400],
+                  //       size: 15,
+                  //     ),
+                  //     Text(
+                  //       "Business",
+                  //       style: TextStyle(
+                  //           fontSize: 11,
+                  //           fontStyle: FontStyle.italic,
+                  //           color: Colors.grey[400]),
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
               Column(
@@ -259,27 +224,28 @@ class _GlobalMemberComponentState extends State<GlobalMemberComponent> {
                   //     : Container(
                   //         child: Text("No Vehicle Added"),
                   //       ),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.directions_bike,
-                        color: Colors.grey[400],
-                        size: 15,
-                      ),
-                      Text(
-                        "Vehicle",
-                        style: TextStyle(
-                            fontSize: 11,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.grey[400]),
-                      ),
-                    ],
-                  )
+                  // Row(
+                  //   children: <Widget>[
+                  //     Icon(
+                  //       Icons.directions_bike,
+                  //       color: Colors.grey[400],
+                  //       size: 15,
+                  //     ),
+                  //     Text(
+                  //       "Vehicle",
+                  //       style: TextStyle(
+                  //           fontSize: 11,
+                  //           fontStyle: FontStyle.italic,
+                  //           color: Colors.grey[400]),
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ],
           ),
         ),
+/*
         Container(
           width: MediaQuery.of(context).size.width - 10,
           decoration: BoxDecoration(
@@ -290,13 +256,15 @@ class _GlobalMemberComponentState extends State<GlobalMemberComponent> {
             children: [
               GestureDetector(
                 onTap: () {
-                  /*!widget.MemberData["IsPrivate"] == true
+                  */
+/*!widget.MemberData["IsPrivate"] == true
                               ? Fluttertoast.showToast(
                             msg: "Profile is Private",
                             backgroundColor: Colors.red,
                             textColor: Colors.white,
                           )
-                              :*/
+                              :*//*
+
 // launch("tel:${widget.MemberData["ContactNo"]}");
                   callingToMemberFromWatchmen("VideoCalling");
                 },
@@ -311,13 +279,15 @@ class _GlobalMemberComponentState extends State<GlobalMemberComponent> {
               ),
               GestureDetector(
                 onTap: () {
-                  /*!widget.MemberData["IsPrivate"] == true
+                  */
+/*!widget.MemberData["IsPrivate"] == true
                               ? Fluttertoast.showToast(
                             msg: "Profile is Private",
                             backgroundColor: Colors.red,
                             textColor: Colors.white,
                           )
-                              :*/
+                              :*//*
+
 // launch("tel:${widget.MemberData["ContactNo"]}");
                   callingToMemberFromWatchmen("VoiceCall");
                 },
@@ -330,6 +300,7 @@ class _GlobalMemberComponentState extends State<GlobalMemberComponent> {
             ],
           ),
         )
+*/
       ],
     );
   }

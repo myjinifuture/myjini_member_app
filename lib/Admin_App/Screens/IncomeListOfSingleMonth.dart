@@ -405,7 +405,7 @@ class _IncomeListOfSingleMonthState extends State<IncomeListOfSingleMonth> {
                     )
                   ],
                 )
-              : NoDataComponent(),
+              : Center(child: Text('No Data Found'),),
     );
   }
 }

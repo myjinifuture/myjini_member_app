@@ -263,7 +263,7 @@ class getEmergencyNumberSocietyWiseState
                         ),
                       );
                     }))
-            : NoDataComponent(),
+            : Center(child: Text("No Data Found"),),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

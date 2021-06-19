@@ -40,92 +40,7 @@ class _VisitorOtpScreenState extends State<VisitorOtpScreen> {
   }
 
   _getLocaldata() async {
-    _sendVerificationCode(widget.MobileNo);
     txtupdatemobile.text = widget.MobileNo;
-  }
-
-  _addVisitorEntry() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var data = {
-          "Id": 0,
-          "Name": widget.Name,
-          "ContactNo": flag == true ? txtupdatemobile.text : widget.MobileNo,
-          "WingId": widget.WingId,
-          "FlatNo": widget.FlatNo,
-          "SocietyId": widget.societyId
-        };
-
-        print("Add Scanned Data = ${data}");
-        Services.AddVisitorEntry(data).then((data) async {
-          if (data.Data != "0" && data.IsSuccess == true) {
-            /*  Fluttertoast.showToast(
-                msg: "Visitor Added Successfully",
-                textColor: Colors.black,
-                gravity: ToastGravity.TOP,
-                backgroundColor: Colors.green,
-                toastLength: Toast.LENGTH_LONG);*/
-
-            Navigator.pushReplacementNamed(context, "/VisitorSuccess");
-
-            /*  Navigator.pushNamedAndRemoveUntil(
-                context, "/Dashboard", (Route<dynamic> route) => false);*/
-          } else {
-            showMsgg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
-          showMsgg("Try Again.");
-        });
-      } else
-        showMsgg("No Internet Connection.");
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsgg("No Internet Connection.");
-    }
-  }
-
-  _sendVerificationCode(String Mobile) async {
-    try {
-      var rnd = new Random();
-      setState(() {
-        rndnumber = "";
-      });
-      for (var i = 0; i < 4; i++) {
-        rndnumber = rndnumber + rnd.nextInt(9).toString();
-      }
-      print(rndnumber);
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-        Services.SendVerficationCode(Mobile, rndnumber).then((data) async {
-          if (data.Data == "ok" && data.IsSuccess == true) {
-            setState(() {
-              isLoading = false;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-            showMsgg("Try Again.");
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on otp $e");
-          showMsgg("Try Again.");
-          setState(() {});
-        });
-      } else {
-        showMsgg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      showMsgg("No Internet Connection.");
-    }
   }
 
   showMsgg(String msg, {String title = 'MYJINI'}) {
@@ -266,8 +181,6 @@ class _VisitorOtpScreenState extends State<VisitorOtpScreen> {
                                                 });
                                                 updatemobile =
                                                     txtupdatemobile.text;
-                                                _sendVerificationCode(
-                                                    updatemobile);
                                                 Navigator.pop(context);
 
                                                 // Navigator.pop(context);
@@ -341,11 +254,6 @@ class _VisitorOtpScreenState extends State<VisitorOtpScreen> {
                             style: TextStyle(fontSize: 16),
                           ),
                           GestureDetector(
-                            onTap: () {
-                              flag == true
-                                  ? _sendVerificationCode(txtupdatemobile.text)
-                                  : _sendVerificationCode(widget.MobileNo);
-                            },
                             child: Text(" Resend",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w900,
@@ -382,7 +290,6 @@ class _VisitorOtpScreenState extends State<VisitorOtpScreen> {
                         onTap: () {
                           if (controller.text == rndnumber) {
                             // Navigator.pushNamed(context, "/VisitorSuccess");
-                            _addVisitorEntry();
                           } else
                             Fluttertoast.showToast(
                                 msg: "Wrong OTP..",

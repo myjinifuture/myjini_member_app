@@ -206,7 +206,7 @@ class _ExpenseByMonthState extends State<ExpenseByMonth> {
                           ),
                         ),
                       )
-                    : NoDataComponent(),
+                    : Center(child: Text('No Data Found'),),
                 _expenseData.length > 0
                     ? Container(
                         height: 50,

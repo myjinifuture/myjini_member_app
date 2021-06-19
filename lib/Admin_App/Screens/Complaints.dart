@@ -117,51 +117,46 @@ class _ComplaintsState extends State<Complaints> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/Dashboard");
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Complaints",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/Dashboard");
-            },
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Complaints",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        body: Container(
-          color: Colors.grey[200],
-          child: isLoading
-              ? LoadingComponent()
-              : _complaintData.length > 0
-                  ? AnimationLimiter(
-                      child: ListView.builder(
-                        itemCount: _complaintData.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ComplaintComponent(
-                              _complaintData[index], index, (type) {
-                            if (type == "false")
-                              _getComplaints();
-                            else if (type == "loading")
-                              setState(() {
-                                isLoading = true;
-                              });
-                          });
-                        },
-                      ),
-                    )
-                  : NoDataComponent(),
-        ),
-
+        // leading: IconButton(
+        //   icon: Icon(
+        //     Icons.arrow_back,
+        //     color: Colors.white,
+        //   ),
+        //   onPressed: () {
+        //     Navigator.pushReplacementNamed(context, "/Dashboard");
+        //   },
+        // ),
       ),
+      body: Container(
+        color: Colors.grey[200],
+        child: isLoading
+            ? LoadingComponent()
+            : _complaintData.length > 0
+                ? AnimationLimiter(
+                    child: ListView.builder(
+                      itemCount: _complaintData.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ComplaintComponent(
+                            _complaintData[index], index, (type) {
+                          if (type == "false")
+                            _getComplaints();
+                          else if (type == "loading")
+                            setState(() {
+                              isLoading = true;
+                            });
+                        });
+                      },
+                    ),
+                  )
+                : Center(child: Text('No Data Found'),),
+      ),
+
     );
   }
 }

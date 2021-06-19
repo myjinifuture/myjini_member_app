@@ -92,6 +92,7 @@ class _AddEventState extends State<AddEvent> {
   }
 
   List selectedWingId = [];
+  List wingsList = [];
 
   sendWingDetails(List selectedWingId,String eventId) async {
     try {
@@ -137,6 +138,8 @@ class _AddEventState extends State<AddEvent> {
         setState(() {
           isLoading = true;
         });
+        print("selectedWingId");
+        print(selectedWingId);
         var data = {
           "societyId": SocietyId,
           "Title": txtTitle.text,
@@ -148,7 +151,6 @@ class _AddEventState extends State<AddEvent> {
           // "EventType": options[tag],
           "EventType": "Free",
           "adminId" : MemberId,
-
         };
         // FormData formdata = FormData.fromMap(data);
         print("data");
@@ -214,9 +216,14 @@ class _AddEventState extends State<AddEvent> {
           if (data !=null) {
             setState(() {
               for(int i=0;i<data.Data.length;i++){
+                if(data.Data[i]["totalFloor"].toString()!="0"){
+                  wingsList.add(data.Data[i]);
+                }
+              }
+              for(int i=0;i<wingsList.length;i++){
                 wingsNameData.add({
-                  "Name" : data.Data[i]["wingName"],
-                  "Id" : data.Data[i]["_id"],
+                  "Name" : wingsList[i]["wingName"],
+                  "Id" : wingsList[i]["_id"],
                 });
               }
               tag = 0;

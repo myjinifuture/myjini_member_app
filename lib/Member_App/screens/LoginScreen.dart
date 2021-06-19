@@ -17,7 +17,6 @@ import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:smart_society_new/Member_App/screens/HomeScreen.dart';
 import 'package:smart_society_new/Member_App/screens/OtpScreen.dart';
-import 'package:unique_identifier/unique_identifier.dart';
 import '../common/Services.dart';
 import 'OTP.dart';
 
@@ -62,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   String _platformImei = 'Unknown';
-  String uniqueId = "Unknown";
+  String uniqueId = "";
   Future<void> initPlatformState() async {
     String platformImei;
     String idunique;
@@ -76,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
     // } on PlatformException {
     //   platformImei = 'Failed to get platform version.';
     // }
-    String  identifier =await UniqueIdentifier.serial;
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
@@ -84,12 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() {
       _platformImei = platformImei;
-      uniqueId = identifier;
     });
     print("_platformImei");
     print(_platformImei);
-    print("uniqueid");
-    print(identifier);
   }
 
   void getPermissionStatus() async {
@@ -159,8 +154,8 @@ class _LoginScreenState extends State<LoginScreen> {
         constant.Session.SocietyId, logindata[0]["society"]["societyId"].toString());
     await prefs.setString(
         constant.Session.IsVerified, logindata[0]["isVerify"].toString());
-    await prefs.setString(
-        constant.Session.Profile, logindata[0]["Image"].toString());
+    // await prefs.setString(
+    //     constant.Session.Profile, logindata[0]["Image"].toString());
     await prefs.setString(constant.Session.ResidenceType,
         logindata[0]["society"]["ResidenceType"].toString());
 /*    await prefs.setString(
@@ -178,6 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
     await prefs.setString(
         constant.Session.Gender, logindata[0]["Gender"].toString());
     await prefs.setString(constant.Session.DOB, logindata[0]["DOB"].toString());
+    await prefs.setString(constant.Session.societyName, logindata[0]["SocietyData"][0]["Name"].toString());
     await prefs.setString(
         constant.Session.Address, logindata[0]["SocietyData"][0]["Address"].toString());
     await prefs.setString(
@@ -203,42 +199,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   }
 
-  updateMemberDetails(String societyId,String name,String mobileNo,String flatNo,String wingId,String flatType,String memberId,String fcmToken) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // setState(() {
-        //   isLoading = true;
-        // });
-        // String name, mobile;
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        // name = prefs.getString(constant.Session.Name);
-        // mobile = prefs.getString(constant.Session.session_login);
-        Services.updateMemberDetails(
-            societyId, name, mobileNo, flatNo, wingId,flatType,memberId,fcmToken:fcmToken)
-            .then((data) async {
-          // setState(() {
-          //   isLoading = false;
-          // });
-          if (data == "1") {
-            // showHHMsg("Data Updated Successfully", "");
-          } else {
-            // setState(() {
-            //   isLoading = false;
-            // });MemberDetailsUpdate url
-          }
-        }, onError: (e) {
-          // setState(() {
-          //   isLoading = false;
-          // });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
-  }
-
   _checkLogin({bool isMemberRegistered}) async {
     print("value of multiple society");
     print(multipleSociety);
@@ -251,20 +211,20 @@ class _LoginScreenState extends State<LoginScreen> {
           // pr.show();
           var data;
           multipleSociety == true ?
-     data = {
+          data = {
             "MobileNo" : _MobileNumber.text,
             // "fcmToken" : fcmToken,
             "DeviceType" : Platform.isAndroid ? "Android" : "IOS",
-       "playerId" : widget.playerId.toString(),
-       "IMEI" : uniqueId,
-       "societyId" : selectedSocietyId,
-          }:data = {
-    "MobileNo" : _MobileNumber.text,
-    // "fcmToken" : fcmToken,
             "playerId" : widget.playerId.toString(),
             "IMEI" : uniqueId,
-    "DeviceType" : Platform.isAndroid ? "Android" : "IOS",
-    };
+            "societyId" : selectedSocietyId,
+          }:data = {
+            "MobileNo" : _MobileNumber.text,
+            // "fcmToken" : fcmToken,
+            "playerId" : widget.playerId.toString(),
+            "IMEI" : uniqueId,
+            "DeviceType" : Platform.isAndroid ? "Android" : "IOS",
+          };
           print("data");
           print(data);
           Services.responseHandler(apiName: "member/login",body: data).then((data) async {
@@ -275,47 +235,48 @@ class _LoginScreenState extends State<LoginScreen> {
               setState(() {
                 logindata = data.Data;
               });
-                if(logindata[0]["society"]["isVerify"].toString() == "true") {
-                  await localdata();
-                  print("isMemberRegistered");
-                  print(isMemberRegistered);
-                  if(isMemberRegistered!=null){
-                    _getMemberSociety(_MobileNumber.text);
-                  }
-                  else {
-                    // await mallLocalData();
-                    // Navigator.pushAndRemoveUntil(context,
-                    //     SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (
-                              context) =>
-                              OTP(
-                                mobileNo: _MobileNumber
-                                    .text
-                                    .toString(),
-                                onSuccess: () {
-                                  Navigator.pushAndRemoveUntil(context,
-                                      SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);                                },
-                              ),
-                        ));
-                  }
-                  // _MallLoginApi();
+              if(logindata[0]["society"]["isVerify"].toString() == "true") {
+                print("isMemberRegistered");
+                print(isMemberRegistered);
+                if(isMemberRegistered!=null){
+                  _getMemberSociety(_MobileNumber.text);
                 }
-                else{
-                  setState(() {
-                    isMemberRegistered = false;
-                  });
-                  Fluttertoast.showToast(
-                      msg: "Please wait for admin approval",
-                      toastLength: Toast.LENGTH_LONG,
-                      textColor: Colors.white,
-                      gravity: ToastGravity.TOP,
-                      backgroundColor: Colors.red);
+                else {
+                  // await mallLocalData();
+                  // await localdata();
+                  // Navigator.pushAndRemoveUntil(context,
+                  //     SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (
+                            context) =>
+                            OTP(
+                              mobileNo: _MobileNumber
+                                  .text
+                                  .toString(),
+                              onSuccess: () async {
+                                await localdata();
+                                Navigator.pushAndRemoveUntil(context,
+                                    SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);                                },
+                            ),
+                      ));
                 }
-                // Navigator.of(context).pushNamedAndRemoveUntil(
-                //     '/HomeScreen', (Route<dynamic> route) => false);
+                // _MallLoginApi();
+              }
+              else{
+                setState(() {
+                  isMemberRegistered = false;
+                });
+                Fluttertoast.showToast(
+                    msg: "Please wait for admin approval",
+                    toastLength: Toast.LENGTH_LONG,
+                    textColor: Colors.white,
+                    gravity: ToastGravity.TOP,
+                    backgroundColor: Colors.red);
+              }
+              // Navigator.of(context).pushNamedAndRemoveUntil(
+              //     '/HomeScreen', (Route<dynamic> route) => false);
             } else {
               setState(() {
                 isMemberRegistered = false;
@@ -463,30 +424,30 @@ class _LoginScreenState extends State<LoginScreen> {
               print(societyData.length);
 
             });
-           if(data.Data.length > 1){
-             setState(() {
-               multipleSociety = true;
-               isLoading = false;
-             });
-           }
-           else if(data.Data.length == 1){
-             setState(() {
-               isLoading = false;
-               isMemberRegistered = true;
-               isButtonPressed = true;
-             });
-             _checkLogin();
-           }
+            if(data.Data.length > 1){
+              setState(() {
+                multipleSociety = true;
+                isLoading = false;
+              });
+            }
+            else if(data.Data.length == 1){
+              setState(() {
+                isLoading = false;
+                isMemberRegistered = true;
+                isButtonPressed = true;
+              });
+              _checkLogin();
+            }
           } else {
             setState(() {
               isMemberRegistered = false;
               isLoading = false;
               isMobileNumberRegistered = false;
               Fluttertoast.showToast(
-                  msg: "This mobile number is not registered",
-                  backgroundColor: Colors.red,
-                  gravity: ToastGravity.TOP,
-                  textColor: Colors.white,
+                msg: "This mobile number is not registered",
+                backgroundColor: Colors.red,
+                gravity: ToastGravity.TOP,
+                textColor: Colors.white,
               );
             },
             );
@@ -521,48 +482,44 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Container(
                 color: Colors.white,
                 height: MediaQuery.of(context).size.height,
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 150.0),
-                    child: Container(
-                      child: Center(
-                        child: Stack(
-                          children: <Widget>[
-                            Container(
-                              height: MediaQuery.of(context).size.height*0.26,
-                              width: MediaQuery.of(context).size.width,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Image.asset('images/applogo.png',
-                                            width: 90, height: 90),
-                                      ],
-                                    ),
-                                  ),
-                                  Text("Welcome User",
-                                      style: TextStyle(
-                                          fontSize: 23,
-                                          fontWeight: FontWeight.w600,
-                                          color: constant.appPrimaryMaterialColor)),
-                                  Text("Login with Mobile Number to Continue",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: constant.appPrimaryMaterialColor)),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 180.0),
-                              child: Container(
-                                child: Column(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 150.0),
+                  child: Container(
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          height: MediaQuery.of(context).size.height*0.26,
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
+                                    Image.asset('images/applogo.png',
+                                        width: 90, height: 90),
+                                  ],
+                                ),
+                              ),
+                              Text("Welcome User",
+                                  style: TextStyle(
+                                      fontSize: 23,
+                                      fontWeight: FontWeight.w600,
+                                      color: constant.appPrimaryMaterialColor)),
+                              Text("Login with Mobile Number to Continue",
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: constant.appPrimaryMaterialColor)),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
 //                  Text(
 //                    "Welcome to,\nMy Genie",
 //                    style: TextStyle(
@@ -570,235 +527,233 @@ class _LoginScreenState extends State<LoginScreen> {
 //                        fontSize: 24,
 //                        color: Color.fromRGBO(81, 92, 111, 1)),
 //                  ),
+                              SizedBox(height: MediaQuery.of(context).size.height*0.3,),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 10.0, right: 10.0),
+                                child: Column(
+                                  children: <Widget>[
                                     Padding(
                                       padding: const EdgeInsets.only(
-                                          top: 20.0, left: 10.0, right: 10.0),
+                                        left: 4.0, right: 8.0, ),
                                       child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 4.0, right: 8.0, top: 6.0),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                SizedBox(
-                                                  height: 50,
-                                                  child: Padding(
-                                                    padding:
-                                                    const EdgeInsets.only(left: 8.0),
-                                                    child: TextFormField(
-                                                      textInputAction:
-                                                      TextInputAction.done,
-                                                      controller: _MobileNumber,
-                                                      maxLength: 10,
-                                                      keyboardType: TextInputType.number,
-                                                      decoration: InputDecoration(
-                                                          counterText: "",
-                                                          focusedBorder: OutlineInputBorder(
-                                                              borderSide: BorderSide(
-                                                                  color: constant.appPrimaryMaterialColor[600],
-                                                              ),
-                                                          ),
-                                                          border: new OutlineInputBorder(
-                                                            borderRadius:
-                                                            new BorderRadius.circular(
-                                                                5.0),
-                                                            borderSide: new BorderSide(),
-                                                          ),
-                                                          hintText: "Your Mobile Number",
-                                                          hintStyle: TextStyle(
-                                                              fontSize: 13,
-                                                          ),
-                                                      ),
-                                                      onChanged: (String val){
-                                                        if(val.length==10){
-                                                          societyNames.clear();
-                                                          selSociety = null;
-                                                          _handleSendNotification();
-                                                          // _getMemberSociety(_MobileNumber.text);
-                                                          _checkLogin(isMemberRegistered:isMemberRegistered);
-                                                        }
-                                                        else{
-                                                          setState(() {
-                                                            multipleSociety = false;
-                                                              isButtonPressed = false;
-                                                          });
-                                                        }
-                                                      },
+                                          SizedBox(
+                                            height: 50,
+                                            child: Padding(
+                                              padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                              child: TextFormField(
+                                                textInputAction:
+                                                TextInputAction.done,
+                                                controller: _MobileNumber,
+                                                maxLength: 10,
+                                                keyboardType: TextInputType.number,
+                                                decoration: InputDecoration(
+                                                  counterText: "",
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: constant.appPrimaryMaterialColor[600],
                                                     ),
+                                                  ),
+                                                  border: new OutlineInputBorder(
+                                                    borderRadius:
+                                                    new BorderRadius.circular(
+                                                        5.0),
+                                                    borderSide: new BorderSide(),
+                                                  ),
+                                                  hintText: "Your Mobile Number",
+                                                  hintStyle: TextStyle(
+                                                    fontSize: 13,
                                                   ),
                                                 ),
-                                                multipleSociety ? Padding(
-                                                  padding: const EdgeInsets.only(top: 8.0, right: 2,left: 10),
-                                                  child: SizedBox(
-                                                    height: 50,
-                                                    child: DropdownButton(
-                                                      hint: Text('Select Your Society'),
-                                                      value: selSociety,
-                                                      style: TextStyle(
-                                                          fontSize: 17,
-                                                          color: Colors.black,
-                                                          fontWeight: FontWeight.w600,
-                                                      ),
-                                                      onChanged: (newValue) {
-                                                        print("soceityename");
-                                                        print(societyNames);
-                                                        print(newValue);
-                                                        print("societyData");
-                                                        print(societyData);
-                                                        print("societyNames");
-                                                        print(societyNames);
-
-                                                        for(int i=0;i<societyData.length;i++){
-                                                          // for(int j=0;j<societyNames.length;j++) {
-                                                            if (societyData[i]["Name"].toString() ==
-                                                                newValue.toString()) {
-                                                              selectedSocietyId =
-                                                                  societyData[i]["_id"]
-                                                                      .toString();
-                                                            }
-                                                          // }
-                                                        }
-                                                        print("selectedSocietyId");
-                                                        print(selectedSocietyId);
-                                                        setState(() {
-                                                          selSociety = newValue;
-                                                          isMemberRegistered = true;
-                                                          isButtonPressed = true;
-                                                        });
-                                                        _checkLogin();
-                                                      },
-                                                      isExpanded: true,
-                                                      items: societyNames.map((val) {
-                                                        print(societyNames);
-                                                        if(societyNames.length==1){
-                                                          setState(() {
-                                                            selSociety = societyNames[0];
-                                                          });
-                                                        }
-                                                        return DropdownMenuItem(
-                                                          child: Text(val),
-                                                          value: val,
-                                                        );
-                                                      }).toList(),
-                                                    ),
-                                                  ),
-                                                ):Container(),
-                                              ],
+                                                onChanged: (String val){
+                                                  if(val.length==10){
+                                                    societyNames.clear();
+                                                    selSociety = null;
+                                                    _handleSendNotification();
+                                                    // _getMemberSociety(_MobileNumber.text);
+                                                    _checkLogin(isMemberRegistered:isMemberRegistered);
+                                                  }
+                                                  else{
+                                                    setState(() {
+                                                      multipleSociety = false;
+                                                      isButtonPressed = false;
+                                                    });
+                                                  }
+                                                },
+                                              ),
                                             ),
                                           ),
-                                          // SizedBox(
-                                          //   width: MediaQuery.of(context).size.width,
-                                          //   height: 45,
-                                          //   // child: RaisedButton(
-                                          //   //   shape: RoundedRectangleBorder(
-                                          //   //       borderRadius:
-                                          //   //       BorderRadius.circular(5)),
-                                          //   //   color: constant.appPrimaryMaterialColor[500],
-                                          //   //   textColor: Colors.white,
-                                          //   //   splashColor: Colors.white,
-                                          //   //   child: isButtonPressed ?
-                                          //   //   Center(
-                                          //   //     child: Padding(
-                                          //   //       padding: const EdgeInsets.all(3.0),
-                                          //   //       child: CircularProgressIndicator(
-                                          //   //         valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-                                          //   //         strokeWidth: 5,
-                                          //   //       ),
-                                          //   //     ),
-                                          //   //   ):
-                                          //   //   Text(
-                                          //   //       "Login",
-                                          //   //       style: TextStyle(
-                                          //   //           fontSize: 18,
-                                          //   //           fontWeight: FontWeight.w600,
-                                          //   //       ),
-                                          //   //   ),
-                                          //   //   onPressed: isMemberRegistered ? () {
-                                          //   //     setState(() {
-                                          //   //       isButtonPressed = true;
-                                          //   //     });
-                                          //   //       if (isMobileNumberRegistered) {
-                                          //   //         if (selSociety == null &&
-                                          //   //             multipleSociety ==
-                                          //   //                 true) {
-                                          //   //           Fluttertoast.showToast(
-                                          //   //               msg: "Please Select Society",
-                                          //   //               backgroundColor: Colors
-                                          //   //                   .red,
-                                          //   //               gravity: ToastGravity
-                                          //   //                   .BOTTOM,
-                                          //   //               textColor: Colors
-                                          //   //                   .white);
-                                          //   //         }
-                                          //   //         else if (
-                                          //   //         _MobileNumber.text !=
-                                          //   //             '' && isMemberRegistered) {
-                                          //   //           print("called");
-                                          //   //           // _checkLogin();
-                                          //   //           // Navigator.push(
-                                          //   //           //     context,
-                                          //   //           //     MaterialPageRoute(
-                                          //   //           //       builder: (
-                                          //   //           //           context) =>
-                                          //   //           //           OTP(
-                                          //   //           //             mobileNo: _MobileNumber
-                                          //   //           //                 .text
-                                          //   //           //                 .toString(),
-                                          //   //           //             onSuccess: () {
-                                          //   //           //               _checkLogin();
-                                          //   //           //             },
-                                          //   //           //           ),
-                                          //   //           //     ));
-                                          //   //         }
-                                          //   //         else {
-                                          //   //           Fluttertoast.showToast(
-                                          //   //             msg: "Please Enter Mobile Number",
-                                          //   //             backgroundColor: Colors
-                                          //   //                 .red,
-                                          //   //             gravity: ToastGravity
-                                          //   //                 .BOTTOM,
-                                          //   //             textColor: Colors
-                                          //   //                 .white,
-                                          //   //           );
-                                          //   //         }
-                                          //   //       }
-                                          //   //   }:null,
-                                          //   // ),
-                                          // ),
+                                          multipleSociety ? Padding(
+                                            padding: const EdgeInsets.only(top: 8.0, right: 2,left: 10),
+                                            child: SizedBox(
+                                              height: 50,
+                                              child: DropdownButton(
+                                                hint: Text('Select Your Society'),
+                                                value: selSociety,
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                                onChanged: (newValue) {
+                                                  print("soceityename");
+                                                  print(societyNames);
+                                                  print(newValue);
+                                                  print("societyData");
+                                                  print(societyData);
+                                                  print("societyNames");
+                                                  print(societyNames);
+
+                                                  for(int i=0;i<societyData.length;i++){
+                                                    // for(int j=0;j<societyNames.length;j++) {
+                                                    if (societyData[i]["Name"].toString() ==
+                                                        newValue.toString()) {
+                                                      selectedSocietyId =
+                                                          societyData[i]["_id"]
+                                                              .toString();
+                                                    }
+                                                    // }
+                                                  }
+                                                  print("selectedSocietyId");
+                                                  print(selectedSocietyId);
+                                                  setState(() {
+                                                    selSociety = newValue;
+                                                    isMemberRegistered = true;
+                                                    isButtonPressed = true;
+                                                  });
+                                                  _checkLogin();
+                                                },
+                                                isExpanded: true,
+                                                items: societyNames.map((val) {
+                                                  print(societyNames);
+                                                  if(societyNames.length==1){
+                                                    setState(() {
+                                                      selSociety = societyNames[0];
+                                                    });
+                                                  }
+                                                  return DropdownMenuItem(
+                                                    child: Text(val),
+                                                    value: val,
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            ),
+                                          ):Container(),
                                         ],
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top:8.0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text("Don't Have an Account?"),
-                                          GestureDetector(
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    context, '/RegisterScreen');
-                                              },
-                                              child: Text("Register",
-                                                  style: TextStyle(
-                                                      color: constant
-                                                          .appPrimaryMaterialColor[700],
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w600,
-                                                  ),
-                                              ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
+                                    // SizedBox(
+                                    //   width: MediaQuery.of(context).size.width,
+                                    //   height: 45,
+                                    //   // child: RaisedButton(
+                                    //   //   shape: RoundedRectangleBorder(
+                                    //   //       borderRadius:
+                                    //   //       BorderRadius.circular(5)),
+                                    //   //   color: constant.appPrimaryMaterialColor[500],
+                                    //   //   textColor: Colors.white,
+                                    //   //   splashColor: Colors.white,
+                                    //   //   child: isButtonPressed ?
+                                    //   //   Center(
+                                    //   //     child: Padding(
+                                    //   //       padding: const EdgeInsets.all(3.0),
+                                    //   //       child: CircularProgressIndicator(
+                                    //   //         valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                                    //   //         strokeWidth: 5,
+                                    //   //       ),
+                                    //   //     ),
+                                    //   //   ):
+                                    //   //   Text(
+                                    //   //       "Login",
+                                    //   //       style: TextStyle(
+                                    //   //           fontSize: 18,
+                                    //   //           fontWeight: FontWeight.w600,
+                                    //   //       ),
+                                    //   //   ),
+                                    //   //   onPressed: isMemberRegistered ? () {
+                                    //   //     setState(() {
+                                    //   //       isButtonPressed = true;
+                                    //   //     });
+                                    //   //       if (isMobileNumberRegistered) {
+                                    //   //         if (selSociety == null &&
+                                    //   //             multipleSociety ==
+                                    //   //                 true) {
+                                    //   //           Fluttertoast.showToast(
+                                    //   //               msg: "Please Select Society",
+                                    //   //               backgroundColor: Colors
+                                    //   //                   .red,
+                                    //   //               gravity: ToastGravity
+                                    //   //                   .BOTTOM,
+                                    //   //               textColor: Colors
+                                    //   //                   .white);
+                                    //   //         }
+                                    //   //         else if (
+                                    //   //         _MobileNumber.text !=
+                                    //   //             '' && isMemberRegistered) {
+                                    //   //           print("called");
+                                    //   //           // _checkLogin();
+                                    //   //           // Navigator.push(
+                                    //   //           //     context,
+                                    //   //           //     MaterialPageRoute(
+                                    //   //           //       builder: (
+                                    //   //           //           context) =>
+                                    //   //           //           OTP(
+                                    //   //           //             mobileNo: _MobileNumber
+                                    //   //           //                 .text
+                                    //   //           //                 .toString(),
+                                    //   //           //             onSuccess: () {
+                                    //   //           //               _checkLogin();
+                                    //   //           //             },
+                                    //   //           //           ),
+                                    //   //           //     ));
+                                    //   //         }
+                                    //   //         else {
+                                    //   //           Fluttertoast.showToast(
+                                    //   //             msg: "Please Enter Mobile Number",
+                                    //   //             backgroundColor: Colors
+                                    //   //                 .red,
+                                    //   //             gravity: ToastGravity
+                                    //   //                 .BOTTOM,
+                                    //   //             textColor: Colors
+                                    //   //                 .white,
+                                    //   //           );
+                                    //   //         }
+                                    //   //       }
+                                    //   //   }:null,
+                                    //   // ),
+                                    // ),
                                   ],
                                 ),
                               ),
-                            ),
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.only(top:8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text("Don't Have an Account?"),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, '/RegisterScreen');
+                                      },
+                                      child: Text("Register",
+                                        style: TextStyle(
+                                          color: constant
+                                              .appPrimaryMaterialColor[700],
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),

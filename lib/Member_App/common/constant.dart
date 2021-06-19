@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 const String API_URL = "http://mywatcher.itfuturz.com/api/AppAPI/";
  String NODE_API = "";
-const String Image_Url = "http://13.127.1.141/";
+ String Image_Url = "";
 const String Image_Url1 = "http://mywatcher.itfuturz.com";
 const Inr_Rupee = "₹";
 const String Access_Token = "Mjdjhcbj43jkmsijkmjJKJKJoijlkmlkjo-HfdkvjDJjMoikjnNJn-JNFhukmk";
@@ -52,6 +52,7 @@ class Session {
   static const String IsVerified = "is_verified";
   static const String forFirstTime = "forFirstTime";
   static const String mapLink = "mapLink";
+  static const String societyName = "societyName";
 }
 
 Map<int, Color> appprimarycolors = {

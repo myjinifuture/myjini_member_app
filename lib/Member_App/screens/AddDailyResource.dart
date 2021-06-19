@@ -10,7 +10,7 @@ import 'package:smart_society_new/Member_App/common/Classlist.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
 import 'package:smart_society_new/Member_App/component/masktext.dart';
-
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'OTP.dart';
 
 
@@ -1183,7 +1183,7 @@ class _AddDailyResourceState extends State<AddDailyResource> {
   ProgressDialog pr;
   int wingflatcount = 0;
   File _image;
-  String Gender;
+  String Gender="";
   String _FlateNo;
 
   TextEditingController txtName = TextEditingController();
@@ -1218,6 +1218,9 @@ class _AddDailyResourceState extends State<AddDailyResource> {
   List allFlatList = [];
   List allWingList = [];
   int counter = 1;
+  String _path;
+  String _fileName;
+
 
   @override
   void initState() {
@@ -1274,9 +1277,14 @@ class _AddDailyResourceState extends State<AddDailyResource> {
         Services.responseHandler(apiName: "admin/getAllWingOfSociety",body: data).then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
-              wingListCopy = data.Data;
+              for(int i=0;i<data.Data.length;i++){
+                if(data.Data[i]["totalFloor"].toString()!="0"){
+                  wingclasslist.add(data.Data[i]);
+                }
+              }
+              wingListCopy = wingclasslist;
               _WingLoading = false;
-              wingclasslist  = data.Data;
+              // wingclasslist  = data.Data;
               // for(int i=0;i<data.Data.length;i++){
               //   wingclasslist.add(data.Data[i]["wingName"]);
               // }
@@ -1352,8 +1360,8 @@ class _AddDailyResourceState extends State<AddDailyResource> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();;
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
                 widget.onAddDailyResource();
               },
             ),
@@ -1376,7 +1384,7 @@ class _AddDailyResourceState extends State<AddDailyResource> {
           "societyId" : SocietyId,
           "wingId" : WingId
         };
-        Services.responseHandler(apiName: "admin/getFlatsOfSociety",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/getFlatsOfSociety_v1",body: data).then((data) async {
           setState(() {
             isLoading = false;
           });
@@ -1481,7 +1489,8 @@ class _AddDailyResourceState extends State<AddDailyResource> {
     "flatId" : ""
   }];
   _SaveStaff() async {
-    if (txtName.text != "") {
+    print(Gender);
+    if (txtName.text != "" && txtContactNo.text!="" && Gender!="" && selectedStaff!=null) {
       try {
         final result = await InternetAddress.lookup('google.com');
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -1494,6 +1503,26 @@ class _AddDailyResourceState extends State<AddDailyResource> {
               break;
             }
           }
+          String filename = "";
+          String filePath = "";
+          File compressedFile;
+          if (_image != null) {
+            ImageProperties properties =
+            await FlutterNativeImage.getImageProperties(_image.path);
+
+            compressedFile = await FlutterNativeImage.compressImage(
+              _image.path,
+              quality: 80,
+              targetWidth: 600,
+              targetHeight: (properties.height * 600 / properties.width).round(),
+            );
+
+            filename = _image.path.split('/').last;
+            filePath = compressedFile.path;
+          } else if (_path != null && _path != '') {
+            filePath = _path;
+            filename = _fileName;
+          }
           FormData formData = new FormData.fromMap({
             "Name": txtName.text,
             "ContactNo1": txtContactNo.text,
@@ -1502,7 +1531,10 @@ class _AddDailyResourceState extends State<AddDailyResource> {
             // "wingId" : selectedWingId,
             // "flatId" : finalWingFlatIds[0]["flatId"],
             // "identityProof" : null,
-            "staffImage" : image == null ? "":image,
+            "staffImage" :(filePath != null && filePath != '')
+                ? await MultipartFile.fromFile(filePath,
+                filename: filename.toString())
+                : null,
             "AadharcardNo": adharnumbertxt.text,
             "VoterId": txtvoterId.text,
             "DateOfBirth": SelectedDOB.toString(),
@@ -1525,7 +1557,10 @@ class _AddDailyResourceState extends State<AddDailyResource> {
             // "wingId" : selectedWingId,
             // "flatId" : finalWingFlatIds[0]["flatId"],
             // "identityProof" : null,
-            "staffImage" : image == null ? "":image,
+            "staffImage" : (filePath != null && filePath != '')
+                ? await MultipartFile.fromFile(filePath,
+                filename: filename.toString())
+                : null,
             "AadharcardNo": adharnumbertxt.text,
             "VoterId": txtvoterId.text,
             "DateOfBirth": SelectedDOB.toString(),
@@ -1572,7 +1607,6 @@ class _AddDailyResourceState extends State<AddDailyResource> {
 
   Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
-
     setState(() {
       _image = image;
     });

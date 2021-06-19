@@ -51,8 +51,6 @@ class _VisitorRegisterState extends State<VisitorRegister> {
     // print("kk=> " + widget.list.toString());
     print("kk=> " + widget.societyId.toString());
     // _getdata();
-    _getSocietyName();
-    _getWingsBySocietyId();
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(
         message: "Please Wait",
@@ -67,131 +65,6 @@ class _VisitorRegisterState extends State<VisitorRegister> {
         insetAnimCurve: Curves.easeInOut,
         messageTextStyle: TextStyle(
             color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
-  }
-
-/*  _getdata() async {
-    societyName = widget.list[0]["Name"].toString();
-    print("hh-> " + widget.list[0]["Name"].toString());
-    print("hh-> " + widget.societyId.toString());
-    print("hh-> " + widget.list.toString());
-
-    societyID = widget.societyId.toString();
-
-*/ /*    setState(() {
-      qrData = (societyID != null ? societyID  : '');
-    });*/ /*
-
-
-  }*/
-
-  _getFlatNumber(wingid) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Future res = Services.GetFlatNumber(widget.societyId, wingid);
-        setState(() {
-          isLoading = true;
-        });
-
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              list = data;
-              isLoading = false;
-            });
-            print("GetSocietyName => " + list.toString());
-          } else {
-            setState(() {
-              list = [];
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on GetSocietyName Data Call $e");
-          showMsg("$e");
-        });
-      } else {
-        showMsg("Something went Wrong!");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
-  }
-
-  _getWingsBySocietyId() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          winglistLoading = true;
-        });
-        Future res = Services.GetWingsBySocietyId(widget.societyId.toString());
-        res.then((data) async {
-          setState(() {
-            winglistLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              winglistClassList = data;
-            });
-            print("servicelisttt=> " + winglistClassList.toString());
-          }
-        }, onError: (e) {
-          showMsg("$e");
-          setState(() {
-            winglistLoading = false;
-          });
-        });
-      } else {
-        showMsg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      showMsg("Something Went Wrong");
-      setState(() {
-        winglistLoading = false;
-      });
-    }
-  }
-
-  _getSocietyName() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        //  String id = societyId.toString();
-        Future res = Services.GetSocietyName(widget.societyId.toString());
-        setState(() {
-          isLoading = true;
-        });
-
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              societyNamelist = data;
-              isLoading = false;
-            });
-            print("GetSocietyName => " + list.toString());
-          } else {
-            setState(() {
-              societyNamelist = [];
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on GetSocietyName Data Call $e");
-          showMsg("$e");
-        });
-      } else {
-        showMsg("Something went Wrong!");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {
@@ -409,7 +282,6 @@ class _VisitorRegisterState extends State<VisitorRegister> {
                           _winglistDropdownError = null;
                         });
                         print("WingID=>" + newValue.id);
-                        _getFlatNumber(newValue.id);
                       },
                       items: winglistClassList.map((winglistClass value) {
                         return DropdownMenuItem<winglistClass>(

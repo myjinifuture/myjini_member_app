@@ -19,7 +19,6 @@ class _ProductListState extends State<ProductList> {
 
   @override
   void initState() {
-    _getProductList();
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(
         message: "Please Wait..",
@@ -34,43 +33,6 @@ class _ProductListState extends State<ProductList> {
         insetAnimCurve: Curves.easeInOut,
         messageTextStyle: TextStyle(
             color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
-  }
-
-  _getProductList() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Future res = Services.GetProduct("");
-        setState(() {
-          isLoading = true;
-        });
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              ProductList = data;
-              isLoading = false;
-            });
-            print("Helo=> " + ProductList.toString());
-            print("Helo=> " + ProductList.length.toString());
-          } else {
-            setState(() {
-              ProductList = [];
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on GetAd Data Call $e");
-          showMsg("$e");
-        });
-      } else {
-        showMsg("Something went Wrong!");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {

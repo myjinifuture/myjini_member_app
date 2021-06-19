@@ -84,6 +84,12 @@ class _CreateSocietyState extends State<CreateSociety> {
             setState(() {
               societyCategoriesList = data.Data;
             });
+            // for(int i=0;i<data.Data.length;i++){
+            //   if(data.Data[i]["categoryName"] == "Industrial" ||
+            //       data.Data[i]["categoryName"] == "Commercial"){
+            //     societyCategoriesList.remove(data.Data[i]);
+            //   }
+            // }
             getState();
           }
         }, onError: (e) {
@@ -431,6 +437,7 @@ class _CreateSocietyState extends State<CreateSociety> {
             print(data.Data[0]["societyCode"]);
             Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (BuildContext context) => SetupWings(
+                  Price_dropdownValue:Price_dropdownValue,
                   wingData: txtwings.text,
                   societyId: data.Data[0]["_id"].toString(),
                   mobileNo : txtmobile.text,
@@ -819,7 +826,7 @@ class _CreateSocietyState extends State<CreateSociety> {
                   ),
                 ),
               ),
-              Padding(
+              Price_dropdownValue.toString()=="Society"||Price_dropdownValue==null?Padding(
                 padding:
                     const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
                 child: Row(
@@ -829,8 +836,8 @@ class _CreateSocietyState extends State<CreateSociety> {
                             fontSize: 15, fontWeight: FontWeight.w500))
                   ],
                 ),
-              ),
-              Padding(
+              ):Container(),
+              Price_dropdownValue.toString()=="Society"||Price_dropdownValue==null?Padding(
                 padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 6.0),
                 child: SizedBox(
                   height: 50,
@@ -863,7 +870,7 @@ class _CreateSocietyState extends State<CreateSociety> {
                         hintStyle: TextStyle(color: Colors.grey, fontSize: 14)),
                   ),
                 ),
-              ),
+              ):Container(),
 
               Padding(
                 padding:
@@ -1191,13 +1198,13 @@ class _CreateSocietyState extends State<CreateSociety> {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w600)),
                     onPressed: isAreaSelected ? () {
-                      setState(() {
-                        buttonPressed = true;
-                      });
+                      print(txtname.text);
+                      print(txtmobile.text);
+                      print(txtwings.text);
                       if (Price_dropdownValue == "Select" ||
                           txtname.text == "" ||
                           txtmobile.text == "" ||
-                          txtwings.text == "" ||
+                          // txtwings.text == "" ||
                           selectedStateCode == null ||
                           selectedCity == null ||
                           txtYourName.text=="" ||

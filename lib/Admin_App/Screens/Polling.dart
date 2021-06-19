@@ -26,11 +26,12 @@ class _PollingState extends State<Polling> {
     getLocaldata();
   }
 
-  String societyId,memberId;
+  String societyId,memberId,wingId;
   getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     societyId = prefs.getString(admin.Session.SocietyId);
     memberId = prefs.getString(Session.Member_Id);
+    wingId = prefs.getString(Session.WingId);
     _getPollingData();
   }
 
@@ -40,12 +41,14 @@ class _PollingState extends State<Polling> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
           "societyId" : societyId,
+          "wingId" : wingId
           // "memberId" : memberId
         };
         setState(() {
           isLoading = true;
         });
-        Services.responseHandler(apiName: "admin/getAllPollingQuestion",body: data)
+        _pollingList.clear();
+        Services.responseHandler(apiName: "admin/getAllPollingQuestion_v1",body: data)
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
@@ -136,49 +139,39 @@ class _PollingState extends State<Polling> {
   @override
   Widget build(BuildContext context) {
     print(_pollingList.length);
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, "/Dashboard");
-      },
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text(
-            "Polling",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, "/Dashboard");
-            },
-          ),
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text(
+          "Polling",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        body: isLoading
-            ? LoadingComponent()
-            : _pollingList.length > 0
-                ? AnimationLimiter(
-                    child: ListView.builder(
-                      itemCount: _pollingList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        print("_pollingList123");
-                        print(_pollingList[index]["PollOptions"]);
-                        // _getResponseOfPolling(_pollingList[index]["_id"]);
-                        return PollingComponent(_pollingList, index,totalMembersInSociety);
-                      },
-                    ),
-                  )
-                : NoDataComponent(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/AddPolling');
-          },
-          child: Icon(Icons.add, color: Colors.white),
-          backgroundColor: cnst.appPrimaryMaterialColor,
-        ),
+      ),
+      body: isLoading
+          ? LoadingComponent()
+          : _pollingList.length > 0
+              ? AnimationLimiter(
+                  child: ListView.builder(
+                    itemCount: _pollingList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      print("_pollingList123");
+                      print(_pollingList[index]["PollOptions"]);
+                      // _getResponseOfPolling(_pollingList[index]["_id"]);
+                      return PollingComponent(_pollingList, index,totalMembersInSociety,
+                        deleted: (){
+                        _getPollingData();
+                        },
+                      updated: _getPollingData,);
+                    },
+                  ),
+                )
+              : Center(child: Text('No Data Found'),),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, '/AddPolling');
+        },
+        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: cnst.appPrimaryMaterialColor,
       ),
     );
   }

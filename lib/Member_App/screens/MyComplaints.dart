@@ -308,7 +308,7 @@ class _MyComplaintsState extends State<MyComplaints> {
                           child: FadeInImage.assetNetwork(
                             placeholder: "images/placeholder.png",
                             image:
-                                Image_Url + '${ComplainData[index]["attachment"]}',
+                                Image_Url + '${ComplainData[ComplainData.length- 1 -index]["attachment"]}',
                             width: MediaQuery.of(context).size.width,
                             fit: BoxFit.cover,
                           ),
@@ -331,7 +331,7 @@ class _MyComplaintsState extends State<MyComplaints> {
                                           padding:
                                               const EdgeInsets.only(top: 5.0),
                                           child: Text(
-                                            "${ComplainData[index]["title"]}",
+                                            "${ComplainData[ComplainData.length- 1 -index]["title"]}",
                                             overflow: TextOverflow.visible,
                                             maxLines: 2,
                                             textAlign: TextAlign.justify,
@@ -360,7 +360,7 @@ class _MyComplaintsState extends State<MyComplaints> {
                                               Radius.circular(100.0))),
                                       child: Center(
                                         child: Text(
-                                            "${ComplainData[index]["dateTime"][0]}",
+                                            "${ComplainData[ComplainData.length- 1 -index]["dateTime"][0]}",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 color: Colors.black54,
@@ -376,7 +376,7 @@ class _MyComplaintsState extends State<MyComplaints> {
                                     padding: const EdgeInsets.only(
                                         top: 5.0, right: 2.0),
                                     child: Text(
-                                      "${ComplainData[index]["description"]}",
+                                      "${ComplainData[ComplainData.length- 1 -index]["description"]}",
                                       overflow: TextOverflow.fade,
                                       textAlign: TextAlign.justify,
                                       style: TextStyle(
@@ -389,7 +389,7 @@ class _MyComplaintsState extends State<MyComplaints> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: <Widget>[
-                                  ComplainData[index]["complainStatus"] == 0
+                                  ComplainData[ComplainData.length- 1 -index]["complainStatus"] == 0
                                       ? Pending()
                                       : Completed()
                                 ],
@@ -400,12 +400,12 @@ class _MyComplaintsState extends State<MyComplaints> {
                       ),
                     ],
                   ),
-                  FlatButton(
+            ComplainData[ComplainData.length- 1 -index]["complainStatus"] == 0  ? FlatButton(
                       onPressed: () {
                         _showConfirmDialog(
-                            ComplainData[index]["_id"].toString());
+                            ComplainData[ComplainData.length- 1 -index]["_id"].toString());
                       },
-                      child: Container(
+                      child:Container(
                         decoration: BoxDecoration(
                             color: Colors.grey[100],
                             borderRadius:
@@ -425,7 +425,7 @@ class _MyComplaintsState extends State<MyComplaints> {
                             ],
                           ),
                         ),
-                      ))
+                      )):Container()
                 ],
               ),
             ),
@@ -443,8 +443,8 @@ class _MyComplaintsState extends State<MyComplaints> {
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pushReplacementNamed(context, "/HomeScreen");
-            }),
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/HomeScreen', (route) => false);            }),
         centerTitle: true,
         title: Text("Complaints"),
         shape: RoundedRectangleBorder(
@@ -455,8 +455,8 @@ class _MyComplaintsState extends State<MyComplaints> {
       ),
       body: WillPopScope(
         onWillPop: () {
-          Navigator.pushReplacementNamed(context, '/HomeScreen');
-        },
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/HomeScreen', (route) => false);        },
         child: isLoading
             ? Container(
                 child: Center(child: CircularProgressIndicator()),

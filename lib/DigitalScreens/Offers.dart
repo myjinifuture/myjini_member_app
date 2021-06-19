@@ -45,7 +45,7 @@ class _OffersState extends State<Offers> {
                                   return OfferComponent(snapshot.data[index]);
                                 },
                               )
-                            : NoDataComponent()
+                            : Center(child: Text('No Data Found'),)
                         : LoadinComponent();
                   },
                 ),

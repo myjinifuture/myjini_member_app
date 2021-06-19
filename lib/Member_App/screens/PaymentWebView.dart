@@ -50,7 +50,6 @@ class _PaymentWebViewState extends State<PaymentWebView> {
         insetAnimCurve: Curves.easeInOut,
         messageTextStyle: TextStyle(
             color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
-    sendMemberPaymentId("123456");
     //createRequest(); //creating the HTTP request
 // Add a listener on url changed
     flutterWebviewPlugin.onUrlChanged.listen((String url) {
@@ -60,7 +59,6 @@ class _PaymentWebViewState extends State<PaymentWebView> {
 //Take the payment_id parameter of the url.
           String paymentRequestId = uri.queryParameters['payment_id'];
 //calling this method to check payment status
-          _checkPaymentStatus(paymentRequestId);
         }
       }
     });
@@ -285,179 +283,6 @@ class _PaymentWebViewState extends State<PaymentWebView> {
       print(
           "error = ${json.decode(resp.body)['message']["amount"].toString()}");
       showMsg("${json.decode(resp.body)['message'].toString()}");
-    }
-  }
-
-  _checkPaymentStatus(String id) async {
-    var response = await http.get(
-        Uri.encodeFull("https://www.instamojo.com/api/1.1/payments/$id/"),
-        // Uri.encodeFull("https://test.instamojo.com/api/1.1/payments/$id/"),
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-Api-Key": "${widget.data["InstaMojoKey"]}",
-          "X-Auth-Token": "${widget.data["InstaMojoToken"]}",
-          "X-XSS-Protection": "0; mode=block"
-        });
-    setState(() {
-      cancelLbl = "";
-    });
-    var realResponse = json.decode(response.body);
-    print("Final Response = ${realResponse}");
-    if (realResponse['success'] == true) {
-      if (realResponse["payment"]['status'] == 'Credit') {
-//payment is successful.
-        flutterWebviewPlugin.close();
-        /*await sendMemberPaymentId(
-            realResponse["payment"]['payment_id'].toString());*/
-        if (widget.data["renew"] == "true") {
-          await sendMemberPaymentIdForRenew(
-              realResponse["payment"]['payment_id'].toString());
-        }
-        await sendMemberPaymentId(
-            realResponse["payment"]['payment_id'].toString());
-        await showSucDialog(realResponse["payment"]['payment_id'].toString());
-        //Navigator.pushReplacementNamed(context, '/Suc');
-      } else {
-        flutterWebviewPlugin.close();
-//payment failed or pending.
-        showFailedDialog();
-        //Navigator.pushReplacementNamed(context, '/failed');
-      }
-    } else {
-      flutterWebviewPlugin.close();
-      showFailedDialog();
-      print("PAYMENT STATUS FAILED");
-    }
-  }
-
-  sendMemberPaymentId(String tId) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String MemberId = prefs.getString(Session.Member_Id);
-
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        String filename = "";
-        String filePath = "";
-        File compressedFile;
-
-        if (widget.data["photo"] != null) {
-          ImageProperties properties =
-              await FlutterNativeImage.getImageProperties(
-                  widget.data["photo"].path);
-
-          compressedFile = await FlutterNativeImage.compressImage(
-            widget.data["photo"].path,
-            quality: 80,
-            targetWidth: 600,
-            targetHeight: (properties.height * 600 / properties.width).round(),
-          );
-
-          filename = widget.data["photo"].path.split('/').last;
-          filePath = compressedFile.path;
-        }
-
-        FormData formData = new FormData.fromMap({
-          "Id": 0,
-          "Title": widget.data["title"],
-          "Description": widget.data["desc"],
-          "File": (filePath != null && filePath != '')
-              ? await MultipartFile.fromFile(filePath,
-                  filename: filename.toString())
-              : null,
-          "MemberId": MemberId,
-          "PackageId": "${widget.data["packageId"]}",
-          "ExpiryDate": widget.data["expiredDate"].toString(),
-          "Type": "${widget.data["type"]}",
-          "TargetedId": "${widget.data["targetedId"]}",
-          "PaymentMode": "Online",
-          "ReferenceNo": "${tId}",
-          "Date": "${DateTime.now().toString()}",
-          "WebsiteURL": "${widget.data["WebsiteURL"]}",
-          "GoogleMap": "${widget.data["GoogleMap"]}",
-          "EmailId": "${widget.data["Email"]}",
-          "VideoLink": "${widget.data["VideoLink"]}",
-        });
-
-        print("SaveAdvertisement Data = ${formData}");
-        Services.SaveAdvertisement(formData).then((data) async {
-          if (data.Data != "0" && data.IsSuccess == true) {
-            showMsg(data.Message, title: "Success");
-          } else {
-            showMsg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
-          showMsg("Try Again.");
-        });
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
-  }
-
-  sendMemberPaymentIdForRenew(String tId) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String MemberId = prefs.getString(Session.Member_Id);
-
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        String filename = "";
-        String filePath = "";
-        File compressedFile;
-
-        if (widget.data["photo"] != null) {
-          ImageProperties properties =
-              await FlutterNativeImage.getImageProperties(
-                  widget.data["photo"].path);
-
-          compressedFile = await FlutterNativeImage.compressImage(
-            widget.data["photo"].path,
-            quality: 80,
-            targetWidth: 600,
-            targetHeight: (properties.height * 600 / properties.width).round(),
-          );
-
-          filename = widget.data["photo"].path.split('/').last;
-          filePath = compressedFile.path;
-        }
-
-        FormData formData = new FormData.fromMap({
-          "Id": "${widget.data["id"]}",
-          "Title": widget.data["title"],
-          "Description": widget.data["desc"],
-          "Image": (filePath != null && filePath != '')
-              ? await MultipartFile.fromFile(filePath,
-                  filename: filename.toString())
-              : null,
-          "MemberId": MemberId,
-          "PackageId": "${widget.data["packageId"]}",
-          "ExpiryDate": widget.data["expiredDate"].toString(),
-          "Type": "${widget.data["type"]}",
-          "TargetedId": "${widget.data["targetedId"]}",
-          "PaymentMode": "Online",
-          "ReferenceNo": "${tId}",
-          "date": "${DateTime.now().toString()}",
-          "WebsiteURL": "${widget.data["WebsiteURL"]}",
-          "GoogleMap": "${widget.data["GoogleMap"]}",
-          "Email": "${widget.data["Email"]}",
-          "VideoLink": "${widget.data["VideoLink"]}",
-        });
-
-        print("SaveAdvertisement Data = ${formData}");
-        Services.SaveAdvertisementForRenew(formData).then((data) async {
-          if (data.Data != "0" && data.IsSuccess == true) {
-            showMsg(data.Message, title: "Success");
-          } else {
-            showMsg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
-          showMsg("Try Again.");
-        });
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
     }
   }
 

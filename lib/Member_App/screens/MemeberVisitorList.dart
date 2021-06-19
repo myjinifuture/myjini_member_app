@@ -59,12 +59,14 @@ class _MemberVisitorListState extends State<MemberVisitorList> {
           setState(() {
             isLoading = false;
           });
-          if (data != null && data.Data.length > 0) {
-            setState(() {
-              for (int i = data.Data.length - 1; i > 0; i--) {
-                _VisitorList.add(data.Data[i]);
-              }
-            });
+          if (data.Data != null ) {
+            // setState(() {
+            //   for (int i = data.Data.length - 1; i > 0; i--) {
+            //     _VisitorList.add(data.Data[i]);
+            //   }
+            // });
+            _VisitorList = data.Data;
+            print(_VisitorList);
           } else {
             setState(() {
               isLoading = false;
@@ -267,33 +269,34 @@ class _MemberVisitorListState extends State<MemberVisitorList> {
                                     _VisitorList[index]["ContactNo"]
                                         .toString());
                               }),
-                          GestureDetector(
-                            onTap: () {
-                              // !isSearching ? launch(
-                              //     ('tel://${_VisitorList[index]["ContactNo"]}')):
-                              // launch(
-                              //     ('tel://${tempList[index]["ContactNo"]}'));
-                              launch(
-                                  'https://wa.me/+91${_VisitorList[index]["ContactNo"]}?text=${name}+ is inviting you as a guest in their society\n'
-                                      'Please show this Code at the society gate ${_VisitorList[index]["entryNo"]}\n'
-                                      '${_VisitorList[index]["wingData"][0]["wingName"]} - ${_VisitorList[index]["flatData"][0]["flatNo"]} \n \n '
-                                      '${_VisitorList[index]["SocietyData"][0]["Location"]["mapLink"]} \n '
-                                      '${_VisitorList[index]["SocietyData"][0]["Address"]}');
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                right: 10.0,
-                              ),
-                              child: Container(
-                                height: 30,
-                                width: 30,
-                                child: Image.asset(
-                                  "images/gatepass.png",
-                                  // fit: BoxFit.fill,
-                                ),
-                              ),
-                            ),
-                          ),
+                          // GestureDetector(
+                          //   onTap: () {
+                          //     // !isSearching ? launch(
+                          //     //     ('tel://${_VisitorList[index]["ContactNo"]}')):
+                          //     // launch(
+                          //     //     ('tel://${tempList[index]["ContactNo"]}'));
+                          //     launch(
+                          //         'https://wa.me/+91${_VisitorList[index]["ContactNo"]}?text=${name}+ is inviting you as a guest in their society\n'
+                          //             'Please show this Code at the society gate ${_VisitorList[index]["entryNo"]}\n'
+                          //             '${_VisitorList[index]["wingData"][0]["wingName"]} - ${_VisitorList[index]["flatData"][0]["flatNo"]} \n \n '
+                          //             '${_VisitorList[index]["SocietyData"][0]["Location"]["mapLink"]} \n '
+                          //             '${_VisitorList[index]["SocietyData"][0]["Address"]}');
+                          //   },
+                          //   child: Padding(
+                          //     padding: EdgeInsets.only(
+                          //       right: 10.0,
+                          //     ),
+                          //     child: Container(
+                          //       height: 30,
+                          //       width: 30,
+                          //       child: Image.asset(
+                          //         "images/gatepass.png",
+                          //         // fit: BoxFit.fill,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+
                         ],
                       ),
                       /*Padding(

@@ -51,9 +51,7 @@ class _MemberProfileState extends State<MemberProfile> {
 
   @override
   void initState() {
-    GetMyvehicleData();
     _getLocaldata();
-    GetFamilyDetail();
     _getLocaldata1();
   }
 
@@ -64,42 +62,6 @@ class _MemberProfileState extends State<MemberProfile> {
     setState(() {
       MemberId = widget.MemberData["Id"].toString();
     });
-  }
-
-  GetMyvehicleData() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.GetVehicleData(MemberId).then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              VehicleData = data;
-              print("======================================");
-              print(VehicleData.length.toString());
-            });
-          } else {
-            setState(() {
-              VehicleData = data;
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
   }
 
   showHHMsg(String title, String msg) {
@@ -139,39 +101,6 @@ class _MemberProfileState extends State<MemberProfile> {
       setState(() {
         ParentIdF = widget.MemberData["ParentId"].toString();
       });
-  }
-
-  GetFamilyDetail() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.GetFamilyMember(ParentIdF, MemberIdF).then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              FmemberData = data;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
   }
 
   @override

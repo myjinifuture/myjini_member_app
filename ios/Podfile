@@ -1,15 +1,8 @@
 # Uncomment this line to define a global platform for your project
 platform :ios, '10.0'
-pod 'Firebase/Analytics'
+
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
-
-
-# Add the pods for any other Firebase products you want to use in your app
-# For example, to use Firebase Authentication and Cloud Firestore
-pod 'Firebase/Auth'
-pod 'Firebase/Firestore'
-pod 'Firebase/Core'
 
 project 'Runner', {
   'Debug' => :debug,
@@ -40,7 +33,6 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
-
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|

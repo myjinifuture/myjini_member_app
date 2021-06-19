@@ -12,6 +12,8 @@ import 'package:smart_society_new/Member_App/common/constant.dart';
 import 'package:smart_society_new/Member_App/component/masktext.dart';
 
 class AddStaff extends StatefulWidget {
+  Function onAddStaff;
+  AddStaff({this.onAddStaff});
   @override
   _AddStaffState createState() => _AddStaffState();
 }
@@ -45,6 +47,7 @@ class _AddStaffState extends State<AddStaff> {
   String selectedWing;
   bool _WingLoading = false;
   List FlatData = [];
+  List wingData = [];
   List _selectedFlatlist = [];
   StaffType staffType;
   bool _StaffLoading = false;
@@ -86,7 +89,16 @@ class _AddStaffState extends State<AddStaff> {
             .then((data) async {
           if (data.Data != null) {
             setState(() {
-              wingsList = data.Data;
+              // wingsList = data.Data;
+              for(int i=0;i<data.Data.length;i++){
+                if(data.Data[i]["totalFloor"].toString()!="0"){
+                  // wingsList.add(data.Data[i]);
+                  wingsList.add({
+                    "Name" : data.Data[i]["wingName"],
+                    "Id" : data.Data[i]["_id"],
+                  });
+                }
+              }
             });
           }
         }, onError: (e) {
@@ -231,46 +243,6 @@ class _AddStaffState extends State<AddStaff> {
     );
   }
 
-  GetFlatData(String WingId) async {
-    try {
-      //check Internet Connection
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          // pr.show();
-        });
-
-        Services.getFlatData(WingId).then((data) async {
-          setState(() {
-            // pr.hide();
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              FlatData = data;
-            });
-            print("----->" + data.toString());
-          } else {
-            setState(() {
-              // pr.hide();
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            // pr.hide();
-          });
-          showHHMsg("Try Again.", "");
-        });
-      } else {
-        setState(() {
-          // pr.hide();
-        });
-        showHHMsg("No Internet Connection.", "");
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
-  }
-
   showHHMsg(String title, String msg) {
     showDialog(
       context: context,
@@ -293,7 +265,8 @@ class _AddStaffState extends State<AddStaff> {
     );
   }
 
-  String selectedWingId;
+  List selectedWingId = [];
+  bool staffAdded = false;
 
   _SaveStaff() async {
     if (txtName.text != "") {
@@ -303,15 +276,19 @@ class _AddStaffState extends State<AddStaff> {
           SharedPreferences preferences = await SharedPreferences.getInstance();
           String SocietyId = preferences.getString(Session.SocietyId);
           for (int i = 0; i < wingsList.length; i++) {
-            if (selectedWing == wingsList[i]["wingName"]) {
-              selectedWingId = wingsList[i]["_id"];
+            for(int j=0;j<selectWing.length;j++) {
+              if (selectWing[j] == wingsList[i]["Name"]) {
+                selectedWingId.add(wingsList[i]["Id"]);
+              }
             }
           }
+          print("selected wings sent to backend");
+          print(selectedWingId);
           FormData formData = new FormData.fromMap({
             "societyId": SocietyId,
             "Name": txtName.text,
             "ContactNo1": txtContactNo.text,
-            "wingId": selectedWingId,
+            "wingId": selectedWingId.toString().replaceAll("]", "").replaceAll("[", "").replaceAll(" ", ""),
             // "flatId" : null,
             // "identityProof" : null,
             "VehicleNo": vehiclenotext.text,
@@ -359,10 +336,13 @@ class _AddStaffState extends State<AddStaff> {
           });
 
           // pr.show();
-          Services.responseHandler(apiName: "member/addStaff", body: formData)
+          Services.responseHandler(apiName: "member/addStaff_v1", body: formData)
               .then((data) async {
             // pr.hide();
-            if (data.Data != "0" && data.IsSuccess == true) {
+            if (data.Data.length > 0 && data.IsSuccess == true) {
+              setState(() {
+                staffAdded = true;
+              });
               print("data.Data");
               print(data.Data);
               Fluttertoast.showToast(
@@ -370,11 +350,11 @@ class _AddStaffState extends State<AddStaff> {
                   backgroundColor: Colors.green,
                   gravity: ToastGravity.TOP,
                   textColor: Colors.white);
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/Dashboard', (Route<dynamic> route) => false);
+             Navigator.pop(context);
+             widget.onAddStaff();
             } else {
               // pr.hide();
-              showMsg(data.Message, title: "Error");
+              showMsg(data.Message, title: "MYJINI");
             }
           }, onError: (e) {
             // pr.hide();
@@ -404,6 +384,7 @@ class _AddStaffState extends State<AddStaff> {
   }
 
   bool buttonPressed = false;
+  List selectWing = [];
 
   @override
   Widget build(BuildContext context) {
@@ -537,6 +518,92 @@ class _AddStaffState extends State<AddStaff> {
                                   ),
                                 ),
                               ),
+                              // need to be updated by Yashfind /path-to-project-dir/.gradle -type f -name "*.lock" | while read f; do rm $f; done
+
+                              // (staff=="Watchmen"||staff=="Select Staff Type")?Container():Padding(
+                              //   padding:
+                              //   const EdgeInsets.only(left: 8.0, top: 10.0),
+                              //   child: Text(
+                              //     "Select Wing *",
+                              //     style: TextStyle(
+                              //         fontSize: 12,
+                              //         fontWeight: FontWeight.bold),
+                              //   ),
+                              // ),
+                              // (staff=="Watchmen"||staff=="Select Staff Type")?Container():Padding(
+                              //   padding: const EdgeInsets.all(8.0),
+                              //   child: Container(
+                              //     width: MediaQuery.of(context).size.width,
+                              //     decoration: BoxDecoration(
+                              //         border: Border.all(width: 1),
+                              //         borderRadius: BorderRadius.all(
+                              //             Radius.circular(6.0))),
+                              //     child: Padding(
+                              //       padding: const EdgeInsets.only(left: 4.0),
+                              //       child: DropdownButtonHideUnderline(
+                              //           child: DropdownButton<dynamic>(
+                              //             icon: Icon(
+                              //               Icons.chevron_right,
+                              //               size: 20,
+                              //             ),
+                              //             hint: wingsList.length > 0
+                              //                 ? Text("Select Wing",
+                              //                 style: TextStyle(
+                              //                     fontSize: 14,
+                              //                     fontWeight: FontWeight.w600))
+                              //                 : Text(
+                              //               "Wing Not Found",
+                              //               style: TextStyle(fontSize: 14),
+                              //             ),
+                              //             value: selectedWing,
+                              //             onChanged: (val) {
+                              //               print(val);
+                              //               setState(() {
+                              //                 selectedWing = val;
+                              //                 _selectedFlatlist.clear();
+                              //                 FlatData.clear();
+                              //               });
+                              //               // GetFlatData(val.WingId);
+                              //             },
+                              //             items: wingsList.map((dynamic val) {
+                              //               return new DropdownMenuItem<dynamic>(
+                              //                 value: val["wingName"],
+                              //                 child: Text(
+                              //                   val["wingName"],
+                              //                   style:
+                              //                   TextStyle(color: Colors.black),
+                              //                 ),
+                              //               );
+                              //             }).toList(),
+                              //           )),
+                              //     ),
+                              //   ),
+                              // ),
+                              // (staff=="Watchmen"||staff=="Select Staff Type")?MultiSelectDialogField(
+                              //   items: wingsList
+                              //       .map((e) => MultiSelectItem(e, e["wingName"]))
+                              //       .toList(),
+                              //   decoration: BoxDecoration(
+                              //     border: Border.all(
+                              //       color: Colors.white,
+                              //     ),
+                              //   ),
+                              //   onConfirm: (values) {
+                              //     selectedWingList.clear();
+                              //     selectedWingIdList.clear();
+                              //     selectedWingList = values;
+                              //     for (int i = 0; i < selectedWingList.length; i++) {
+                              //       selectedWingIdList
+                              //           .add(selectedWingList[i]["_id"]);
+                              //     }
+                              //     print(selectedWingIdList);
+                              //   },
+                              //   buttonIcon: Icon(
+                              //     Icons.arrow_drop_down,
+                              //     color: cnst.appPrimaryMaterialColor,
+                              //   ),
+                              //   buttonText: Text("Select Wing"),
+                              // ):Container(),
                             ],
                           ),
                           Padding(
@@ -917,70 +984,97 @@ class _AddStaffState extends State<AddStaff> {
                               ),
                             ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 8.0, top: 10.0),
-                                child: Text(
-                                  "Select Wing *",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(width: 1),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(6.0))),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 4.0),
-                                    child: DropdownButtonHideUnderline(
-                                        child: DropdownButton<dynamic>(
-                                      icon: Icon(
-                                        Icons.chevron_right,
-                                        size: 20,
-                                      ),
-                                      hint: wingsList.length > 0
-                                          ? Text("Select Wing",
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600))
-                                          : Text(
-                                              "Wing Not Found",
-                                              style: TextStyle(fontSize: 14),
-                                            ),
-                                      value: selectedWing,
-                                      onChanged: (val) {
-                                        print(val);
-                                        setState(() {
-                                          selectedWing = val;
-                                          _selectedFlatlist.clear();
-                                          FlatData.clear();
-                                        });
-                                        // GetFlatData(val.WingId);
-                                      },
-                                      items: wingsList.map((dynamic val) {
-                                        return new DropdownMenuItem<dynamic>(
-                                          value: val["wingName"],
-                                          child: Text(
-                                            val["wingName"],
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    )),
-                                  ),
-                                ),
-                              ),
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: MultiSelectFormField(
+                              autovalidate: false,
+                              title: Text('Select Wing'),
+                              validator: (value) {
+                                if (value == null || value.length == 0) {
+                                  return 'Please select one or more options';
+                                }
+                              },
+                              dataSource: wingsList,
+                              textField: 'Name',
+                              valueField: 'Name',
+                              okButtonLabel: 'OK',
+                              cancelButtonLabel: 'CANCEL',
+                              hintWidget: selectWing.length == 0 ? Text(
+                                  'No Wing Selected'):Text(selectWing.toString()),
+                              change: () => selectWing,
+                              onSaved: (value) {
+                                setState(() {
+                                  selectWing = value;
+                                });
+                                print("selectWing");
+                                print(selectWing);
+                              },
+                            ),
                           ),
+                          // Column(
+                          //   crossAxisAlignment: CrossAxisAlignment.start,
+                          //   children: <Widget>[
+                          //     Padding(
+                          //       padding:
+                          //           const EdgeInsets.only(left: 8.0, top: 10.0),
+                          //       child: Text(
+                          //         "Select Wing *",
+                          //         style: TextStyle(
+                          //             fontSize: 12,
+                          //             fontWeight: FontWeight.bold),
+                          //       ),
+                          //     ),
+                          //     Padding(
+                          //       padding: const EdgeInsets.all(8.0),
+                          //       child: Container(
+                          //         width: MediaQuery.of(context).size.width,
+                          //         decoration: BoxDecoration(
+                          //             border: Border.all(width: 1),
+                          //             borderRadius: BorderRadius.all(
+                          //                 Radius.circular(6.0))),
+                          //         child: Padding(
+                          //           padding: const EdgeInsets.only(left: 4.0),
+                          //           child: DropdownButtonHideUnderline(
+                          //               child: DropdownButton<dynamic>(
+                          //             icon: Icon(
+                          //               Icons.chevron_right,
+                          //               size: 20,
+                          //             ),
+                          //             hint: wingsList.length > 0
+                          //                 ? Text("Select Wing",
+                          //                     style: TextStyle(
+                          //                         fontSize: 14,
+                          //                         fontWeight: FontWeight.w600))
+                          //                 : Text(
+                          //                     "Wing Not Found",
+                          //                     style: TextStyle(fontSize: 14),
+                          //                   ),
+                          //             value: selectedWing,
+                          //             onChanged: (val) {
+                          //               print(val);
+                          //               setState(() {
+                          //                 selectedWing = val;
+                          //                 _selectedFlatlist.clear();
+                          //                 FlatData.clear();
+                          //               });
+                          //               // GetFlatData(val.WingId);
+                          //             },
+                          //             items: wingsList.map((dynamic val) {
+                          //               return new DropdownMenuItem<dynamic>(
+                          //                 value: val["wingName"],
+                          //                 child: Text(
+                          //                   val["wingName"],
+                          //                   style:
+                          //                       TextStyle(color: Colors.black),
+                          //                 ),
+                          //               );
+                          //             }).toList(),
+                          //           )),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                           /*    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
@@ -1122,10 +1216,21 @@ class _AddStaffState extends State<AddStaff> {
               minWidth: MediaQuery.of(context).size.width - 20,
               onPressed: !buttonPressed
                   ? () {
-                      setState(() {
-                        buttonPressed = true;
-                      });
-                      _SaveStaff();
+                if(staff==''||txtName.text==''||txtContactNo.text==''||Gender=='' || selectWing.length==0){
+                  Fluttertoast.showToast(
+                      msg: "Please Fill All Mandatory Details",
+                      backgroundColor: Colors.red,
+                      gravity: ToastGravity.TOP,
+                      textColor: Colors.white);
+                }
+                else{
+                  setState(() {
+                    if(staffAdded) {
+                      buttonPressed = true;
+                    }
+                  });
+                  _SaveStaff();
+                }
                     }
                   : null,
               child: Text(

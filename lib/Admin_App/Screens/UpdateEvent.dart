@@ -133,7 +133,7 @@ class _UpdateEventState extends State<UpdateEvent> {
     }
   }
 
-  updateEvent() async {
+  updateEvent({String eventId}) async {
     try {
       // selectedWingId.clear();
       // for (int i = 0; i < selectedWing.length; i++) {
@@ -160,7 +160,7 @@ class _UpdateEventState extends State<UpdateEvent> {
               _dateTime.toString().substring(0, 4),
           // "wingIdList": selectedWingId,
           "organisedBy": "",
-          "eventId": MemberId,
+          "eventId": eventId,
           "venue": "",
         };
         print("data");
@@ -211,6 +211,7 @@ class _UpdateEventState extends State<UpdateEvent> {
   ];
 
   List wingsNameData = [];
+  List _wingList = [];
 
   getWingsId(String societyId) async {
     try {
@@ -223,10 +224,15 @@ class _UpdateEventState extends State<UpdateEvent> {
             .then((data) async {
           if (data != null) {
             setState(() {
-              for (int i = 0; i < data.Data.length; i++) {
+              for(int i=0;i<data.Data.length;i++){
+                if(data.Data[i]["totalFloor"].toString()!="0"){
+                  _wingList.add(data.Data[i]);
+                }
+              }
+              for (int i = 0; i < _wingList.length; i++) {
                 wingsNameData.add({
-                  "Name": data.Data[i]["wingName"],
-                  "Id": data.Data[i]["_id"],
+                  "Name": _wingList[i]["wingName"],
+                  "Id": _wingList[i]["_id"],
                 });
               }
               tag = 0;
@@ -298,30 +304,30 @@ class _UpdateEventState extends State<UpdateEvent> {
                   style: TextStyle(color: Colors.black),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: MultiSelectFormField(
-                  autovalidate: false,
-                  title: Text('Select Wing'),
-                  validator: (value) {
-                    if (value == null || value.length == 0) {
-                      return 'Please select one or more options';
-                    }
-                  },
-                  dataSource: wingsNameData,
-                  textField: 'Name',
-                  valueField: 'Name',
-                  okButtonLabel: 'OK',
-                  cancelButtonLabel: 'CANCEL',
-                  hintWidget: Text('No Wing Selected'),
-                  change: () => selectedWing,
-                  onSaved: (value) {
-                    setState(() {
-                      selectedWing = value;
-                    });
-                  },
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(bottom: 10),
+              //   child: MultiSelectFormField(
+              //     autovalidate: false,
+              //     title: Text('Select Wing'),
+              //     validator: (value) {
+              //       if (value == null || value.length == 0) {
+              //         return 'Please select one or more options';
+              //       }
+              //     },
+              //     dataSource: wingsNameData,
+              //     textField: 'Name',
+              //     valueField: 'Name',
+              //     okButtonLabel: 'OK',
+              //     cancelButtonLabel: 'CANCEL',
+              //     hintWidget: Text('No Wing Selected'),
+              //     change: () => selectedWing,
+              //     onSaved: (value) {
+              //       setState(() {
+              //         selectedWing = value;
+              //       });
+              //     },
+              //   ),
+              // ),
               GestureDetector(
                 onTap: () {
                   _showDatePicker();
@@ -387,16 +393,9 @@ class _UpdateEventState extends State<UpdateEvent> {
                 padding: EdgeInsets.only(top: 10),
                 child: RaisedButton(
                   onPressed: () {
-                    if (tag == -1) {
-                      Fluttertoast.showToast(
-                          msg: "Please select event type",
-                          toastLength: Toast.LENGTH_LONG,
-                          gravity: ToastGravity.TOP,
-                          backgroundColor: Colors.red,
-                          textColor: Colors.white);
-                    } else if (txtTitle == "" ||
-                        txtAmount == "" ||
-                        selectedWing.length == 0) {
+                    if (txtTitle.text == "" ||
+                        txtDesc.text == ""
+                        ) {
                       Fluttertoast.showToast(
                           msg: "Please Fill All the Details",
                           toastLength: Toast.LENGTH_LONG,
@@ -404,7 +403,7 @@ class _UpdateEventState extends State<UpdateEvent> {
                           backgroundColor: Colors.red,
                           textColor: Colors.white);
                     } else {
-                      updateEvent();
+                      updateEvent(eventId: widget.eventData["_id"]);
                     }
                   },
                   color: appPrimaryMaterialColor[700],

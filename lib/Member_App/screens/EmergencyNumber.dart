@@ -42,7 +42,7 @@ class _EmergencyNumberState extends State<EmergencyNumber> {
           "societyId":societyId,
         };
 
-        Services.responseHandler(apiName: "member/getSocietyEmergencyContacts",body: data).then((data) async {
+        Services.responseHandler(apiName: "member/getSocietyEmergencyContacts_v1",body: data).then((data) async {
           setState(() {
             isLoading = false;
           });
@@ -88,9 +88,71 @@ class _EmergencyNumberState extends State<EmergencyNumber> {
   }
 
   Widget _NumberCard(BuildContext context, int index) {
-    print("Image_Url");
-    print(Image_Url + EmergencyNumberData[index]["image"]);
-    return Card(
+    // print(Image_Url + tempList[index]["image"]);
+    return isSearching ? Card(
+      elevation: 1,
+      child: Container(
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 8.0, right: 8.0, top: 8.0, bottom: 8.0),
+              child: Image.network(
+                Image_Url + tempList[index]["image"],
+                width: MediaQuery.of(context).size.width*0.08,
+                height: MediaQuery.of(context).size.height*0.08,
+              ),
+            ),
+            Padding(padding: EdgeInsets.only(left: 10)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                      "${tempList[index]["Name"].toString().trim()}",
+                      style:
+                      TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+                  Text(
+                      "${tempList[index]["ContactNo"].toString().trim()}",
+                      style:
+                      TextStyle(fontWeight: FontWeight.w500, fontSize: 15))
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    width: 45,
+                    height: 45,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(80.0))),
+                    child: InkWell(
+                      onTap: () {
+                        launch(
+                            "tel:${tempList[index]["ContactNo"]}");
+                      },
+                      child: Center(
+                        child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Stack(
+                              children: <Widget>[
+                                Image.asset('images/call.png',
+                                    width: 22, height: 22, color: Colors.green),
+                              ],
+                            ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    ) : Card(
       elevation: 1,
       child: Container(
         child: Row(
@@ -155,51 +217,111 @@ class _EmergencyNumberState extends State<EmergencyNumber> {
     );
   }
 
+  TextEditingController txtSearch = new TextEditingController();
+
+  bool isSearching = false;
+  List tempList = [];
+
+  void searchOperation(String searchText) {
+    if (searchText != "") {
+      setState(() {
+        tempList.clear();
+        isSearching = true;
+      });
+      String mobile = "", name = "";
+      for (int i = 0; i < EmergencyNumberData.length; i++) {
+        name = EmergencyNumberData[i]["Name"];
+        mobile = EmergencyNumberData[i]["ContactNo"];
+        if (name.toLowerCase().contains(searchText.toLowerCase()) ||
+            mobile.toLowerCase().contains(searchText.toLowerCase())) {
+          setState(() {
+            tempList.add(EmergencyNumberData[i]);
+          });
+        }
+      }
+    } else {
+      setState(() {
+        isSearching = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print("EmergencyNumberData");
     print(EmergencyNumberData);
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, "/HomeScreen");
-              }),
-          centerTitle: true,
-          title: Text(
-            'Emergency Number',
-            style: TextStyle(fontSize: 18),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(10),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: () {
+        //       Navigator.pushReplacementNamed(context, "/HomeScreen");
+        //     }),
+        centerTitle: true,
+        title: Text(
+          'Emergency Number',
+          style: TextStyle(fontSize: 18),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(10),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 8.0, left: 2, right: 2),
-          child: isLoading
-              ? Container(
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              : EmergencyNumberData.length > 0
-                  ? ListView.builder(
-                      itemBuilder: _NumberCard,
-                      itemCount: EmergencyNumberData.length,
-                    )
-                  : Container(
-                      child: Center(
-                        child: Text("No Emergency Number Added"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 8.0, left: 2, right: 2),
+        child:SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0, right: 8.0, left: 8.0),
+                        child: TextFormField(
+                          onChanged: searchOperation,
+                          controller: txtSearch,
+                          scrollPadding: EdgeInsets.all(0),
+                          decoration: InputDecoration(
+                              counter: Text(""),
+                              border: new OutlineInputBorder(
+                                  borderSide: new BorderSide(color: Colors.black),
+                                  borderRadius: BorderRadius.all(Radius.circular(8))),
+                              suffixIcon: Icon(
+                                Icons.search,
+                                color: constant.appPrimaryMaterialColor,
+                              ),
+                              hintText: "Search Emergency Number"),
+                          maxLength: 100,
+                          keyboardType: TextInputType.text,
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
-                    ),
-        ),
+                      isLoading
+                          ? Container(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                          :
+                      EmergencyNumberData.length > 0
+                          ? Container(
+                            child: isSearching ? ListView.builder(
+                        shrinkWrap: true,
+                        physics: PageScrollPhysics(),
+                        itemCount: tempList.length,
+                        itemBuilder: _NumberCard,
+                      ):ListView.builder(
+                        shrinkWrap: true,
+                        physics: PageScrollPhysics(),
+                        itemBuilder: _NumberCard,
+                        itemCount: EmergencyNumberData.length,
+                      ),
+                          )
+                          :
+                       Container(
+                        child: Center(child: Text("No Emergency Contact Found")),
+                      ),
+                    ],
+                  ),
+                ),
       ),
     );
   }

@@ -378,7 +378,7 @@ class _IncomeState extends State<Income> {
                                 ),
                               ),
                             )
-                          : NoDataComponent(),
+                          : Center(child: Text('No Data Found'),),
                       _incomeData[0].length > 0
                           ? Container(
                               height: 50,
@@ -423,7 +423,7 @@ class _IncomeState extends State<Income> {
                           : Container(),
                     ],
                   )
-                : NoDataComponent(),
+                : Center(child: Text('No Data Found'),),
       ),
     );
   }

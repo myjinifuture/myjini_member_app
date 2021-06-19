@@ -52,8 +52,8 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
                 deleteStaff(widget.visitorData['_id'].toString());
-                Navigator.of(context).pop();;
-                // widget.onDelete();
+                Navigator.of(context).pop();
+
               },
             ),
           ],
@@ -75,14 +75,15 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
         var data = {"staffId": staffId};
         Services.responseHandler(apiName: "admin/deleteStaff", body: data).then(
                 (data) async {
-              if (data.Data != "0" && data.IsSuccess == true) {
+              if (data.Data != null && data.IsSuccess == true) {
                 print("data.Data");
                 print(data.Data);
                 Fluttertoast.showToast(
                     msg: "Staff deleted Successfully!!!",
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.red,
                     gravity: ToastGravity.TOP,
                     textColor: Colors.white);
+                widget.onDelete();
               } else {
                 showMsg(data.Message, title: "Error");
               }
@@ -217,6 +218,29 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
     }
   }
 
+  List<Widget> wingDetails = [];
+
+  wings(){
+    wingDetails.clear();
+    for(int i=0;i<widget.visitorData["WingData"].length;i++){
+      wingDetails.add(Text(
+        "Wing-" '${widget.visitorData["WingData"][i]["wingName"]}'
+            .toUpperCase(),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
+        ),
+      ));
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    wings();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     print("data:");
@@ -308,14 +332,14 @@ class _SocietyStaffComponentState extends State<SocietyStaffComponent> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                widget.visitorData['staffCategory'] ==
-                                    "Watchman"
-                                    ? Text(
-                                    "Wing-" '${widget.visitorData["WingData"][0]["wingName"]}'
-                                        .toUpperCase(),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15))
+                                widget.visitorData['WingData'].length >
+                                    0
+                                    ?
+                                SingleChildScrollView(
+                                  child: Column(
+                                      children: wingDetails,
+                                  ),
+                                )
                                     : Container(),
                               ],
                             ),

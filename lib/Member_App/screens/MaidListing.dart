@@ -27,11 +27,13 @@ class _MaidListingState extends State<MaidListing> {
     _getMaidListing(initialDate); // Tell monil to give Maid service - 2 number ------Completed at 1:57 PM 2nd april 2021
   }
 
-  String societyId = "";
+  String societyId = "",wingId="",flatId="";
   getLocalData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       societyId = prefs.getString(Session.SocietyId);
+      wingId = prefs.getString(Session.WingId);
+      flatId = prefs.getString(Session.FlatId);
     });
   }
 
@@ -41,13 +43,17 @@ class _MaidListingState extends State<MaidListing> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
           "societyId": societyId,
+          "wingId" : wingId,
+          "flatId" : flatId,
           "toDate": date
         };
+        print("data");
+        print(data);
         setState(() {
           isLoading = true;
         });
         maidList.clear();
-        Services.responseHandler(apiName: "admin/getStaffEntry",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/getStaffEntry_v3",body: data).then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               // maidList = data.Data;

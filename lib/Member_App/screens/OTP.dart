@@ -2,18 +2,21 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pin_input_text_field/pin_input_text_field.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
+import 'package:lottie/lottie.dart';
 
 class OTP extends StatefulWidget {
   String mobileNo,newuser;
   Function onSuccess;
 
-  OTP({this.mobileNo, this.onSuccess,this.newuser});
+  OTP({this.mobileNo, this.onSuccess, this.newuser});
 
   @override
   _OTPState createState() => _OTPState();
@@ -39,19 +42,65 @@ class _OTPState extends State<OTP> {
     _onVerifyCode();
   }
 
-  // PinDecoration _pinDecoration = UnderlineDecoration(
-  //     color: Colors.grey,
-  //     enteredColor: cnst.appPrimaryMaterialColor1,
-  //     hintText: '000000');
-
   void _onVerifyCode() async {
-    setState(() {
-      isCodeSent = true;
-    });
-    final PhoneVerificationCompleted verificationCompleted =
-        (AuthCredential phoneAuthCredential) {
+      setState(() {
+        isCodeSent = true;
+      });
+      final PhoneVerificationCompleted verificationCompleted =
+          (AuthCredential phoneAuthCredential) {
+        _firebaseAuth
+            .signInWithCredential(phoneAuthCredential)
+            .then((value) {
+          if (value.user != null) {
+            widget.onSuccess();
+          } else {
+            Fluttertoast.showToast(msg: "Error validating OTP, try again");
+          }
+        }).catchError((error) {
+          Fluttertoast.showToast(msg: "Try again in sometime");
+        });
+      };
+      final PhoneVerificationFailed verificationFailed =
+          ( authException) {
+        Fluttertoast.showToast(msg: authException.message);
+        setState(() {
+          isCodeSent = false;
+          error = authException.message;
+        });
+      };
+
+      final PhoneCodeSent codeSent =
+          (String verificationId, [int forceResendingToken]) async {
+        _verificationId = verificationId;
+        setState(() {
+          _verificationId = verificationId;
+        });
+      };
+      final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
+          (String verificationId) {
+        _verificationId = verificationId;
+        setState(() {
+          _verificationId = verificationId;
+        });
+      };
+
+      // TODO: Change country code
+
+      await _firebaseAuth.verifyPhoneNumber(
+          phoneNumber: "+91${widget.mobileNo}",
+          timeout: const Duration(seconds: 60),
+          verificationCompleted: verificationCompleted,
+          verificationFailed: verificationFailed,
+          codeSent: codeSent,
+          codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
+    }
+
+    void _onFormSubmitted() async {
+      AuthCredential _authCredential = PhoneAuthProvider.credential(
+          verificationId: _verificationId, smsCode: controller.text);
+
       _firebaseAuth
-          .signInWithCredential(phoneAuthCredential)
+          .signInWithCredential(_authCredential)
           .then((UserCredential value) {
         if (value.user != null) {
           widget.onSuccess();
@@ -59,59 +108,8 @@ class _OTPState extends State<OTP> {
           Fluttertoast.showToast(msg: "Error validating OTP, try again");
         }
       }).catchError((error) {
-        Fluttertoast.showToast(msg: "Try again in sometime");
+        Fluttertoast.showToast(msg: "Something went wrong");
       });
-    };
-    final PhoneVerificationFailed verificationFailed =
-        (FirebaseAuthException authException) {
-      Fluttertoast.showToast(msg: authException.message);
-      setState(() {
-        isCodeSent = false;
-        error = authException.message;
-      });
-    };
-
-    final PhoneCodeSent codeSent =
-        (String verificationId, [int forceResendingToken]) async {
-      _verificationId = verificationId;
-      setState(() {
-        _verificationId = verificationId;
-      });
-    };
-    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-        (String verificationId) {
-      _verificationId = verificationId;
-      setState(() {
-        _verificationId = verificationId;
-      });
-    };
-
-    // TODO: Change country code
-
-    await _firebaseAuth.verifyPhoneNumber(
-        phoneNumber: "+91${widget.mobileNo}",
-        timeout: const Duration(seconds: 60),
-        verificationCompleted: verificationCompleted,
-        verificationFailed: verificationFailed,
-        codeSent: codeSent,
-        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
-  }
-
-  void _onFormSubmitted() async {
-    AuthCredential _authCredential = PhoneAuthProvider.credential(
-        verificationId: _verificationId, smsCode: controller.text);
-
-    _firebaseAuth
-        .signInWithCredential(_authCredential)
-        .then((UserCredential value) {
-      if (value.user != null) {
-        widget.onSuccess();
-      } else {
-        Fluttertoast.showToast(msg: "Error validating OTP, try again");
-      }
-    }).catchError((error) {
-      Fluttertoast.showToast(msg: "Something went wrong");
-    });
   }
 
   showMsg(String msg) {
@@ -130,7 +128,8 @@ class _OTPState extends State<OTP> {
                 style: TextStyle(color: Colors.black),
               ),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -142,116 +141,132 @@ class _OTPState extends State<OTP> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top + 10, left: 30, right: 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              "Verification",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 27,
-                  fontWeight: FontWeight.bold),
-            ),
-            Text(
-              "Enter the code we sent to your Mobile Number",
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal),
-            ),
-            SizedBox(height: 60),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: PinInputTextField(
-                pinLength: 6,
-                //decoration: _pinDecoration,
-                controller: controller,
-                autoFocus: true,
-                onChanged: (pin){
-                  if(pin.length == 6){
-                    _onFormSubmitted();
-                  }
-                },
-                textInputAction: TextInputAction.done,
-                onSubmit: (pin) {
-                  if (pin.length == 6) {
-                    _onFormSubmitted();
-                  } else {
-                    Fluttertoast.showToast(msg: "Invalid OTP");
-                  }
-                },
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 10,
+              left: 30,
+              right: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                "Verification",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 27,
+                    fontWeight: FontWeight.bold),
               ),
-            ),
-            // Center(
-            //   child: Container(
-            //     width: MediaQuery.of(context).size.width / 1.5,
-            //     margin: EdgeInsets.only(top: 20),
-            //     height: 45,
-            //     decoration: BoxDecoration(
-            //         gradient: LinearGradient(
-            //             begin: Alignment.topLeft,
-            //             end: Alignment.bottomRight,
-            //             colors: [
-            //               appPrimaryMaterialColor,
-            //               appPrimaryMaterialColor
-            //             ]),
-            //         borderRadius: BorderRadius.all(Radius.circular(6))),
-            //     child: MaterialButton(
-            //       shape: RoundedRectangleBorder(
-            //           borderRadius: new BorderRadius.circular(10.0)),
-            //       //color: cnst.appPrimaryMaterialColor1,
-            //       minWidth: MediaQuery.of(context).size.width - 20,
-            //       onPressed: () {
-            //         if (controller.text.length == 6) {
-            //           _onFormSubmitted();
-            //         }
-            //       },
-            //       child: Text(
-            //         "Verify",
-            //         style: TextStyle(
-            //             color: Colors.white,
-            //             fontSize: 17.0,
-            //             fontWeight: FontWeight.w600),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            SizedBox(
-              height: 30,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text("Didn't get Code? ",
-                    style:
-                    TextStyle(fontSize: 17, color: Colors.grey.shade600)),
-                InkWell(
-                  onTap: () {
-                    Fluttertoast.showToast(
-                        msg: "OTP Sending",
-                        textColor: Colors.white,
-                        backgroundColor: Colors.green);
-                    _onVerifyCode();
+              Text(
+                "Enter the code we sent to your Mobile Number",
+                style: TextStyle(
+                    color: Colors.black54,
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal),
+              ),
+              SizedBox(height: 20,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Lottie.asset(
+                    'assets/otp.json',
+                    width: 90,
+                    height: 90,
+                  ),
+                ],
+              ),
+              SizedBox(height: 30),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: PinInputTextField(
+                  pinLength: 6,
+                  //decoration: _pinDecoration,
+                  controller: controller,
+                  autoFocus: true,
+                  onChanged: (pin) {
+                    if (pin.length == 6) {
+                      _onFormSubmitted();
+                    }
                   },
-                  child: Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: Text("RESEND CODE",
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: appPrimaryMaterialColor,
-                              fontWeight: FontWeight.bold)),
+                  textInputAction: TextInputAction.done,
+                  onSubmit: (pin) {
+                    if (pin.length == 6) {
+                      _onFormSubmitted();
+                    } else {
+                      Fluttertoast.showToast(msg: "Invalid OTP");
+                    }
+                  },
+                ),
+              ),
+              // Center(
+              //   child: Container(
+              //     width: MediaQuery.of(context).size.width / 1.5,
+              //     margin: EdgeInsets.only(top: 20),
+              //     height: 45,
+              //     decoration: BoxDecoration(
+              //         gradient: LinearGradient(
+              //             begin: Alignment.topLeft,
+              //             end: Alignment.bottomRight,
+              //             colors: [
+              //               appPrimaryMaterialColor,
+              //               appPrimaryMaterialColor
+              //             ]),
+              //         borderRadius: BorderRadius.all(Radius.circular(6))),
+              //     child: MaterialButton(
+              //       shape: RoundedRectangleBorder(
+              //           borderRadius: new BorderRadius.circular(10.0)),
+              //       //color: cnst.appPrimaryMaterialColor1,
+              //       minWidth: MediaQuery.of(context).size.width - 20,
+              //       onPressed: () {
+              //         if (controller.text.length == 6) {
+              //           _onFormSubmitted();
+              //         }
+              //       },
+              //       child: Text(
+              //         "Verify",
+              //         style: TextStyle(
+              //             color: Colors.white,
+              //             fontSize: 17.0,
+              //             fontWeight: FontWeight.w600),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              SizedBox(
+                height: 30,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text("Didn't get Code? ",
+                      style:
+                          TextStyle(fontSize: 17, color: Colors.grey.shade600)),
+                  InkWell(
+                    onTap: () {
+                      Fluttertoast.showToast(
+                          msg: "OTP Sending",
+                          textColor: Colors.white,
+                          backgroundColor: Colors.green);
+                      _onVerifyCode();
+                    },
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: Text("RESEND CODE",
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: appPrimaryMaterialColor,
+                                fontWeight: FontWeight.bold)),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

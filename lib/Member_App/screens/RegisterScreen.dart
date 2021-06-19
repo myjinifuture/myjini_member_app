@@ -21,9 +21,9 @@ import 'OTP.dart';
 
 class RegisterScreen extends StatefulWidget {
 
-  String Name,mobileNo,societyCode,societyId,societyNameAndSocietyAddress;
+  String Name,mobileNo,societyCode,societyId,societyNameAndSocietyAddress,type;
 
-  RegisterScreen({this.Name,this.mobileNo,this.societyCode,this.societyId,this.societyNameAndSocietyAddress});
+  RegisterScreen({this.Name,this.mobileNo,this.societyCode,this.societyId,this.societyNameAndSocietyAddress,this.type});
 
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -69,68 +69,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void initState() {
     print("widget.societyId");
     print(widget.societyId);
-    if(widget.societyId!=null){
+    getAllSocieties();
+    flatholdertypes.clear();
+    if(widget.mobileNo!=null){
       isPersonAdmin = true;
+      txtname.text = widget.Name;
+      txtmobile.text = widget.mobileNo;
+      selYourSociety = widget.societyNameAndSocietyAddress;
+      print(widget.Name);
     }
-    txtname.text = widget.Name;
-    txtmobile.text = widget.mobileNo;
-    selYourSociety = widget.societyNameAndSocietyAddress;
-    print(widget.Name);
+    getFlatType();
+
     // FocusScope.of(context)
     //     .requestFocus(FocusNode());
     _CodeVerification(widget.societyCode);
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(message: 'Please Wait');
-    // _firebaseMessaging.getToken().then((token) {
-    //   setState(() {
-    //     fcmToken = token;
-    //     print('fcm in register----------->' + '${token}');
-    //   });
-    //   print("fcmToken1");
-    //   print(fcmToken);
-    // });
-    getAllSocieties();
   }
 
   getFlatType() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      // if (prefs.getString('madeAtleastOneWing') == "true"){
-      //   Fluttertoast.showToast(
-      //       msg: "Society Created Successfully",
-      //       backgroundColor: Colors.red,
-      //       gravity: ToastGravity.TOP,
-      //       textColor: Colors.white);
-      // }
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Future res = Services.getFlatType();
-        res.then((data) async {
-          wingList.clear();
-          if (data !=null) {
-            print("fcmToken2");
-            print(fcmToken);
-            for(int i=0;i<data.length;i++){
-              flatholdertypes.add(data[i]["Type"]);
-            }
-            print("flatholdertypes");
-            print(flatholdertypes);
-            setState(() {
-              winglistClassList = data;
-            });
-            print("getFlatType=> " + winglistClassList.toString());
-          }
-        }, onError: (e) {
-          showHHMsg("$e","");
-        });
-      } else {
-        showHHMsg("No Internet Connection.","");
-      }
-    } on SocketException catch (_) {
-      showHHMsg("Something Went Wrong","");
-    }
+    flatholdertypes.clear();
+    flatholdertypes.add("Owner");
+    flatholdertypes.add("Closed");
+    flatholdertypes.add("Rent");
+    flatholdertypes.add("Dead");
+    flatholdertypes.add("Shop");
+    print("flatholdertypes");
+    print(flatholdertypes);
   }
-
 
   _CodeVerification(String code) async {
       try {
@@ -188,6 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         setState(() {
           isLoading = true;
         });
+        print("this functon called");
         allSocieties.clear();
         Services.responseHandler(apiName: "masterAdmin/getSocietyList",body: data).then((data) async {
           print(data.Data);
@@ -232,7 +199,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               isLoading = false;
               societyData = data.Data;
             });
-            getFlatType();
           } else {
             print("else called");
             Fluttertoast.showToast(
@@ -331,7 +297,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             "wingId" : wingId
           };
           copyOfFlatList.clear();
-          Services.responseHandler(apiName: "admin/getFlatsOfSociety",body: data).then((data) async {
+          Services.responseHandler(apiName: "admin/getFlatsOfSociety_v1",body: data).then((data) async {
             setState(() {
               isLoading = false;
             });
@@ -640,8 +606,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         constant.Session.SocietyId, logindata[0]["society"]["societyId"].toString());
     await prefs.setString(
         constant.Session.IsVerified, logindata[0]["society"]["isVerify"].toString());
-    await prefs.setString(
-        constant.Session.Profile, logindata[0]["Image"].toString());
     await prefs.setString(constant.Session.ResidenceType,
         logindata[0]["society"]["ResidenceType"].toString());
 /*    await prefs.setString(
@@ -739,8 +703,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           var data;
           data = {
             "MobileNo" : mobileNo,
-            "fcmToken" : fcmToken,
             "DeviceType" : Platform.isAndroid ? "Android" : "IOS",
+            "societyId" : SocietyId
           };
           Services.responseHandler(apiName: "member/login",body: data).then((data) async {
             // pr.hide();
@@ -1031,13 +995,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: DropdownButtonHideUnderline(
                           child: Padding(
                             padding: const EdgeInsets.only(left: 10.0, right: 8.0, top: 6.0),
-                            child: DropdownButton<dynamic>(
+                            child: DropdownButton<String>(
                               icon: Icon(
                                 Icons.arrow_drop_down,
                                 size: 30,
                               ),
                               //isDense: true,
-                              hint: new Text(selFlatHolderType,
+                              hint: new Text(
+                                selFlatHolderType,
                                 style: TextStyle(fontSize: 14),
                               ),
                               // value: _memberClass,
@@ -1048,9 +1013,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 });
                               },
                               //value: selCity,
-                              items: flatholdertypes.map<DropdownMenuItem<dynamic>>(
+                              items: flatholdertypes.map<DropdownMenuItem<String>>(
                                       (dynamic value) {
-                                    return DropdownMenuItem<dynamic>(
+                                    return DropdownMenuItem<String>(
                                       value: value,
                                       child: new Text(
                                         value,
@@ -1063,197 +1028,84 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                     ),
-                    // Row(
-                    //   children: <Widget>[
-                    //     Padding(
-                    //       padding: const EdgeInsets.only(left: 9.0, top: 10),
-                    //       child: Text(
-                    //         "  Society Code *",
-                    //         style: TextStyle(
-                    //             fontSize: 14,
-                    //             fontWeight: FontWeight.w600,
-                    //             color: Colors.black54),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // Padding(
-                    //   padding:
-                    //   const EdgeInsets.only(left: 8.0, right: 8.0, top: 6.0),
-                    //   child: Column(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: <Widget>[
-                    //       Padding(
-                    //         padding: const EdgeInsets.only(left: 8.0),
-                    //         child: SizedBox(
-                    //           height: 50,
-                    //           child: TextFormField(
-                    //             controller: CodeControler,
-                    //             // keyboardType: TextInputType.number,
-                    //             onChanged: (text) {
-                    //               setState(() {
-                    //                 codeValue = text;
-                    //                 wingList = [];
-                    //                 verify = false;
-                    //               });
-                    //               if(text.length == 10){
-                    //                 FocusScope.of(context)
-                    //                     .requestFocus(FocusNode());
-                    //                 _CodeVerification(CodeControler.text);
-                    //               }
-                    //             },
-                    //             decoration: InputDecoration(
-                    //                 border: new OutlineInputBorder(
-                    //                   borderRadius:
-                    //                   new BorderRadius.circular(5.0),
-                    //                   borderSide: new BorderSide(),
-                    //                 ),
-                    //                 hintText: "Enter Society Code",
-                    //                 hintStyle: TextStyle(fontSize: 13),
-                    //                 suffixIcon: Padding(
-                    //                     padding: const EdgeInsets.all(8.0),
-                    //                     child: isLoading
-                    //                         ? CircularProgressIndicator(
-                    //                       strokeWidth: 4,
-                    //                     )
-                    //                         : verify
-                    //                     // ? valid
-                    //                         ? Image.asset(
-                    //                       'images/success.png',
-                    //                       width: 18,
-                    //                       height: 18,
-                    //                     )
-                    //                         : Image.asset(
-                    //                       'images/error.png',
-                    //                       width: 20,
-                    //                       height: 20,
-                    //                     )
-                    //                   /*: Padding(
-                    //                               padding: const EdgeInsets.only(
-                    //                                   top: 6.0, right: 8.0),
-                    //                               child: GestureDetector(
-                    //                                   onTap: () {
-                    //                                     FocusScope.of(context)
-                    //                                         .requestFocus(
-                    //                                             FocusNode());
-                    //                                     _CodeVerification();
-                    //                                   },
-                    //                                   child: codeValue.length > 0
-                    //                                       ? Text(
-                    //                                           "Verify",
-                    //                                           style: TextStyle(
-                    //                                               fontSize: 16,
-                    //                                               color: constant
-                    //                                                   .appPrimaryMaterialColor,
-                    //                                               fontWeight:
-                    //                                                   FontWeight
-                    //                                                       .w600),
-                    //                                         )
-                    //                                       : Text("")),
-                    //                             ),*/
-                    //                 )),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    // Padding(
-                    //   padding: const EdgeInsets.all(8.0),
-                    //   child: Align(
-                    //     alignment: Alignment.center,
-                    //     child: Text("OR",
-                    //       style: TextStyle(
-                    //         fontWeight: FontWeight.bold,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // Padding(
-                    //   padding: const EdgeInsets.only(left:16.0,right: 8.0),
-                    //   child: Container(
-                    //     width: MediaQuery.of(context).size.width,
-                    //     height: 50,
-                    //     decoration: BoxDecoration(
-                    //       border: Border.all(color: Colors.grey),
-                    //       borderRadius: BorderRadius.circular(5),
-                    //     ),
-                    //     child: DropdownButtonHideUnderline(
-                    //       child: Padding(
-                    //         padding: const EdgeInsets.only(left: 10.0, right: 1.0, top: 6.0),
-                    //         child: SingleChildScrollView(
-                    //           scrollDirection: Axis.horizontal,
-                    //           child: DropdownButton<dynamic>(
-                    //             icon: Icon(
-                    //               Icons.arrow_drop_down,
-                    //               size: 30,
-                    //             ),
-                    //             //isDense: true,
-                    //             hint: new Text(selYourSociety,
-                    //               style: TextStyle(fontSize: 14),
-                    //             ),
-                    //             // value: _memberClass,
-                    //             onChanged: (val) {
-                    //               print(val);
-                    //               setState(() {
-                    //                 selYourSociety = val;
-                    //               });
-                    //             },
-                    //             //value: selCity,
-                    //             items: allSocieties.map<DropdownMenuItem<dynamic>>(
-                    //                     (dynamic value) {
-                    //                   return DropdownMenuItem<dynamic>(
-                    //                     value: value["Address"],
-                    //                     child: Column(
-                    //                       children: [
-                    //                         Container(
-                    //                           child: Text("anirudh"),
-                    //                         ),
-                    //                         new Text(
-                    //                           value["Address"],
-                    //                           style: new TextStyle(color: Colors.black),
-                    //                         ),
-                    //                       ],
-                    //                     ),
-                    //                   );
-                    //                 }).toList(),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // SearchableDropdown(
-                    //   items: allSocieties.map((item) {
-                    //     return new DropdownMenuItem<dynamic>(
-                    //         child: Text(item["Address"],
-                    //                       style: TextStyle(fontSize: 14),
-                    //                      )
-                    //     );}).toList(),
-                    //   isExpanded: true,
-                    //   value: selYourSociety,
-                    //   isCaseSensitiveSearch: true,
-                    //   searchHint: new Text(
-                    //     'Select ',
-                    //     style: new TextStyle(fontSize: 20),
-                    //   ),
-                    //   // searchFn: (String keyword){
-                    //   //   print(keyword);
-                    //   //     // isContains = allSocieties.toString().contains(keyword);
-                    //   //     // if(isContains==false){
-                    //   //     //   setState(() {
-                    //   //     //     allSocieties.clear();
-                    //   //     //   });
-                    //   //     // }
-                    //   //   },
-                    //
-                    //   onChanged: (value) {
-                    //     setState(() {
-                    //       selYourSociety = value;
-                    //       print(selYourSociety);
-                    //     });
-                    //   },
-                    // ),
+                    widget.type == "Industrial" ?
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SearchableDropdown.single(
+                        items: allSocieties,
+                        value: selYourSociety,
+                        hint: "Select Your Industry",
+                        searchHint: "Select one",
+                        onClear: (){
+                          print('hi');
+                          print(selYourSociety);
+                          if(selYourSociety==null){
+                            setState(() {
+                              verify = false;
+                              wingList.length = 0;
+                              CodeControler.text = "";
+                              selectedFlat = null;
+                            });
+                          }
+                        },
+                        onChanged: (value) {
+                          print(value);
+                          print(societyData);
+                          for(int i=0;i<societyData.length;i++){
+                            if(societyData[i]["Name"]+" ,"+societyData[i]["Address"].toString() == value){
+                              print("true");
+                              FocusScope.of(context)
+                                  .requestFocus(FocusNode());
+                              _CodeVerification(societyData[i]["societyCode"]);
+                              break;
+                            }
+                          }
+                          setState(() {
+                            selYourSociety = value;
+                          });
+                        },
+                        isExpanded: true,
+                      ),
+                    ) :
+                    widget.type == "Commercial" ?
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SearchableDropdown.single(
+                        items: allSocieties,
+                        value: selYourSociety,
+                        hint: "Select Your Commercial Area",
+                        searchHint: "Select one",
+                        onClear: (){
+                          print('hi');
+                          print(selYourSociety);
+                          if(selYourSociety==null){
+                            setState(() {
+                              verify = false;
+                              wingList.length = 0;
+                              CodeControler.text = "";
+                              selectedFlat = null;
+                            });
+                          }
+                        },
+                        onChanged: (value) {
+                          print(value);
+                          print(societyData);
+                          for(int i=0;i<societyData.length;i++){
+                            if(societyData[i]["Name"]+" ,"+societyData[i]["Address"].toString() == value){
+                              print("true");
+                              FocusScope.of(context)
+                                  .requestFocus(FocusNode());
+                              _CodeVerification(societyData[i]["societyCode"]);
+                              break;
+                            }
+                          }
+                          setState(() {
+                            selYourSociety = value;
+                          });
+                        },
+                        isExpanded: true,
+                      ),
+                    ) :
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SearchableDropdown.single(
@@ -1557,7 +1409,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               print(selectedFlat);
                               print(selectedWing);
                               if(txtname.text == "" ||
-                                  txtmobile.text == "" ||
+                                  txtmobile.text == "" ||Gender==''||
                                   selectedFlat == null || selectedWing == null){
                                 Fluttertoast.showToast(
                                     msg: "Fields Can't be empty",

@@ -23,7 +23,6 @@ class _DirectoryProfileVehicleState extends State<DirectoryProfileVehicle> {
 
   @override
   void initState() {
-    GetMyvehicleData();
     _getLocaldata();
   }
 
@@ -34,42 +33,6 @@ class _DirectoryProfileVehicleState extends State<DirectoryProfileVehicle> {
     setState(() {
       MemberId = widget.vehicleData;
     });
-  }
-
-  GetMyvehicleData() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.GetVehicleData(MemberId).then((data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              VehicleData = data;
-              print("======================================");
-              print(VehicleData.length.toString());
-            });
-          } else {
-            setState(() {
-              VehicleData = data;
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
   }
 
   showHHMsg(String title, String msg) {
@@ -84,67 +47,6 @@ class _DirectoryProfileVehicleState extends State<DirectoryProfileVehicle> {
               child: new Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();;
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  _DeleteMemberVehicle(String Id) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-        Services.DeleteVehicleData(Id).then((data) async {
-          if (data.Data == "1") {
-            setState(() {
-              isLoading = false;
-            });
-            GetMyvehicleData();
-          } else {
-            isLoading = false;
-            showHHMsg("Vehicle Is Not Deleted", "");
-          }
-        }, onError: (e) {
-          isLoading = false;
-          showHHMsg("$e", "");
-          isLoading = false;
-        });
-      } else {
-        showHHMsg("No Internet Connection.", "");
-      }
-    } on SocketException catch (_) {
-      showHHMsg("Something Went Wrong", "");
-    }
-  }
-
-  void _showConfirmDialog(String Id) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("MYJINI"),
-          content: new Text("Are You Sure You Want To Delete this Vehicle ?"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text("No",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w600)),
-              onPressed: () {
-                Navigator.of(context).pop();;
-              },
-            ),
-            new FlatButton(
-              child: new Text("Yes",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w600)),
-              onPressed: () {
-                Navigator.of(context).pop();;
-                // _DeleteMemberVehicle(Id);
               },
             ),
           ],

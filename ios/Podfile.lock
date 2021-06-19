@@ -234,7 +234,7 @@ PODS:
     - BSGridCollectionViewLayout (= 1.2.5)
     - BSImageView (= 1.0.3)
   - BSImageView (1.0.3)
-  - cloud_firestore (0.14.3-1):
+  - cloud_firestore (0.14.4):
     - Firebase/CoreOnly (~> 6.33.0)
     - Firebase/Firestore (~> 6.33.0)
     - firebase_core
@@ -296,27 +296,26 @@ PODS:
   - Firebase/RemoteConfig (6.33.0):
     - Firebase/CoreOnly
     - FirebaseRemoteConfig (~> 4.9.0)
-  - firebase_analytics (6.2.0):
+  - firebase_analytics (6.3.0):
     - Firebase/Analytics (~> 6.33.0)
     - Firebase/CoreOnly (~> 6.33.0)
     - firebase_core
     - Flutter
-  - firebase_auth (0.18.3-1):
+  - firebase_auth (0.18.4-1):
     - Firebase/Auth (~> 6.33.0)
     - Firebase/CoreOnly (~> 6.33.0)
     - firebase_core
     - Flutter
-  - firebase_core (0.5.2-1):
+  - firebase_core (0.5.3):
     - Firebase/CoreOnly (~> 6.33.0)
     - Flutter
-  - firebase_messaging (0.0.1):
-    - Firebase/Core
-    - Firebase/Messaging
-    - Flutter
-  - firebase_remote_config (0.4.2):
+  - firebase_messaging (7.0.3):
     - Firebase/CoreOnly (~> 6.33.0)
-    - Firebase/RemoteConfig (~> 6.33.0)
+    - Firebase/Messaging (~> 6.33.0)
     - firebase_core
+    - Flutter
+  - firebase_remote_config (0.0.1):
+    - Firebase/RemoteConfig
     - Flutter
   - FirebaseABTesting (4.2.0):
     - FirebaseCore (~> 6.10)
@@ -399,6 +398,8 @@ PODS:
   - flutter_sms (1.1.0):
     - Flutter
   - flutter_statusbarcolor (0.0.1):
+    - Flutter
+  - flutter_text_to_speech (2.0.0):
     - Flutter
   - flutter_user_agent (1.2.2):
     - Flutter
@@ -489,10 +490,10 @@ PODS:
     - nanopb/encode (= 1.30906.0)
   - nanopb/decode (1.30906.0)
   - nanopb/encode (1.30906.0)
-  - OneSignal (2.16.3)
-  - onesignal_flutter (2.6.3):
+  - OneSignal (2.16.5)
+  - onesignal_flutter (2.6.4):
     - Flutter
-    - OneSignal (= 2.16.3)
+    - OneSignal (= 2.16.5)
   - package_info (0.0.1):
     - Flutter
   - path_provider (0.0.1):
@@ -500,8 +501,8 @@ PODS:
   - "permission_handler (4.4.0+hotfix.4)":
     - Flutter
   - PromisesObjC (1.2.12)
-  - Protobuf (3.15.8)
-  - razorpay-pod (1.1.12)
+  - Protobuf (3.17.0)
+  - razorpay-pod (1.1.14)
   - razorpay_flutter (1.1.10):
     - Flutter
     - razorpay-pod
@@ -526,8 +527,6 @@ PODS:
     - FMDB (>= 2.7.5)
   - SwiftyGif (5.4.0)
   - Try (2.1.1)
-  - unique_identifier (0.0.1):
-    - Flutter
   - url_launcher (0.0.1):
     - Flutter
   - vibration (1.7.3):
@@ -543,10 +542,6 @@ DEPENDENCIES:
   - contacts_service (from `.symlinks/plugins/contacts_service/ios`)
   - esys_flutter_share (from `.symlinks/plugins/esys_flutter_share/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
-  - Firebase/Analytics
-  - Firebase/Auth
-  - Firebase/Core
-  - Firebase/Firestore
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
@@ -563,6 +558,7 @@ DEPENDENCIES:
   - flutter_share_me (from `.symlinks/plugins/flutter_share_me/ios`)
   - flutter_sms (from `.symlinks/plugins/flutter_sms/ios`)
   - flutter_statusbarcolor (from `.symlinks/plugins/flutter_statusbarcolor/ios`)
+  - flutter_text_to_speech (from `.symlinks/plugins/flutter_text_to_speech/ios`)
   - flutter_user_agent (from `.symlinks/plugins/flutter_user_agent/ios`)
   - flutter_webview_plugin (from `.symlinks/plugins/flutter_webview_plugin/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
@@ -585,7 +581,6 @@ DEPENDENCIES:
   - speech_recognition (from `.symlinks/plugins/speech_recognition/ios`)
   - speech_to_text (from `.symlinks/plugins/speech_to_text/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
-  - unique_identifier (from `.symlinks/plugins/unique_identifier/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - vibration (from `.symlinks/plugins/vibration/ios`)
   - webview_flutter (from `.symlinks/plugins/webview_flutter/ios`)
@@ -678,6 +673,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_sms/ios"
   flutter_statusbarcolor:
     :path: ".symlinks/plugins/flutter_statusbarcolor/ios"
+  flutter_text_to_speech:
+    :path: ".symlinks/plugins/flutter_text_to_speech/ios"
   flutter_user_agent:
     :path: ".symlinks/plugins/flutter_user_agent/ios"
   flutter_webview_plugin:
@@ -722,8 +719,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/speech_to_text/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
-  unique_identifier:
-    :path: ".symlinks/plugins/unique_identifier/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
   vibration:
@@ -742,18 +737,18 @@ SPEC CHECKSUMS:
   BSGridCollectionViewLayout: 333dcb457a5a3bdd9212607ab5756553dcfe06cb
   BSImagePicker: 07404254f2fcdaf5a2eb403c0f8c337267ce8738
   BSImageView: a149459433a2687157d034c78e059d30ac7f2544
-  cloud_firestore: ff21f96f114720fae096d385b9273087191bd184
+  cloud_firestore: b8c0e15fa49dfff87c2817d288b577e5dca2df13
   contacts_service: 849e1f84281804c8bfbec1b4c3eedcb23c5d3eca
   DKImagePickerController: b5eb7f7a388e4643264105d648d01f727110fc3d
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   esys_flutter_share: 403498dab005b36ce1f8d7aff377e81f0621b0b4
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
   Firebase: 8db6f2d1b2c5e2984efba4949a145875a8f65fe5
-  firebase_analytics: 52ba26fcfb9cc90f76b36c4e5200cc0a7e9024eb
-  firebase_auth: cb33b01b51904969161403bbcb20036519f0c578
-  firebase_core: 66cbd013dcb58a0420669b3e824ede4841100f7d
-  firebase_messaging: 8499cb9086aaf14fd6a44e57061535d9c6b17424
-  firebase_remote_config: fae1229134d60988e1e9f2ef77849bcd7cad0843
+  firebase_analytics: 36a619088c46224900829f14f4daa71585693a6f
+  firebase_auth: d5159db3873478d1ac839af7b10d2f831516136a
+  firebase_core: 5d6a02f3d85acd5f8321c2d6d62877626a670659
+  firebase_messaging: 0aea2cd5885b65e19ede58ee3507f485c992cc75
+  firebase_remote_config: 7297b33f88ca82beacff00cc60cc1230bd9fc4c5
   FirebaseABTesting: 8a9d8df3acc2b43f4a22014ddf9f601bca6af699
   FirebaseAnalytics: 5dd088bd2e67bb9d13dbf792d1164ceaf3052193
   FirebaseAuth: c92d49ada7948d1a23466e3db17bc4c2039dddc3
@@ -775,6 +770,7 @@ SPEC CHECKSUMS:
   flutter_share_me: dd04bcb65a595f76bd2fa0537df08fffc5a04903
   flutter_sms: 91ce41530f55c85d6524d82307a5d555844c086a
   flutter_statusbarcolor: 8afb1071ed8c58be929f1e32b36c629771fd2259
+  flutter_text_to_speech: 7384947a2265b6e305d0c2c7de90ef33879b853c
   flutter_user_agent: 27c45d034dc31b80948d29998cea52cd3a7bf936
   flutter_webview_plugin: ed9e8a6a96baf0c867e90e1bce2673913eeac694
   fluttertoast: b644586ef3b16f67fae9a1f8754cef6b2d6b634b
@@ -796,30 +792,29 @@ SPEC CHECKSUMS:
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   multi_image_picker: 58577ab96d99b35c82d626db7d81906d14c2b667
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
-  OneSignal: fd223b247d46e0aa97c7712f3e031c29798d018a
-  onesignal_flutter: 605e4ed3c95a9705db9f5073a66ac6d0045b3fee
-  package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
+  OneSignal: b72068b06b359f22e27404edee87338f4b68e783
+  onesignal_flutter: 48eddd9a4eddc7ed5052eef8a6ab6f9ed73e6ebc
+  package_info: 78cabb3c322943c55d39676f4a5bfc748c01d055
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   permission_handler: 8278954f2382902f63f00dd8828769c0bd6d511b
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Protobuf: adb85cd18a15bd1a777c158af9fd6e612a0e6d69
-  razorpay-pod: e2e8cf25aea59eef51c6851716f188df71adab86
+  Protobuf: 7327d4444215b5f18e560a97f879ff5503c4581c
+  razorpay-pod: 7991bc0823d0f4b2934b4ea87967d54d2e284e2c
   razorpay_flutter: 84b3bfd206ae9c9c2a9ba585524a1b3d8102b6c1
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   searchable_dropdown: 5058be32fdc5e0481d300ff2087129072e71bd62
   share: 0b2c3e82132f5888bccca3351c504d0003b3b410
-  shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
+  shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
   sms: 1e6c3082da09f2a4961d61bc254cc86865993ffd
   speech_recognition: b5319aace06c3633c0547de44899f6e0bf8b2168
   speech_to_text: b43a7d99aef037bd758ed8e45d79bbac035d2dfe
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   Try: 5ef669ae832617b3cee58cb2c6f99fb767a4ff96
-  unique_identifier: ebb92b4bc4ad9c2c93f85cb5e02f70ad168a2bd6
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   vibration: b5a33e764c3f609a975b9dca73dce20fdde627dc
   webview_flutter: d2b4d6c66968ad042ad94cbb791f5b72b4678a96
 
-PODFILE CHECKSUM: 4e56ff5b8b9690195685b6cb7440e00623ca49e2
+PODFILE CHECKSUM: 8aa1b7e22a2e790027560f8c29c3030d36f01149
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.10.1

@@ -36,8 +36,12 @@ class Menu {
         Icon: "event_society.png", IconName: "Events", IconLabel: "Events"));
     listofmenus.add(new Menu(
         Icon: "Vendors.png", IconName: "Vendors", IconLabel: "Vendors"));
+    // listofmenus.add(new Menu(
+    //     Icon: "reminder.png", IconName: "Reminders", IconLabel: "Reminders"));
+    // listofmenus.add(new Menu(
+    //     Icon: "deals.png", IconName: "OffersScreen", IconLabel: "Offers"));
     listofmenus.add(new Menu(
-        Icon: "reminder.png", IconName: "Reminders", IconLabel: "Reminders"));
+        Icon: "online-marketing.png", IconName: "AdvertisementScreen", IconLabel: "Advertisements"));
 
     return listofmenus;
   }

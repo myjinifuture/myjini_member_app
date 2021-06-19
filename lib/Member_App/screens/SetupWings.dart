@@ -17,9 +17,9 @@ import '../common/constant.dart';
 
 class SetupWings extends StatefulWidget {
   var wingData,societyId;
-  String mobileNo,societyCode;
+  String mobileNo,societyCode,Price_dropdownValue;
   bool isEdit = false;
-  SetupWings({this.wingData,this.societyId,this.mobileNo,this.societyCode,this.isEdit});
+  SetupWings({this.wingData,this.societyId,this.mobileNo,this.societyCode,this.isEdit,this.Price_dropdownValue});
   @override
   _SetupWingsState createState() => _SetupWingsState();
 }
@@ -47,6 +47,8 @@ class _SetupWingsState extends State<SetupWings> {
   @override
   void initState() {
     super.initState();
+    print("societyCode");
+    print(widget.societyCode);
     getWingsId(widget.societyId.toString());
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(
@@ -66,78 +68,6 @@ class _SetupWingsState extends State<SetupWings> {
     );
 
     // getState();
-  }
-
-  getState() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      filledOneWing = prefs.getString('madeAtleastOneWing');
-      print("filledOneWing");
-      print(filledOneWing);
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          stateLoading = true;
-        });
-        Future res = Services.GetState();
-        res.then((data) async {
-          setState(() {
-            stateLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              stateClassList = data;
-            });
-          }
-        }, onError: (e) {
-          showMsg("$e");
-          setState(() {
-            stateLoading = false;
-          });
-        });
-      } else {
-        showMsg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      showMsg("Something Went Wrong");
-      setState(() {
-        stateLoading = false;
-      });
-    }
-  }
-
-  getCity(String id) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          cityLoading = true;
-        });
-        Future res = Services.GetCity(id);
-        res.then((data) async {
-          setState(() {
-            cityLoading = false;
-          });
-          if (data != null && data.length > 0) {
-            setState(() {
-              cityClassList = data;
-            });
-          }
-        }, onError: (e) {
-          showMsg("$e");
-          setState(() {
-            cityLoading = false;
-          });
-        });
-      } else {
-        showMsg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      showMsg("Something Went Wrong");
-      setState(() {
-        cityLoading = false;
-      });
-    }
   }
 
   bool foundOneRegisteredBuilding = false;
@@ -220,6 +150,8 @@ class _SetupWingsState extends State<SetupWings> {
     );
   }
 
+  bool dataLoaded = false;
+
   getSocietyDetails(String societyCode) async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -246,22 +178,30 @@ class _SetupWingsState extends State<SetupWings> {
               print(data.Data["Society"][0]);
               print("code before register screen");
               print(data.Data["Society"][0]["societyCode"]);
+              dataLoaded = true;
               if(widget.isEdit){
                 Navigator.pushReplacementNamed(context, '/Dashboard');
               }
               else{
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RegisterScreen(
-                        Name: data.Data["Society"][0]["ContactPerson"],
-                        mobileNo: data.Data["Society"][0]["ContactMobile"],
-                        societyCode :data.Data["Society"][0]["societyCode"],
-                        societyId : widget.societyId,
-                        societyNameAndSocietyAddress : data.Data["Society"][0]["Name"]+" ,"+data.Data["Society"][0]["Address"]
+                if(dataLoaded) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          RegisterScreen(
+                              Name: data.Data["Society"][0]["ContactPerson"],
+                              mobileNo: data
+                                  .Data["Society"][0]["ContactMobile"],
+                              societyCode: data
+                                  .Data["Society"][0]["societyCode"],
+                              societyId: widget.societyId,
+                              societyNameAndSocietyAddress: data
+                                  .Data["Society"][0]["Name"] + " ," + data
+                                  .Data["Society"][0]["Address"]
+                          ),
                     ),
-                  ),
-                );
+                  );
+                }
               }
               // Clipboard.setData(new ClipboardData(text: widget.societyCode));
             });
@@ -343,8 +283,10 @@ class _SetupWingsState extends State<SetupWings> {
                                           societyCode: widget.societyCode,
                                           noOfWings: widget.wingData,
                                           mobileNo: widget.mobileNo,
-                                          isEdit: widget.isEdit
-                                      )));
+                                          isEdit: widget.isEdit,
+                                      ),
+                              ),
+                              );
                             }
                             // Navigator.pushNamed(context, "/WingDetail");
                           },

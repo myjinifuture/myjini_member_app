@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show Platform;
+import 'dart:io' show InternetAddress, Platform, SocketException;
 
 import 'package:easy_permission_validator/easy_permission_validator.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,9 +11,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Admin_App/Screens/AddAmenitiesScreen.dart';
 import 'package:smart_society_new/Admin_App/Screens/AddDocument.dart';
 import 'package:smart_society_new/Admin_App/Screens/AddEvent.dart';
+
 //admin App screens
 import 'package:smart_society_new/Admin_App/Screens/AddGallary.dart';
 import 'package:smart_society_new/Admin_App/Screens/AddNotice.dart';
@@ -23,6 +25,7 @@ import 'package:smart_society_new/Admin_App/Screens/Complaints.dart';
 import 'package:smart_society_new/Admin_App/Screens/Dashboard.dart';
 import 'package:smart_society_new/Admin_App/Screens/DirectoryMember.dart';
 import 'package:smart_society_new/Admin_App/Screens/Document.dart';
+import 'package:smart_society_new/Admin_App/Screens/VendorsAdminScreen.dart';
 import 'package:smart_society_new/Admin_App/Screens/EditDocument.dart';
 import 'package:smart_society_new/Admin_App/Screens/EventsAdmin.dart';
 import 'package:smart_society_new/Admin_App/Screens/Expense.dart';
@@ -65,18 +68,27 @@ import 'package:smart_society_new/Member_App/component/NotificationPopup.dart';
 import 'package:smart_society_new/Member_App/screens/AddDailyResource.dart';
 import 'package:smart_society_new/Member_App/screens/AddFamilyMember.dart';
 import 'package:smart_society_new/Member_App/screens/AddGuest.dart';
+import 'package:smart_society_new/Member_App/screens/AdvertisementScreen.dart';
+import 'package:smart_society_new/Member_App/screens/OffersScreen.dart';
+import 'package:smart_society_new/Member_App/screens/OffersListingScreen.dart';
+import 'package:smart_society_new/Member_App/screens/ViewOfferScreen.dart';
 import 'package:smart_society_new/Member_App/screens/AdvertisementCreate.dart';
 import 'package:smart_society_new/Member_App/screens/AdvertisementManage.dart';
 import 'package:smart_society_new/Member_App/screens/Amenities.dart';
 import 'package:smart_society_new/Member_App/screens/Approval_Pending.dart';
 import 'package:smart_society_new/Member_App/screens/BankDetails.dart';
 import 'package:smart_society_new/Member_App/screens/BannerScreen.dart';
+import 'package:smart_society_new/Member_App/screens/DailyServicesScreen.dart';
 import 'package:smart_society_new/Member_App/screens/Bills.dart';
 import 'package:smart_society_new/Member_App/screens/BuildingInfo.dart';
 import 'package:smart_society_new/Member_App/screens/Committees.dart';
 import 'package:smart_society_new/Member_App/screens/ComplaintScreen.dart';
 import 'package:smart_society_new/Member_App/screens/ContactList.dart';
 import 'package:smart_society_new/Member_App/screens/ContactUs.dart';
+import 'package:smart_society_new/Member_App/screens/DailyServicesStaffListing.dart';
+import 'package:smart_society_new/Member_App/screens/DailyServicesStaffProfileScreen.dart';
+import 'package:smart_society_new/Member_App/screens/StaffReviewListingScreen.dart';
+import 'package:smart_society_new/Member_App/screens/RateNowScreen.dart';
 import 'package:smart_society_new/Member_App/screens/CreateBuildingScreen.dart';
 import 'package:smart_society_new/Member_App/screens/CreateBuildingSlider.dart';
 import 'package:smart_society_new/Member_App/screens/CreateSociety.dart';
@@ -89,6 +101,7 @@ import 'package:smart_society_new/Member_App/screens/EventDetail.dart';
 import 'package:smart_society_new/Member_App/screens/Events.dart';
 import 'package:smart_society_new/Member_App/screens/FamilyMemberDetail.dart';
 import 'package:smart_society_new/Member_App/screens/GalleryScreen.dart';
+import 'package:smart_society_new/Member_App/screens/MyStaffScreen.dart';
 import 'package:smart_society_new/Member_App/screens/Reminders.dart';
 import 'package:smart_society_new/Member_App/screens/AllRemindersScreen.dart';
 import 'package:smart_society_new/Member_App/screens/AddReminderScreen.dart';
@@ -125,10 +138,11 @@ import 'package:smart_society_new/Member_App/screens/VisitorSuccess.dart';
 import 'package:smart_society_new/Member_App/screens/WingDetail.dart';
 import 'package:smart_society_new/Member_App/screens/WingFlat.dart';
 import 'package:smart_society_new/Member_App/screens/getPendingApprovals.dart';
+import 'package:smart_society_new/Member_App/screens/AddStaff.dart';
 import 'package:vibration/vibration.dart';
+import 'package:smart_society_new/Member_App/screens/BroadcastMessagePopUp.dart';
 
 import './Member_App/./screens/Ringing.dart';
-import './Member_App/screens/AddStaff.dart';
 import './Member_App/screens/SOS.dart';
 import 'Admin_App/Screens/AddAMC.dart';
 import 'Admin_App/Screens/AddExpense.dart';
@@ -139,6 +153,7 @@ import 'Admin_App/Screens/RulesAndRegulations.dart';
 import 'Admin_App/Screens/amcList.dart';
 import 'AllAdvertisementData.dart';
 import 'Mall_App/Providers/CartProvider.dart';
+import 'Member_App/common/Services.dart';
 import 'Member_App/screens/AddEmergencySocietyWise.dart';
 import 'Member_App/screens/DirectoryProfileFamily.dart';
 import 'Member_App/screens/DirectoryProfileVehicle.dart';
@@ -146,74 +161,131 @@ import 'Member_App/screens/NoticeBoard.dart';
 import 'Member_App/screens/VerifiedOrNot.dart';
 import 'Member_App/screens/addEmergencyNumberSocietyWise.dart';
 import 'Member_App/screens/fromMemberScreen.dart';
+import 'Member_App/src/global_bloc.dart';
+import 'package:smart_society_new/Member_App/common/constant.dart' as cnst;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  Platform.isAndroid ? OneSignal.shared.init(
-    "d48ee1f9-8f00-4208-bb5c-057f7e5fe0dc",
-    iOSSettings: {
-      OSiOSSettings.autoPrompt: false,
-      OSiOSSettings.inAppLaunchUrl: false,
-    },
-  ):OneSignal.shared.init(
-    "d48ee1f9-8f00-4208-bb5c-057f7e5fe0dc",
-    iOSSettings: {
-      OSiOSSettings.autoPrompt: true,
-      OSiOSSettings.inAppLaunchUrl: true,
-    },
-  );
+  Platform.isAndroid
+      ? OneSignal.shared.init(
+          "d48ee1f9-8f00-4208-bb5c-057f7e5fe0dc",
+          iOSSettings: {
+            OSiOSSettings.autoPrompt: false,
+            OSiOSSettings.inAppLaunchUrl: false,
+          },
+        )
+      : OneSignal.shared.init(
+          "d48ee1f9-8f00-4208-bb5c-057f7e5fe0dc",
+          iOSSettings: {
+            OSiOSSettings.autoPrompt: true,
+            OSiOSSettings.inAppLaunchUrl: true,
+          },
+        );
 
   OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.none);
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          builder: (context) => CartProvider(),
-        ),
-      ],
-      child: MyApp(),
-    ),
+    // MultiProvider(
+    //   providers: [
+    //     ChangeNotifierProvider(
+    //       create: (_) => HomeScreen(),
+    //     ),
+    //   ],
+    //   child:
+    MyApp(),
   );
+  // );
 }
-
 
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
-
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   AppLifecycleState _notification;
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
       _notification = state;
     });
     print("notification on main page");
+    rejectCall();
     print(_notification);
+  }
+
+  String MemberId = "";
+  rejectCall() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    MemberId = prefs.getString(cnst.Session.Member_Id);
+    onRejectCall();
+  }
+
+  onRejectCall() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        // if(commonId==null){
+        //   Navigator.pushAndRemoveUntil(
+        //       context, SlideLeftRoute(page: HomeScreen()), (route) => false);
+        // }
+        // else {
+        var body = {
+          "memberId": MemberId,
+          "watchmanId": ""
+        };
+        print("body");
+        print(body);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        Services.responseHandler(apiName: "member/rejectCallForMemberWatchman", body: body)
+            .then(
+                (data) async {
+                  if (data.Data.toString() == '1') {
+                // Navigator.pushReplacementNamed(context, "/HomeScreen");
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => DirecotryScreen(),
+                //   ),
+                // );
+              } else {
+                print("else called");
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => DirecotryScreen(),
+                // ),
+                // );
+              }
+            }, onError: (e) {
+          // showHHMsg("Something Went Wrong Please Try Again", "");
+        });
+      }
+    } on SocketException catch (_) {
+      // showHHMsg("No Internet Connection.", "");
+    }
   }
 
   // FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  // final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   static const platform = const MethodChannel('com.myjini_member.app');
 
-
   String Title;
   String bodymessage;
-
 
   // void initPlayer() {
   //   advancedPlayer = new AudioPlayer();
   //   audioCache = new AudioCache(fixedPlayer: advancedPlayer);
   // }
 
+  GlobalBloc globalBloc;
 
   @override
   void initState() {
+    globalBloc = GlobalBloc();
     WidgetsBinding.instance.addObserver(this);
     // this.initState();
     // initPlayer();
@@ -235,20 +307,23 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
   }
 
   var playerId;
+
   void _handleSendNotification() async {
     var status = await OneSignal.shared.getPermissionSubscriptionState();
 
-     playerId = status.subscriptionStatus.userId;
+    playerId = status.subscriptionStatus.userId;
     print("playerid");
     print(playerId);
   }
 
   bool isAppOpenedAfterNotification = false;
+
   Future<void> initOneSignalNotification() async {
     debugPrint("initOneSignalNotification called");
     //Remove this method to stop OneSignal Debugging
     OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
-    OneSignal.shared.setNotificationReceivedHandler((OSNotification notification) {
+    OneSignal.shared
+        .setNotificationReceivedHandler((OSNotification notification) {
       // will be called whenever a notification is received
       isAppOpenedAfterNotification = true;
       debugPrint(isAppOpenedAfterNotification.toString());
@@ -274,30 +349,30 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
       );
       if (data["notificationType"].toString() == "AddEvent") {
         Get.to(() => Events());
+      } else if (data["NotificationType"].toString() ==
+          "BroadcastMessageFromSociety") {
+        Get.to(() => BroadcastMessagePopUp(
+              broadcastMessage: data["Message"],
+            ));
       }
       if (data["notificationType"].toString() == "JoinSociety") {
         Get.to(() => getPendingApprovals());
-      }
-      else if (data["notificationType"].toString() == "AddDocument") {
+      } else if (data["notificationType"].toString() == "AddDocument") {
         Get.to(() => DocumentScreen());
-
-      }
-      else if (data["notificationType"].toString() == "AddGallery") {
+      } else if (data["notificationType"].toString() == "AddGallery") {
         Get.to(() => GalleryScreen());
-      }
-      else if (data["notificationType"].toString() == "StaffEntry" ||
+      } else if (data["notificationType"].toString() == "StaffEntry" ||
           data["notificationType"].toString() == "StaffLeave") {
         Get.to(() => NoticeBoard(message: data));
-      }
-      else if (data["notificationType"] == 'Visitor') {
-        Get.to(() => NotificationPopup(data,unknownEntry : true));
-      }
-      else if (data["notificationType"] == 'SendComplainToAdmin') {
-      Get.to(() => NotificationPopup(data,unknownEntry : false));
-      }
-      else if (data["NotificationType"] == "SOS") {
-        Get.to(() => SOS(data,
-                        body: notification.payload.body,));
+      } else if (data["notificationType"] == 'Visitor') {
+        Get.to(() => NotificationPopup(data, unknownEntry: true));
+      } else if (data["notificationType"] == 'SendComplainToAdmin') {
+        Get.to(() => NotificationPopup(data, unknownEntry: false));
+      } else if (data["NotificationType"] == "SOS") {
+        Get.to(() => SOS(
+              data,
+              body: notification.payload.body,
+            ));
         //for vibration
       } else if (data["CallResponseIs"] == "Accepted" &&
           data["NotificationType"] == "VideoCalling") {
@@ -305,16 +380,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
         print(data);
         Get.to(() => JoinPage(
             unknownEntry: false,
-            fromMemberData:
-            notification.payload.additionalData));
+            againPreviousScreen: false,
+            fromMemberData: notification.payload.additionalData));
       } else if (data["CallResponseIs"] == "Accepted" &&
           data["NotificationType"] == "VoiceCall") {
         print('data');
         print(data);
         Get.to(() => JoinPage(
             unknownEntry: false,
-            fromMemberData:
-            notification.payload.additionalData));
+            againPreviousScreen: false,
+            fromMemberData: notification.payload.additionalData));
       } else if (data["CallResponseIs"] == "Rejected" &&
           data["NotificationType"] == "VideoCalling") {
         print('data');
@@ -332,36 +407,72 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
       } else if (data["NotificationType"] == "VideoCalling") {
         print('data');
         print(data);
-        Get.to(() => Ringing(
-          fromMemberData: notification.payload.additionalData,
-        ),);
-
-      } else if (data["notificationType"] == "UnknownVisitor" && data["CallStatus"] == "Accepted") {
+        Get.to(
+          () => Ringing(
+            fromMemberData: notification.payload.additionalData,
+          ),
+        );
+      } else if (data["notificationType"] == "UnknownVisitor" &&
+          data["CallStatus"] == "Accepted") {
         print('data');
         print(data);
-        Get.to(() => JoinPage(
-            unknownEntry: false,
-            fromMemberData:
-            notification.payload.additionalData),);
-      }
-      else if (data["notificationType"] == "UnknownVisitor" && data["CallStatus"] == "Rejected") {
+        Get.to(
+          () => JoinPage(
+              unknownEntry: false,
+              againPreviousScreen: false,
+              fromMemberData: notification.payload.additionalData),
+        );
+      } else if (data["notificationType"] == "UnknownVisitor" &&
+          data["CallStatus"] == "Rejected") {
         print('data');
         print(data);
         Get.to(() => FromMemberScreen(
             fromMemberData: notification.payload.additionalData,
             rejected: "rejected"));
-      }
-      else if (data["notificationType"] == "UnknownVisitor") {
+      } else if (data["notificationType"] == "UnknownVisitor") {
         print('data');
         print(data);
-        Get.to(() => Ringing(
-            fromMemberData: notification.payload.additionalData),);
-      }
-      else if (data["NotificationType"] == "VoiceCall") {
+        Get.to(
+          () => Ringing(fromMemberData: notification.payload.additionalData),
+        );
+      } else if (data["NotificationType"] == "RejectVideoCallingBySender") {
         print('data');
         print(data);
-        Get.to(() => Ringing(
-            fromMemberData: notification.payload.additionalData),);
+        Get.to(
+          () => FromMemberScreen(
+              fromMemberData: notification.payload.additionalData,
+              rejected: "rejected"),
+        );
+      } else if (data["NotificationType"] == "RejectVideoCallingByReceiver") {
+        print('data');
+        print(data);
+        Get.to(
+          () => FromMemberScreen(
+              fromMemberData: notification.payload.additionalData,
+              rejected: "rejected"),
+        );
+      } else if (data["NotificationType"] == "RejectVoiceCallBySender") {
+        print('data');
+        print(data);
+        Get.to(
+          () => FromMemberScreen(
+              fromMemberData: notification.payload.additionalData,
+              rejected: "rejected"),
+        );
+      } else if (data["NotificationType"] == "RejectVoiceCallByReceiver") {
+        print('data');
+        print(data);
+        Get.to(
+          () => FromMemberScreen(
+              fromMemberData: notification.payload.additionalData,
+              rejected: "rejected"),
+        );
+      } else if (data["NotificationType"] == "VoiceCall") {
+        print('data');
+        print(data);
+        Get.to(
+          () => Ringing(fromMemberData: notification.payload.additionalData),
+        );
       }
     });
 
@@ -371,12 +482,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
       print("PERMISSION STATE CHANGED");
     });
 
-    OneSignal.shared.setSubscriptionObserver((OSSubscriptionStateChanges changes) {
+    OneSignal.shared
+        .setSubscriptionObserver((OSSubscriptionStateChanges changes) {
       // will be called whenever the subscription changes
       //(ie. user gets registered with OneSignal and gets a user ID)
     });
 
-    OneSignal.shared.setEmailSubscriptionObserver((OSEmailSubscriptionStateChanges emailChanges) {
+    OneSignal.shared.setEmailSubscriptionObserver(
+        (OSEmailSubscriptionStateChanges emailChanges) {
       // will be called whenever then user's email subscription changes
       // (ie. OneSignal.setEmail(email) is called and the user gets registered
     });
@@ -1059,151 +1172,172 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: Get.key,
-      // navigatorKey: navigatorKey,
-      debugShowCheckedModeBanner: false,
-      title: "MYJINI",
+    return Provider<GlobalBloc>.value(
+      value: globalBloc,
+      child: MaterialApp(
+        navigatorKey: Get.key,
+        // navigatorKey: navigatorKey,
+        debugShowCheckedModeBanner: false,
+        title: "MYJINI",
+        initialRoute: '/',
+        routes: {
+          '/': (context) => Splashscreen(
+                isAppOpenedAfterNotification: isAppOpenedAfterNotification,
+                navigatorKey: Get.key,
+              ),
+          '/LoginScreen': (context) => LoginScreen(playerId: playerId),
+          '/GetPass': (context) => GetPass(),
+          '/HomeScreen': (context) => HomeScreen(),
+          '/getEmergencyNumberSocietyWise': (context) =>
+              getEmergencyNumberSocietyWise(),
+          '/Notice': (context) => NoticeScreen(),
+          '/WaitingScreen': (context) => Approval_admin(),
+          '/Complaints': (context) => MyComplaints(),
+          '/AllAdvertisements': (context) => AllAdvertisementData(),
+          '/AddComplaints': (context) => ComplaintScreen(),
+          '/Directory': (context) => DirecotryScreen(),
+          '/RegisterScreen': (context) => RegisterScreen(),
+          '/MyProfile': (context) => MyProfileScreen(),
+          '/Documents': (context) => DocumentScreen(),
+          '/Emergency': (context) => EmergencyNumber(),
+          '/Gallery': (context) => GalleryScreen(),
+          '/Reminders': (context) => Reminders(),
+          '/DailyServicesScreen': (context) => DailyServicesScreen(),
+          '/DailyServicesStaffListing': (context) =>
+              DailyServicesStaffListing(),
+          '/DailyServicesStaffProfileScreen': (context) =>
+              DailyServicesStaffProfileScreen(),
+          '/StaffReviewListingScreen': (context) => StaffReviewListingScreen(),
+          '/RateNowScreen': (context) => RateNowScreen(),
+          '/EditDocument': (context) => EditDocument(),
+          '/AllRemindersScreen': (context) => AllRemindersScreen(),
+          '/AddReminderScreen': (context) => AddReminderScreen(),
+          '/AdvertisementScreen': (context) => AdvertisementScreen(),
+          '/UpdateProfile': (context) => UpdateProfile(),
+          '/AddGuest': (context) => AddGuest(),
+          '/AddStaff': (context) => AddStaff(),
+          '/MyGuestList': (context) => MyGuestList(),
+          '/EditGallery': (context) => EditGallery(),
+          '/Rules': (context) => SocietyRules(),
+          '/FamilyMemberDetail': (context) => FamilyMemberDetail(),
+          '/AddFamily': (context) => AddFamilyMember(),
+          '/GetMyVehicle': (context) => GetMyvehicle(),
+          '/DirectoryProfileVehicle': (context) => DirectoryProfileVehicle(),
+          '/DirectoryProfileFamily': (context) => DirectoryProfileFamily(),
+          '/Polling': (context) => PollingScreen(),
+          '/ViewGalleryPhotos': (context) => ViewGalleryPhotos(),
+          '/Maintainence': (context) => Maintainance(),
+          '/OffersScreen': (context) => OffersScreen(),
+          '/OffersListingScreen': (context) => OffersListingScreen(),
+          '/ViewOfferScreen': (context) => ViewOfferScreen(),
+          '/GlobalSearch': (context) => GlobalSearchMembers(),
+          '/AdvertisementCreate': (context) => AdvertisementCreate(),
+          '/NoticeBoard': (context) => NoticeBoard(),
+          '/Vendors': (context) => ServicesScreen(
+                initialIndex: 0,
+              ),
+          '/MyServiceRequests': (context) => MyServiceRequests(),
+          '/AdvertisementList': (context) => AdvertisementList(),
+          '/MyWishList': (context) => MyWishList(),
+          '/IntroScreen': (context) => IntroScreen(),
+          '/VendorsAdminScreen': (context) => VendorsAdminScreen(),
+          '/VisitorSuccess': (context) => VisitorSuccess(),
+          '/CreateSociety': (context) => CreateSociety(),
+          '/SetupWings': (context) => SetupWings(),
+          '/WingDetail': (context) => WingDetail(),
+          '/ViewVisitorPopUpImage': (context) => ViewVisitorPopUpImage(),
+          '/WingFlat': (context) => WingFlat(),
+          '/CustomerProfile': (context) => CustomerProfile(),
+          '/AddDailyResource': (context) => AddDailyResource(),
 
-      initialRoute: '/',
-      routes: {
-        '/': (context) => Splashscreen(isAppOpenedAfterNotification:isAppOpenedAfterNotification,navigatorKey: navigatorKey,),
-        '/LoginScreen': (context) => LoginScreen(playerId:playerId),
-        '/GetPass': (context) => GetPass(),
-        '/HomeScreen': (context) => HomeScreen(navigatorKey:navigatorKey),
-        '/getEmergencyNumberSocietyWise': (context) => getEmergencyNumberSocietyWise(),
-        '/Notice': (context) => NoticeScreen(),
-        '/WaitingScreen': (context) => Approval_admin(),
-        '/Complaints': (context) => MyComplaints(),
-        '/AllAdvertisements': (context) => AllAdvertisementData(),
-        '/AddComplaints': (context) => ComplaintScreen(),
-        '/Directory': (context) => DirecotryScreen(),
-        '/RegisterScreen': (context) => RegisterScreen(),
-        '/MyProfile': (context) => MyProfileScreen(),
-        '/Documents': (context) => DocumentScreen(),
-        '/Emergency': (context) => EmergencyNumber(),
-        '/Gallery': (context) => GalleryScreen(),
-        '/Reminders': (context) => Reminders(),
-        '/EditDocument': (context) => EditDocument(),
-        '/AllRemindersScreen': (context) => AllRemindersScreen(),
-        '/AddReminderScreen': (context) => AddReminderScreen(),
-        '/UpdateProfile': (context) => UpdateProfile(),
-        '/AddGuest': (context) => AddGuest(),
-        '/AddStaff': (context) => AddStaff(),
-        '/MyGuestList': (context) => MyGuestList(),
-        '/EditGallery': (context) => EditGallery(),
-        '/Rules': (context) => SocietyRules(),
-        '/FamilyMemberDetail': (context) => FamilyMemberDetail(),
-        '/AddFamily': (context) => AddFamilyMember(),
-        '/GetMyVehicle': (context) => GetMyvehicle(),
-        '/DirectoryProfileVehicle': (context) => DirectoryProfileVehicle(),
-        '/DirectoryProfileFamily': (context) => DirectoryProfileFamily(),
-        '/Polling': (context) => PollingScreen(),
-        '/ViewGalleryPhotos': (context) => ViewGalleryPhotos(),
-        '/Maintainence': (context) => Maintainance(),
-        '/GlobalSearch': (context) => GlobalSearchMembers(),
-        '/AdvertisementCreate': (context) => AdvertisementCreate(),
-        '/NoticeBoard': (context) => NoticeBoard(),
-        '/Vendors': (context) => ServicesScreen(),
-        '/MyServiceRequests': (context) => MyServiceRequests(),
-        '/AdvertisementList': (context) => AdvertisementList(),
-        '/MyWishList': (context) => MyWishList(),
-        '/IntroScreen': (context) => IntroScreen(),
-        '/VisitorSuccess': (context) => VisitorSuccess(),
-        '/CreateSociety': (context) => CreateSociety(),
-        '/SetupWings': (context) => SetupWings(),
-        '/WingDetail': (context) => WingDetail(),
-        '/ViewVisitorPopUpImage': (context) => ViewVisitorPopUpImage(),
-        '/WingFlat': (context) => WingFlat(),
-        '/CustomerProfile': (context) => CustomerProfile(),
-        '/AddDailyResource': (context) => AddDailyResource(),
+          '/AdvertisementManage': (context) => AdvertisementManage(),
+          '/ContactList': (context) => ContactList(),
+          '/Committee': (context) => Committees(),
+          '/Amenities': (context) => Amenities(),
+          '/DailyHelp': (context) => DailyHelp(),
+          '/Mall': (context) => Mall(),
+          '/Cart': (context) => Cart(),
+          '/Bills': (context) => Bills(),
+          '/TermsAndConditions': (context) => TermsAndConditions(),
+          '/PrivacyPolicy': (context) => PrivacyPolicy(),
+          '/Statistics': (context) => Statistics(),
+          '/ContactUs': (context) => ContactUs(),
+          '/MySociety': (context) => MySociety(),
+          '/BankDetails': (context) => BankDetails(),
+          '/BuildingInfo': (context) => BuildingInfo(),
+          '/Events': (context) => Events(),
+          '/EventDetail': (context) => EventDetail(),
+          //---------------- Digital Card  -------------------------------
+          '/RegistrationDC': (context) => RegistrationDC(),
 
-        '/AdvertisementManage': (context) => AdvertisementManage(),
-        '/ContactList': (context) => ContactList(),
-        '/Committee': (context) => Committees(),
-        '/Amenities': (context) => Amenities(),
-        '/DailyHelp': (context) => DailyHelp(),
-        '/Mall': (context) => Mall(),
-        '/Cart': (context) => Cart(),
-        '/Bills': (context) => Bills(),
-        '/TermsAndConditions': (context) => TermsAndConditions(),
-        '/PrivacyPolicy': (context) => PrivacyPolicy(),
-        '/Statistics': (context) => Statistics(),
-        '/ContactUs': (context) => ContactUs(),
-        '/MySociety': (context) => MySociety(),
-        '/BankDetails': (context) => BankDetails(),
-        '/BuildingInfo': (context) => BuildingInfo(),
-        '/Events': (context) => Events(),
-        '/EventDetail': (context) => EventDetail(),
-        //---------------- Digital Card  -------------------------------
-        '/RegistrationDC': (context) => RegistrationDC(),
-
-        //----------------  Admin App    -----------------------------
-        '/Dashboard': (context) => Dashboard(),
-        '/AddNotice': (context) => AddNotice(),
-        '/AddDocument': (context) => AddDocument(),
-        '/DirectoryMember': (context) => DirectoryMember(),
-        '/AllNotice': (context) => Notice(),
-        '/Document': (context) => Document(),
-        '/Visitor': (context) => VisitorByWing(),
-        '/Staff': (context) => StaffInOut(),
-        '/RulesAndRegulations': (context) => RulesAndRegulations(),
-        '/AddRules': (context) => AddRules(),
-        '/AllComplaints': (context) => Complaints(),
-        '/MemberProfile': (context) => MemberProfile(),
-        '/Gallary': (context) => Gallary(),
-        '/AddGallary': (context) => AddGallary(),
-        '/Income': (context) => Income(),
-        '/Expense': (context) => Expense(),
-        '/BalanceSheet': (context) => BalanceSheet(),
-        '/ExpenseByMonth': (context) => ExpenseByMonth(),
-        '/IncomeByMonth': (context) => IncomeByMonth(),
-        '/AddIncome': (context) => AddIncome(),
-        '/AddExpense': (context) => AddExpense(),
-        '/AllPolling': (context) => Polling(),
-        '/AddPolling': (context) => AddPolling(),
-        '/amcList': (context) => amcList(),
-        '/AddAMC': (context) => AddAMC(),
-        '/StaffInOut': (context) => StaffInOut(),
-        '/EventsAdmin': (context) => EventsAdmin(),
-        '/AddEvent': (context) => AddEvent(),
-        '/AddMemberSOSContacts': (context) => AddMemberSOSContacts(),
-        '/AddAmenitiesScreen': (context) => AddAmenitiesScreen(),
-        '/getAmenitiesScreen': (context) => getAmenitiesScreen(),
-        '/JoinCreateBuildingScreen': (context) => JoinCreateBuildingScreen(),
-        '/CreateBuildingScreen': (context) => CreateBuildingScreen(),
-        '/CreateBuildingSlider': (context) => CreateBuildingSlider(),
-        '/SetupWingScreen': (context) => SetupWingScreen(),
-        '/BannerScreen': (context) => BannerScreen(),
-        //===============digital card screen=============
-        '/AddCard': (context) => AddCard(),
-        '/ChangeTheme': (context) => ChangeTheme(),
-        '/DashBoard1': (context) => DashBoard1(),
-        '/EditOffer': (context) => EditOffer(),
-        '/EditService': (context) => EditService(),
-        '/Home': (context) => Home(),
-        '/getPendingApprovals': (context) => getPendingApprovals(),
-        '/More': (context) => More(),
-        '/OfferDetail': (context) => OfferDetail(),
-        '/Offers': (context) => Offers(),
-        '/MemberServices': (context) => MemberServices(),
-        '/ShareHistory': (context) => ShareHistory(),
-        '/ProfileDetail': (context) => ProfileDetail(),
-        '/AddService': (context) => AddService(),
-        '/AddOffer': (context) => AddOffer(),
-        '/AddEmergencySocietyWise': (context) => AddEmergencySocietyWise(),
-        '/Ringing': (context) => Ringing(),
-        '/SOSPage': (context) => SOSpage(),
-        '/BloodPlasma': (context) => BloodPlasma(),
-        '/AddPlasmaDonor': (context) => AddPlasmaDonor(),
-      },
-      onUnknownRoute: (settings) => MaterialPageRoute(
-          builder: (context) => NoRouteScreen(
-                routeName: settings.name,
-              )),
-      theme: ThemeData(
-        fontFamily: 'OpenSans',
-        primarySwatch: constant.appPrimaryMaterialColor,
+          //----------------  Admin App    -----------------------------
+          '/Dashboard': (context) => Dashboard(),
+          '/AddNotice': (context) => AddNotice(),
+          '/AddDocument': (context) => AddDocument(),
+          '/DirectoryMember': (context) => DirectoryMember(),
+          '/AllNotice': (context) => Notice(),
+          '/Document': (context) => Document(),
+          '/Visitor': (context) => VisitorByWing(),
+          '/Staff': (context) => StaffInOut(),
+          '/RulesAndRegulations': (context) => RulesAndRegulations(),
+          '/AddRules': (context) => AddRules(),
+          '/AllComplaints': (context) => Complaints(),
+          '/MemberProfile': (context) => MemberProfile(),
+          '/Gallary': (context) => Gallary(),
+          '/AddGallary': (context) => AddGallary(),
+          '/Income': (context) => Income(),
+          '/Expense': (context) => Expense(),
+          '/BalanceSheet': (context) => BalanceSheet(),
+          '/ExpenseByMonth': (context) => ExpenseByMonth(),
+          '/IncomeByMonth': (context) => IncomeByMonth(),
+          '/AddIncome': (context) => AddIncome(),
+          '/AddExpense': (context) => AddExpense(),
+          '/AllPolling': (context) => Polling(),
+          '/AddPolling': (context) => AddPolling(),
+          '/MyStaffScreen': (context) => MyStaffScreen(),
+          '/amcList': (context) => amcList(),
+          '/AddAMC': (context) => AddAMC(),
+          '/StaffInOut': (context) => StaffInOut(),
+          '/EventsAdmin': (context) => EventsAdmin(),
+          '/AddEvent': (context) => AddEvent(),
+          '/AddMemberSOSContacts': (context) => AddMemberSOSContacts(),
+          '/AddAmenitiesScreen': (context) => AddAmenitiesScreen(),
+          '/getAmenitiesScreen': (context) => getAmenitiesScreen(),
+          '/JoinCreateBuildingScreen': (context) => JoinCreateBuildingScreen(),
+          '/CreateBuildingScreen': (context) => CreateBuildingScreen(),
+          '/CreateBuildingSlider': (context) => CreateBuildingSlider(),
+          '/SetupWingScreen': (context) => SetupWingScreen(),
+          '/BannerScreen': (context) => BannerScreen(),
+          //===============digital card screen=============
+          '/AddCard': (context) => AddCard(),
+          '/ChangeTheme': (context) => ChangeTheme(),
+          '/DashBoard1': (context) => DashBoard1(),
+          '/EditOffer': (context) => EditOffer(),
+          '/EditService': (context) => EditService(),
+          '/Home': (context) => Home(),
+          '/getPendingApprovals': (context) => getPendingApprovals(),
+          '/More': (context) => More(),
+          '/OfferDetail': (context) => OfferDetail(),
+          '/Offers': (context) => Offers(),
+          '/MemberServices': (context) => MemberServices(),
+          '/ShareHistory': (context) => ShareHistory(),
+          '/ProfileDetail': (context) => ProfileDetail(),
+          '/AddService': (context) => AddService(),
+          '/AddOffer': (context) => AddOffer(),
+          '/AddEmergencySocietyWise': (context) => AddEmergencySocietyWise(),
+          '/Ringing': (context) => Ringing(),
+          '/SOSPage': (context) => SOSpage(),
+          '/BloodPlasma': (context) => BloodPlasma(),
+          '/AddPlasmaDonor': (context) => AddPlasmaDonor(),
+        },
+        onUnknownRoute: (settings) => MaterialPageRoute(
+            builder: (context) => NoRouteScreen(
+                  routeName: settings.name,
+                )),
+        theme: ThemeData(
+          fontFamily: 'Roboto',
+          primarySwatch: constant.appPrimaryMaterialColor,
+        ),
       ),
     );
   }
@@ -1368,4 +1502,3 @@ class _OverlayScreenState extends State<OverlayScreen> {
     );
   }
 }
-

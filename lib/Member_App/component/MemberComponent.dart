@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:share/share.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,10 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:smart_society_new/Admin_App/Screens/MemberProfile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:smart_society_new/Admin_App/Common/Constants.dart' as cnst;
-import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
+import 'package:esys_flutter_share/esys_flutter_share.dart' as S;
 import 'package:smart_society_new/Member_App/common/Services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MemberComponent extends StatefulWidget {
   var memberData;
@@ -37,47 +40,50 @@ class _MemberComponentState extends State<MemberComponent> {
           .getUrl(Uri.parse("http://smartsociety.itfuturz.com/${ImgUrl}"));
       var response = await request.close();
       Uint8List bytes = await consolidateHttpClientResponseBytes(response);
-      await Share.files('Share Profile', {'eyes.vcf': bytes}, 'image/pdf');
+      await S.Share.files('Share Profile', {'eyes.vcf': bytes}, 'image/pdf');
     }
   }
 
   bool isLoading = false;
   String Data = "";
+  var shareMyAddressContent;
 
-  GetVcard() async {
+  shareMyAddress() async {
     try {
       final result = await InternetAddress.lookup('google.com');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String name = prefs.getString(constant.Session.Name);
+      String flatNo = prefs.getString(constant.Session.FlatNo);
+      String wing = prefs.getString(constant.Session.Wing);
+      String mapLink = prefs.getString(constant.Session.mapLink);
+      String address = prefs.getString(constant.Session.Address);
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
+        var body = {
+          "name": name,
+          "flatNo": flatNo,
+          "wing": wing,
+          "mapLink": mapLink,
+          "address": address,
+        };
+        Services.responseHandler(
+            apiName: "admin/shareMemberSocietyDetails", body: body)
+            .then((data) async {
+          if (data.Data!=null) {
+            setState(() {
+              shareMyAddressContent=data.Data;
+            });
+          }
+        }, onError: (e) {
+          showHHMsg("$e","");
         });
-
-        Services.GetVcardofMember(widget.memberData["SocietyData"][0]['_id'].toString()).then(
-                (data) async {
-              setState(() {
-                isLoading = false;
-              });
-              if (data != null) {
-                setState(() {
-                  Data = data;
-                });
-                shareFile('${Data}');
-              } else {
-                setState(() {
-                  isLoading = false;
-                });
-              }
-            }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
+      } else {
+        showHHMsg("No Internet Connection.","");
       }
     } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
+      showHHMsg("Something Went Wrong","");
     }
   }
+
 
   showHHMsg(String title, String msg) {
     showDialog(
@@ -97,6 +103,13 @@ class _MemberComponentState extends State<MemberComponent> {
         );
       },
     );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    shareMyAddress();
+    super.initState();
   }
 
   @override
@@ -201,7 +214,8 @@ class _MemberComponentState extends State<MemberComponent> {
                       IconButton(
                           icon: Icon(Icons.share),
                           onPressed: () {
-                            GetVcard();
+                            Share.share(
+                                shareMyAddressContent);
                           }),
                     ],
                   ),

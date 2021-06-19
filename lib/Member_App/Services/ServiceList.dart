@@ -25,61 +25,11 @@ class _ServiceListState extends State<ServiceList>  {
   List _vendorData = [];
   List PackageList = [];
 
-  @override
-  void initState() {
-    print("Service Id: " + widget.ServiceId);
-    //print("Service Id: " + widget.ServiceData["Id"].toString());
-    print("Service title: " + widget.servicetitle);
-    // _getServiceData();
-    _getServicePackage();
-    _getVendorData();
-    print("MMMM => " + widget.ServiceData.toString());
-  }
-
   _openWhatsapp(mobile) {
     String whatsAppLink = cnst.whatsAppLink;
     String urlwithmobile = whatsAppLink.replaceAll("#mobile", "91$mobile");
     String urlwithmsg = urlwithmobile.replaceAll("#msg", "");
     launch(urlwithmsg);
-  }
-
-  _getServicePackage() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        String id = widget.ServiceData["Id"].toString();
-        Future res = Services.GetServicePackage(id);
-        setState(() {
-          isLoading = true;
-        });
-
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              PackageList = data;
-              isLoading = false;
-            });
-            print("HelloWorld => " + PackageList.toString());
-            print("HelloWorld => " + PackageList.length.toString());
-          } else {
-            setState(() {
-              PackageList = [];
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on NewLead Data Call $e");
-          showMsg("$e");
-        });
-      } else {
-        showMsg("Something went Wrong!");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {
@@ -134,41 +84,6 @@ class _ServiceListState extends State<ServiceList>  {
       showHHMsg("No Internet Connection.", "");
     }
   }*/
-
-  _getVendorData() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-
-        Services.GetVendorData(widget.ServiceId.toString()).then((Data) async {
-          setState(() {
-            isLoading = false;
-          });
-          if (Data != null && Data.length > 0) {
-            setState(() {
-              _vendorData = Data;
-            });
-            print("hhhh => " + _vendorData.toString());
-            print("hhhh => " + _vendorData.length.toString());
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          showHHMsg("Try Again.", "");
-        });
-      }
-    } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.", "");
-    }
-  }
 
   showHHMsg(String title, String msg) {
     showDialog(

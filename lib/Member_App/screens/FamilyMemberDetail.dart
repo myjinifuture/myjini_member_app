@@ -99,36 +99,6 @@ class _FamilyMemberDetailState extends State<FamilyMemberDetail> {
     );
   }
 
-  _DeleteFamilyMember(String Id) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        setState(() {
-          isLoading = true;
-        });
-        Services.DeleteFamilyMember(Id).then((data) async {
-          if (data.Data == "1") {
-            setState(() {
-              isLoading = false;
-            });
-            GetFamilyDetail();
-          } else {
-            isLoading = false;
-            showHHMsg("Member Is Not Deleted", "");
-          }
-        }, onError: (e) {
-          isLoading = false;
-          showHHMsg("$e", "");
-          isLoading = false;
-        });
-      } else {
-        showHHMsg("No Internet Connection.", "");
-      }
-    } on SocketException catch (_) {
-      showHHMsg("Something Went Wrong", "");
-    }
-  }
-
   void _showConfirmDialog(String Id) {
     showDialog(
       context: context,
@@ -151,7 +121,6 @@ class _FamilyMemberDetailState extends State<FamilyMemberDetail> {
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
                 Navigator.of(context).pop();;
-                _DeleteFamilyMember(Id);
               },
             ),
           ],

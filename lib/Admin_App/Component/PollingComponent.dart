@@ -5,13 +5,18 @@ import 'package:smart_society_new/Admin_App/Common/Constants.dart' as cnst;
 import 'dart:io';
 import '../../Member_App/./common/Services.dart';
 import 'package:pie_chart/pie_chart.dart';
+import '../Screens/AddPolling.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class PollingComponent extends StatefulWidget {
   var _pollingData;
   int index;
   String totalMembersInSociety;
+  Function deleted;
+  Function updated;
 
-  PollingComponent(this._pollingData, this.index,this.totalMembersInSociety);
+  PollingComponent(this._pollingData, this.index,this.totalMembersInSociety,
+      {this.deleted,this.updated});
 
   @override
   _PollingComponentState createState() => _PollingComponentState();
@@ -108,29 +113,12 @@ class _PollingComponentState extends State<PollingComponent> {
     // widget._pollingData[widget.index]["PollOptions"].length+=1;
     for(int i=0;i<widget._pollingData[widget.index]["PollOptions"].length;i++) {
       responsePercent+=widget._pollingData[widget.index]["PollOptions"][i]["ResponsePercent"];
-      // data.addAll({
-      //   widget._pollingData[widget.index]["PollOptions"][i]["pollOption"]:
-      //   widget._pollingData[widget.index]["PollOptions"][i]["ResponsePercent"]/100,
-      // // });
-      // if(i == widget._pollingData[widget.index]["PollOptions"].length - 1){
-      //   data.addAll({
-      //     "No Response":
-      //     (100 - responsePercent)/100,
-      //   });
-      // }
-      // else{
-        // responsePercent +=
-        // widget._pollingData[widget.index]["PollOptions"][i]["ResponsePercent"];
         print(widget._pollingData[widget.index]["PollOptions"][i]["ResponsePercent"]/100);
         print(widget._pollingData[widget.index]["PollOptions"][i]["pollOption"]);
         data.addAll({
           widget._pollingData[widget.index]["PollOptions"][i]["pollOption"]:
           widget._pollingData[widget.index]["PollOptions"][i]["ResponsePercent"]/100,
         });
-      // percentageList.add({
-      //   "value" : widget._pollingData[widget.index]["PollOptions"][i]["ResponsePercent"].toString(),
-      // });
-      // }
       percentageList[i] = Row(
         children: [
           Text("${double.parse(widget._pollingData[widget.index]["PollOptions"][i]["ResponsePercent"].toString()).round()}",
@@ -147,9 +135,6 @@ class _PollingComponentState extends State<PollingComponent> {
       "No Reponse":
       (100 - responsePercent)/100,
     });
-    // percentageList.add({
-    //   "value" : (100 - responsePercent).toString(),
-    // });
     percentageList[percentageList.length-1] = Row(
       children: [
         Text("${double.parse((100 - responsePercent).toString()).round()}",
@@ -179,7 +164,6 @@ class _PollingComponentState extends State<PollingComponent> {
         var data = {
           "pollQuestionId" : pollingQuestionId
         };
-
         Services.responseHandler(apiName: "admin/getResponseOfPoll",body: data)
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
@@ -187,20 +171,82 @@ class _PollingComponentState extends State<PollingComponent> {
               responseToPolling = data.Data;
             });
           } else {
-            // setState(() {
-            //   isLoading = false;
-            // });
           }
         }, onError: (e) {
           showMsg("Something Went Wrong Please Try Again");
-          // setState(() {
-          //   isLoading = false;
-          // });
         });
       }
     } on SocketException catch (_) {
       showMsg("No Internet Connection.");
     }
+  }
+
+  _deletePollingQuestion() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        // widget.onChange("loading");
+        var data = {
+          "pollQuestionId" : widget._pollingData[widget.index]["_id"]
+        };
+        print("data");
+        print(data);
+        Services.responseHandler(apiName: "admin/deletePollQuestion", body: data)
+            .then((data) async {
+          if (data.Data.toString() == "1" && data.IsSuccess == true) {
+            // widget.onChange("false");
+            Fluttertoast.showToast(
+                msg: "Question Deleted Successfully!!",
+                backgroundColor: Colors.red,
+                gravity: ToastGravity.TOP,
+                textColor: Colors.white);
+            widget.updated();
+            Navigator.of(context).pop();
+            // widget.deleted();
+          } else {
+            // widget.onChange("false");
+            showMsg("Polling Is Not Deleted");
+          }
+        }, onError: (e) {
+          // widget.onChange("false");
+          print("Error : on Delete Notice $e");
+          showMsg("Something Went Wrong Please Try Again");
+          // widget.onChange("false");
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("Something Went Wrong");
+    }
+  }
+
+  void _showConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("MYJINI"),
+          content: new Text("Are You Sure You Want To Delete this Polling Question ?"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("No",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w600)),
+              onPressed: () {
+                Navigator.of(context).pop();;
+              },
+            ),
+            new FlatButton(
+              child: new Text("Yes",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w600)),
+              onPressed: () {
+                _deletePollingQuestion();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -238,6 +284,33 @@ class _PollingComponentState extends State<PollingComponent> {
                               color: cnst.appPrimaryMaterialColor),
                         ),
                       ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AddPolling(question : widget._pollingData[widget.index]["pollQuestion"],
+                              wings : widget._pollingData[widget.index]["pollFor"]["wingId"],
+                                polloptions : widget._pollingData[widget.index]["PollOptions"],
+                                  Id:widget._pollingData[widget.index]["_id"],
+                                  onUpdate: widget.updated,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Image.asset("images/edit_icon.png",
+                            width: 24, height: 24, fit: BoxFit.fill),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          _showConfirmDialog();
+                        },
+                        child: Image.asset("images/delete_icon.png",
+                            width: 24, height: 24, fit: BoxFit.fill),
+                      ),
                     ],
                   ),
                 ),
@@ -246,28 +319,30 @@ class _PollingComponentState extends State<PollingComponent> {
                 Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          PieChart(
-                            dataMap: data,
-                            colorList:
-                            _colors, // if not declared, random colors will be chosen
-                            animationDuration: Duration(milliseconds: 1500),
-                            chartLegendSpacing: 10.0,
-                            chartRadius: MediaQuery.of(context).size.width /
-                                2.7, //determines the size of the chart
-                            showChartValuesInPercentage: true,
-                            showChartValues: true,
-                            showChartValuesOutside: false,
-                            chartValueBackgroundColor: Colors.grey[200],
-                            showLegends: true,
-                            legendPosition:
-                            LegendPosition.right, //can be changed to top, left, bottom
-                            decimalPlaces: 1,
-                            showChartValueLabel: true,
-                            initialAngle: 0,
-                            chartValueStyle: defaultChartValueStyle.copyWith(
-                              color: Colors.blueGrey[900].withOpacity(0.9),
+                          Expanded(
+                            child: PieChart(
+                              dataMap: data,
+                              colorList:
+                              _colors, // if not declared, random colors will be chosen
+                              animationDuration: Duration(milliseconds: 1500),
+                              chartLegendSpacing: 10.0,
+                              chartRadius: MediaQuery.of(context).size.width /
+                                  2.7, //determines the size of the chart
+                              showChartValuesInPercentage: true,
+                              showChartValues: true,
+                              showChartValuesOutside: false,
+                              chartValueBackgroundColor: Colors.grey[200],
+                              showLegends: true,
+                              legendPosition:
+                              LegendPosition.right, //can be changed to top, left, bottom
+                              decimalPlaces: 1,
+                              showChartValueLabel: true,
+                              initialAngle: 0,
+                              chartValueStyle: defaultChartValueStyle.copyWith(
+                                color: Colors.blueGrey[900].withOpacity(0.9),
+                              ),
+                              chartType: ChartType.disc, //can be changed to ChartType.ring
                             ),
-                            chartType: ChartType.disc, //can be changed to ChartType.ring
                           ),
                           Padding(
                             padding: const EdgeInsets.only(bottom:4.0),

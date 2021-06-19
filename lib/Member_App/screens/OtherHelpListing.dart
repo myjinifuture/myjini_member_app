@@ -14,8 +14,8 @@ class OtherHelpListing extends StatefulWidget {
 class _OtherHelpListingState extends State<OtherHelpListing> {
   bool isLoading = true;
   List otherList = [];
-  String SocietyId;
-  String initialDate;
+  String SocietyId,wingId;
+  String initialDate,flatId;
 
   @override
   void initState() {
@@ -29,6 +29,9 @@ class _OtherHelpListingState extends State<OtherHelpListing> {
   _getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     SocietyId = prefs.getString(Session.SocietyId);
+    wingId = prefs.getString(Session.WingId);
+    flatId = prefs.getString(Session.FlatId);
+
     _getMaidListing(initialDate);
   }
 
@@ -38,27 +41,28 @@ class _OtherHelpListingState extends State<OtherHelpListing> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
           "societyId": SocietyId,
+          "wingId" : wingId,
+          "flatId" : flatId,
           "toDate": date
         };
         setState(() {
           isLoading = true;
         });
         otherList.clear();
-        Services.responseHandler(apiName: "admin/getStaffEntry",body: data).then((data) async {
+        Services.responseHandler(apiName: "admin/getStaffEntry_v3",body: data).then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               // otherList = data.Data;
-              isLoading = false;
               for(int i=0;i<data.Data.length;i++){
                 if(data.Data[i]["StaffData"][0]["staffCategory"]!="Maid"){
                   otherList.add(data.Data[i]);
                 }
               }
+              isLoading = false;
             });
           } else {
             setState(() {
               isLoading = false;
-              otherList = data.Data;
             });
           }
         }, onError: (e) {

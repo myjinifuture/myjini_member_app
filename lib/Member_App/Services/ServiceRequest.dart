@@ -51,7 +51,6 @@ class _ServiceRequestState extends State<ServiceRequest> {
 
   @override
   void initState() {
-    _getServicePackage();
     print("Meher=> " + widget.servicetitle);
     print("Meher=> " + PackageList.toString());
     print("Meher111 => " + _SelectedPackageList.toString());
@@ -79,87 +78,6 @@ class _ServiceRequestState extends State<ServiceRequest> {
     txtservice.text = widget.servicetitle;
     txtservicepackage.text = widget.ServiceData["Title"];
   }
-
-  addServicereq() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // pr.show();
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-
-        String _board = "";
-        //String _serviceamtlist="",_commisionper="",_commissionamt="";
-
-        for (int i = 0; i < _SelectedPackageList.length; i++) {
-          if (i < _SelectedPackageList.length - 1) {
-            _board = _board + _SelectedPackageList[i].toString() + ",";
-          } else {
-            _board = _board + _SelectedPackageList[i].toString();
-          }
-        }
-      /*  for (int i = 0; i < _SelectedCommisionAmountList.length; i++) {
-          if (i < _SelectedCommisionAmountList.length - 1) {
-            _commissionamt = _commissionamt + _SelectedCommisionAmountList[i].toString() + ",";
-          } else {
-            _commissionamt = _commissionamt + _SelectedCommisionAmountList[i].toString();
-          }
-        }
-        for (int i = 0; i < _SelectedCommisionPercentageList.length; i++) {
-          if (i < _SelectedCommisionPercentageList.length - 1) {
-            _commisionper = _commisionper + _SelectedCommisionPercentageList[i].toString() + ",";
-          } else {
-            _commisionper = _commisionper + _SelectedCommisionPercentageList[i].toString();
-          }
-        }
-        for (int i = 0; i < _SelectedServiceAmountList.length; i++) {
-          if (i < _SelectedServiceAmountList.length - 1) {
-            _serviceamtlist = _serviceamtlist + _SelectedServiceAmountList[i].toString() + ",";
-          } else {
-            _serviceamtlist = _serviceamtlist + _SelectedServiceAmountList[i].toString();
-          }
-        }
-*/
-        var data = {
-          "Id": 0,
-          "MemberId": prefs.getString(cnst.Session.Member_Id),
-          "ServiceId": widget.ServiceId,
-          "ServicePackageId":  widget.ServiceData["Id"].toString(),
-          "TotalAmount": finalamt,
-          "Date": _date.toString(),
-          "VendorId": widget._vendorData["Id"],
-          "ServicePackagePriceID": _board,
-        };
-
-        print("Save Vendor Data = ${data}");
-        Services.AddServiceRequest(data).then((data) async {
-          // pr.hide();
-
-          if (data.Data != "0" && data.IsSuccess == true) {
-            Fluttertoast.showToast(
-                msg: "Service Added Successfully !",
-                textColor: Colors.black,
-                toastLength: Toast.LENGTH_LONG);
-
-            Navigator.pushReplacementNamed(context, "/HomeScreen");
-
-          /*  Navigator.pushNamedAndRemoveUntil(
-                context, "/Dashboard", (Route<dynamic> route) => false);*/
-          } else {
-            showMsg(data.Message, title: "Error");
-          }
-        }, onError: (e) {
-          // pr.hide();
-          showMsg("Try Again.");
-        });
-      } else
-        showMsg("No Internet Connection.");
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsg("No Internet Connection.");
-    }
-  }
-
-
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -194,46 +112,6 @@ class _ServiceRequestState extends State<ServiceRequest> {
           .toString();
     }
     return final_date;
-  }
-
-  _getServicePackage() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        String id = widget.ServiceData["Id"].toString();
-        Future res = Services.GetServicePackage(id);
-        setState(() {
-          isLoading = true;
-        });
-
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              PackageList = data;
-              isLoading = false;
-            });
-            print("Meher123=> " + PackageList.toString());
-            /*print("HelloWorld => " + PackageList.toString());
-            print("HelloWorld => " + PackageList.length.toString());*/
-          } else {
-            setState(() {
-              PackageList = [];
-              isLoading = false;
-            });
-          }
-        }, onError: (e) {
-          setState(() {
-            isLoading = false;
-          });
-          print("Error : on NewLead Data Call $e");
-          showMsg("$e");
-        });
-      } else {
-        showMsg("Something went Wrong!");
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
   }
 
   showMsg(String msg, {String title = 'MYJINI'}) {
@@ -825,7 +703,6 @@ class _ServiceRequestState extends State<ServiceRequest> {
                                if (_formkey.currentState
                                   .validate()) {
                                  if (isValidate) {
-                                   addServicereq();
                                  }
 
                               }

@@ -1,29 +1,51 @@
 import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_society_new/Mall_App/Screens/HomeScreen.dart';
+import 'package:smart_society_new/Mall_App/transitions/slide_route.dart';
 import 'package:smart_society_new/Member_App/common/settings.dart';
+import 'package:smart_society_new/Member_App/screens/DirectoryScreen.dart';
 import 'package:vibration/vibration.dart';
+import 'dart:ui' as ui;
+
+import 'Services.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:smart_society_new/Member_App/common/constant.dart' as cnst;
 
 // import 'package:wakelock/wakelock.dart';
 
 class JoinPage extends StatefulWidget {
   Map fromMemberData;
-  String videoCall = "",entryIdWhileGuestEntry="";
+  String videoCall = "", entryIdWhileGuestEntry = "";
   String unknownVisitorEntryId = "";
-  bool unknownEntry;
+  bool unknownEntry,againPreviousScreen;
+  bool isAudioCallAccepted;
 
-  JoinPage({
-    this.fromMemberData,
-    this.videoCall,this.entryIdWhileGuestEntry,this.unknownVisitorEntryId,this.unknownEntry
-  });
+  JoinPage(
+      {this.fromMemberData,
+        this.videoCall,
+        this.entryIdWhileGuestEntry,
+        this.unknownVisitorEntryId,
+        this.unknownEntry,
+        this.isAudioCallAccepted,
+      this.againPreviousScreen
+      });
 
   @override
   _JoinPageState createState() => _JoinPageState();
 }
 
-class _JoinPageState extends State<JoinPage> {
+class _JoinPageState extends State<JoinPage> with AutomaticKeepAliveClientMixin{
+
+  @override
+  bool get wantKeepAlive => true;
+
   static final _users = <int>[];
   bool muted = false;
   AgoraRtmChannel _channel;
@@ -33,9 +55,38 @@ class _JoinPageState extends State<JoinPage> {
 
   @override
   void initState() {
+    GetLocalData();
     initialize();
+    _getContactPermission();
     Vibration.cancel();
     super.initState();
+  }
+
+  String MemberId = "";
+  GetLocalData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String memberId = prefs.getString(cnst.Session.Member_Id);
+
+    if (memberId != null && memberId != "")
+      setState(() {
+        MemberId = memberId;
+      });
+  }
+
+
+  Future<PermissionStatus> _getContactPermission() async {
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.camera);
+    if (permission != PermissionStatus.granted &&
+        permission != PermissionStatus.denied) {
+      Map<PermissionGroup, PermissionStatus> permissionStatus =
+          await PermissionHandler()
+              .requestPermissions([PermissionGroup.camera]);
+      return permissionStatus[PermissionGroup.camera] ??
+          PermissionStatus.unknown;
+    } else {
+      return permission;
+    }
   }
 
   @override
@@ -48,32 +99,26 @@ class _JoinPageState extends State<JoinPage> {
     super.dispose();
   }
 
+  var commonId;
+
   Future<void> initialize() async {
     await _initAgoraRtcEngine();
     _addAgoraEventHandlers();
-    await AgoraRtcEngine.enableWebSdkInteroperability(true);
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    var data;
-    // if(widget.fromMemberData==null){
-    //   data = preferences.getString('data');
-    // }
-    // else{
-    if(widget.unknownVisitorEntryId != null){
-      data = widget.unknownVisitorEntryId;
+    // await AgoraRtcEngine.enableWebSdkInteroperability(true);
+    if (widget.unknownVisitorEntryId != null) {
+      commonId = widget.unknownVisitorEntryId;
+    } else if (widget.entryIdWhileGuestEntry != null) {
+      commonId = widget.entryIdWhileGuestEntry.toString();
+    } else {
+      commonId = widget.fromMemberData["CallingId"].toString();
     }
-    else if(widget.entryIdWhileGuestEntry!=null){
-      data = widget.entryIdWhileGuestEntry.toString();
-    }else{
-      data = widget.fromMemberData["CallingId"].toString();
-    }
-    // }
-    print("data on join page");
-    print(data);
-    widget.fromMemberData["NotificationType"] == "VoiceCall" || widget.videoCall=="false" ? await AgoraRtcEngine.disableVideo() : null;
+    widget.fromMemberData["NotificationType"] == "VoiceCall" ||
+        widget.videoCall == "false"
+        ? await AgoraRtcEngine.disableVideo()
+        : null;
     await AgoraRtcEngine.setParameters(
         '''{\"che.video.lowBitRateStreamParameter\":{\"width\":320,\"height\":180,\"frameRate\":15,\"bitRate\":140}}''');
-    await AgoraRtcEngine.joinChannel(null, data, null, 0).then((value) {
-      log("after join $value");
+    await AgoraRtcEngine.joinChannel(null, commonId, null, 0).then((value) {
       setState(() {
         loading = false;
       });
@@ -84,28 +129,18 @@ class _JoinPageState extends State<JoinPage> {
 
   Future<void> _initAgoraRtcEngine() async {
     await AgoraRtcEngine.create(APP_ID);
-    widget.fromMemberData["NotificationType"] == "VoiceCall" ? await AgoraRtcEngine.disableVideo():await AgoraRtcEngine.enableVideo();
+    widget.fromMemberData["NotificationType"] == "VoiceCall"
+        ? await AgoraRtcEngine.disableVideo()
+        : await AgoraRtcEngine.enableVideo();
   }
 
   void _addAgoraEventHandlers() {
-    // AgoraRtcEngine.onError = (dynamic code) {
-    //   print("error-> " + code.toString());
-    // };
-
     AgoraRtcEngine.onJoinChannelSuccess = (
-      String channel,
-      int uid,
-      int elapsed,
-    ) {
-      log("on join -> $channel");
-      print("on join2 -> ${uid.toString}");
+        String channel,
+        int uid,
+        int elapsed,
+        ) {
     };
-
-    // AgoraRtcEngine.onLeaveChannel = () {
-    //   setState(() {
-    //     _users.clear();
-    //   });
-    // };
 
     AgoraRtcEngine.onUserJoined = (int uid, int elapsed) {
       print("smit8 ${uid}");
@@ -125,7 +160,6 @@ class _JoinPageState extends State<JoinPage> {
   List<Widget> _getRenderViews() {
     print("smit 6");
     final List<AgoraRenderWidget> list = [];
-    //user.add(widget.channelId);
     _users.forEach((int uid) {
       list.add(AgoraRenderWidget(uid));
     });
@@ -142,16 +176,6 @@ class _JoinPageState extends State<JoinPage> {
           ),
         ),
       ],
-    );
-  }
-
-  /// Video view row wrapper
-  Widget _expandedVideoRow(List<Widget> views) {
-    final wrappedViews = views.map<Widget>(_videoView).toList();
-    return Expanded(
-      child: Row(
-        children: wrappedViews,
-      ),
     );
   }
 
@@ -172,15 +196,84 @@ class _JoinPageState extends State<JoinPage> {
               color: Colors.deepPurple,
             ),
             Expanded(child: views[1]),
-            // Expanded(child: views[0]),
-            // Expanded(child: views[1]),
-            // _expandedVideoRow([views[0]]),
-            // _expandedVideoRow([views[1]])
           ],
         );
         break;
       default:
         return Container();
+    }
+  }
+
+  showHHMsg(String title, String msg) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text(title),
+          content: new Text(msg),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();;
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  onRejectCall() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        // if(commonId==null){
+        //   Navigator.pushAndRemoveUntil(
+        //       context, SlideLeftRoute(page: HomeScreen()), (route) => false);
+        // }
+        // else {
+          var body = {
+            "memberId": MemberId,
+            "watchmanId": ""
+          };
+          print("body");
+          print(body);
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('commonId', commonId);
+          Services.responseHandler(apiName: "member/rejectCallForMemberWatchman", body: body)
+              .then(
+                  (data) async {
+                    if(widget.againPreviousScreen){
+                      Navigator.of(context).pop();
+                    }
+                else if (data.Data.toString() == '1') {
+                  print('call declined successfully');
+                  AgoraRtcEngine.destroy();
+                  Navigator.pushReplacementNamed(context, "/HomeScreen");
+                      // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => DirecotryScreen(),
+                  //   ),
+                  // );
+                } else {
+                  print("else called");
+                  AgoraRtcEngine.destroy();
+                       Navigator.pushReplacementNamed(context, "/HomeScreen");
+                      // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => DirecotryScreen(),
+                  // ),
+                  // );
+                }
+              }, onError: (e) {
+            showHHMsg("Something Went Wrong Please Try Again", "");
+          });
+      }
+    } on SocketException catch (_) {
+      showHHMsg("No Internet Connection.", "");
     }
   }
 
@@ -205,15 +298,8 @@ class _JoinPageState extends State<JoinPage> {
           ),
           RawMaterialButton(
             onPressed: () {
-              // Navigator.pushReplacementNamed(
-              //     context,'/HomeScreen');
-              if(widget.unknownEntry){
-                Navigator.of(context).pop();;
-              }
-              else {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              }
-              },
+              onRejectCall();
+            },
             child: Icon(
               Icons.call_end,
               color: Colors.white,
@@ -252,31 +338,51 @@ class _JoinPageState extends State<JoinPage> {
     AgoraRtcEngine.switchCamera();
   }
 
+  ScreenshotController screenshotController = ScreenshotController();
+  GlobalKey _globalKey = new GlobalKey();
+
+  Future<void> _capturePng() async {
+    try {
+      RenderRepaintBoundary boundary =
+      _globalKey.currentContext.findRenderObject();
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData byteData =
+      await image.toByteData(format: ui.ImageByteFormat.png);
+    } catch (e) {
+      print(e);
+    }  }
+
+  GlobalKey _containerKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     print("widget.memberdata");
     print(widget.fromMemberData);
     return WillPopScope(
-      onWillPop: (){
-        if(widget.unknownEntry){
-          Navigator.of(context).pop();;
-        }
-        else {
-          Navigator.pushReplacementNamed(context, '/HomeScreen');
-        }      },
+      onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
           title: Text('MYJINI'),
+          leading: Container(),
         ),
-        body: Center(
-          child: loading
-              ? CircularProgressIndicator()
-              : Stack(
+        body: RepaintBoundary(
+          key: _containerKey,
+          child: GestureDetector(
+            onDoubleTap: () => _capturePng(),
+            child: Screenshot(
+              controller : screenshotController,
+              child: Center(
+                child: loading
+                    ? CircularProgressIndicator()
+                    : Stack(
                   children: <Widget>[
                     _viewRows(),
                     _toolbar(),
                   ],
                 ),
+              ),
+            ),
+          ),
         ),
       ),
     );

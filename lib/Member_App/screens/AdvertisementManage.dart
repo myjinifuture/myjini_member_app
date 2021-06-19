@@ -28,38 +28,6 @@ class _AdvertisementManageState extends State<AdvertisementManage> {
     pr.style(message: 'Please Wait');
   }
 
-  getAdvertisementData() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        Future res = Services.GetMyAdvertisement();
-        setState(() {
-          isLoading = true;
-        });
-        res.then((data) async {
-          if (data != null && data.length > 0) {
-            setState(() {
-              _advertisementData = data;
-              isLoading = false;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-              _advertisementData = data;
-            });
-          }
-        }, onError: (e) {
-          showMsg("Something Went Wrong.\nPlease Try Again");
-          setState(() {
-            isLoading = false;
-          });
-        });
-      }
-    } on SocketException catch (_) {
-      showMsg("No Internet Connection.");
-    }
-  }
-
   String setDate(String date) {
     String final_date = "";
     var tempDate;
@@ -179,41 +147,12 @@ class _AdvertisementManageState extends State<AdvertisementManage> {
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
                 Navigator.of(context).pop();;
-                _deleteAdvertisement(Id, index);
               },
             ),
           ],
         );
       },
     );
-  }
-
-  _deleteAdvertisement(String id, int index) async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // pr.show();
-        Services.DeleteAdvertisement(id).then((data) async {
-          if (data.Data == "1") {
-            setState(() {
-              _advertisementData.removeAt(index);
-            });
-            // pr.hide();
-          } else {
-            isLoading = false;
-            showMsg("Something Went Wrong");
-          }
-        }, onError: (e) {
-          showMsg("Something Went Wrong.\nPlease Try Again");
-          // pr.hide();
-        });
-      } else {
-        showMsg("No Internet Connection.");
-      }
-    } on SocketException catch (_) {
-      // pr.hide();
-      showMsg("Something Went Wrong");
-    }
   }
 
   @override
@@ -233,8 +172,8 @@ class _AdvertisementManageState extends State<AdvertisementManage> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pushReplacementNamed(context, "/HomeScreen");
-            },
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/HomeScreen', (route) => false);            },
           ),
         ),
         body: isLoading

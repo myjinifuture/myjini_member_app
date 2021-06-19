@@ -11,6 +11,7 @@ import 'package:smart_society_new/Member_App/screens/updateMemberdetailform.dart
 import 'package:url_launcher/url_launcher.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class FamilyMemberComponent extends StatefulWidget {
   var familyData, memberName;
@@ -28,6 +29,8 @@ class _FamilyMemberComponentState extends State<FamilyMemberComponent> {
 
   @override
   Widget build(BuildContext context) {
+    print("widget.familyData");
+    print(widget.familyData);
     return GestureDetector(
       onTap: () {
         _settingModalBottomSheet();
@@ -51,18 +54,30 @@ class _FamilyMemberComponentState extends State<FamilyMemberComponent> {
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
                         children: [
-                          Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius:
-                                  BorderRadius.all(Radius.circular(100.0))),
-                              width: 80,
-                              height: 80,
-                              child: Padding(
-                                padding: const EdgeInsets.all(25.0),
-                                child: Image.asset("images/family.png",
-                                    width: 40, color: Colors.grey[400]),
-                              )),
+                          widget.familyData['Image'] == ''
+                              ? Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(100.0))),
+                                  width: 80,
+                                  height: 80,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(25.0),
+                                    child: Image.asset("images/family.png",
+                                        width: 40, color: Colors.grey[400]),
+                                  ),
+                                )
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: FadeInImage.assetNetwork(
+                                      placeholder: '',
+                                      image: constant.Image_Url +
+                                          "${widget.familyData['Image']}",
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.fill),
+                                ),
                           Text(
                             "${widget.familyData["Name"]}",
                             style: TextStyle(
@@ -109,7 +124,7 @@ class _FamilyMemberComponentState extends State<FamilyMemberComponent> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Share.share(
                               "Hello, My Name is ${widget.memberName}\nI have added you as a Family Member\nYou can Login from the application link below:\nhttp://tinyurl.com/wz2aeao\nMYJINI MANAGEMENT PVT LTD\nDownload MyJini App now to manage your society security, maintenance, staffing\nwww.myjini.in");
                         },
@@ -135,15 +150,17 @@ class _FamilyMemberComponentState extends State<FamilyMemberComponent> {
 
   //family detail bottom sheet
 
-  void _showConfirmDialog(String Id) {
+  void _showConfirmDialog(
+      {String memberId, String societyId, String wingId, String flatId}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDelete(
-          deleteId: Id,
-          onDelete: () {
-            widget.onDelete();
-          },
+          deleteId: memberId,
+          flatId: flatId,
+          societyId: societyId,
+          wingId: wingId,
+          onDelete: widget.onDelete,
         );
       },
     );
@@ -160,7 +177,8 @@ class _FamilyMemberComponentState extends State<FamilyMemberComponent> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -266,7 +284,13 @@ class _FamilyMemberComponentState extends State<FamilyMemberComponent> {
                                 onTap: () {
                                   Navigator.pop(context);
                                   _showConfirmDialog(
-                                      widget.familyData["_id"].toString());
+                                      memberId: widget.familyData["_id"],
+                                      societyId: widget.familyData["society"][0]
+                                          ["societyId"],
+                                      wingId: widget.familyData["society"][0]
+                                          ["wingId"],
+                                      flatId: widget.familyData["society"][0]
+                                          ["flatId"]);
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(5.0),
@@ -332,15 +356,21 @@ class _FamilyMemberComponentState extends State<FamilyMemberComponent> {
 
 class AlertDelete extends StatefulWidget {
   var deleteId;
+  var societyId;
+  var wingId;
+  var flatId;
   Function onDelete;
 
-  AlertDelete({this.deleteId, this.onDelete});
+  AlertDelete(
+      {this.deleteId, this.onDelete, this.societyId, this.flatId, this.wingId});
 
   @override
   _AlertDeleteState createState() => _AlertDeleteState();
 }
 
 class _AlertDeleteState extends State<AlertDelete> {
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -352,7 +382,7 @@ class _AlertDeleteState extends State<AlertDelete> {
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           onPressed: () {
-            Navigator.of(context).pop();;
+            Navigator.pop(context);
           },
         ),
         new FlatButton(
@@ -360,44 +390,79 @@ class _AlertDeleteState extends State<AlertDelete> {
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           onPressed: () {
-            _DeleteFamilyMember(widget.deleteId);
-            Navigator.of(context).pop();;
+            Navigator.pop(context);
+            deleteFamilyMember();
           },
         ),
       ],
     );
   }
 
-  _DeleteFamilyMember(String Id) async {
+  // _DeleteFamilyMember(String Id) async {
+  //   try {
+  //     final result = await InternetAddress.lookup('google.com');
+  //     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+  //       // setState(() {
+  //       //   isLoading = true;
+  //       // });
+  //       Services.DeleteFamilyMember(Id).then((data) async {
+  //         if (data.Data == "1") {
+  //           // setState(() {
+  //           //   isLoading = false;
+  //           // });
+  //
+  //           // Navigator.pushReplacement(
+  //           //     context, SlideLeftRoute(page: CustomerProfile()));
+  //           widget.onDelete();
+  //         } else {
+  //           // isLoading = false;
+  //           showHHMsg("Member Is Not Deleted", "");
+  //         }
+  //       }, onError: (e) {
+  //         //isLoading = false;
+  //         showHHMsg("$e", "");
+  //         //isLoading = false;
+  //       });
+  //     } else {
+  //       showHHMsg("No Internet Connection.", "");
+  //     }
+  //   } on SocketException catch (_) {
+  //     showHHMsg("Something Went Wrong", "");
+  //   }
+  // }
+
+  deleteFamilyMember() async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // setState(() {
-        //   isLoading = true;
-        // });
-        Services.DeleteFamilyMember(Id).then((data) async {
-          if (data.Data == "1") {
-            // setState(() {
-            //   isLoading = false;
-            // });
 
-            // Navigator.pushReplacement(
-            //     context, SlideLeftRoute(page: CustomerProfile()));
-            widget.onDelete();
+        var data = {
+          "memberId": widget.deleteId,
+          "societyId": widget.societyId,
+          "wingId": widget.wingId,
+          "flatId": widget.flatId,
+        };
+        Services.responseHandler(
+                apiName: "member/removeFromProperty", body: data)
+            .then((data) async {
+          if (data.Data.toString() == '1' ) {
+
+              Fluttertoast.showToast(
+                  msg: "Family member deleted Successfully!!!",
+                  backgroundColor: Colors.red,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.white);
+              widget.onDelete();
           } else {
-            // isLoading = false;
-            showHHMsg("Member Is Not Deleted", "");
+
           }
         }, onError: (e) {
-          //isLoading = false;
-          showHHMsg("$e", "");
-          //isLoading = false;
+
+          showHHMsg("Try Again.", "");
         });
-      } else {
-        showHHMsg("No Internet Connection.", "");
       }
     } on SocketException catch (_) {
-      showHHMsg("Something Went Wrong", "");
+      showHHMsg("No Internet Connection.", "");
     }
   }
 
@@ -412,7 +477,8 @@ class _AlertDeleteState extends State<AlertDelete> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],

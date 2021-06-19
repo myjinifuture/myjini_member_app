@@ -35,6 +35,7 @@ class _RulesAndRegulationsState extends State<RulesAndRegulations> {
     });
   }
 
+  String wingId;
   _getRules() async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -42,8 +43,11 @@ class _RulesAndRegulationsState extends State<RulesAndRegulations> {
         _rulesData.clear();
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String societyId = prefs.getString(constant.Session.SocietyId);
+         wingId = prefs.getString(constant.Session.WingId);
+         print("m------------>${wingId}");
         var data = {
           "societyId": societyId,
+          // "wingId" : wingId
         };
         setState(() {
           isLoading = true;
@@ -126,7 +130,8 @@ class _RulesAndRegulationsState extends State<RulesAndRegulations> {
                     itemBuilder: (BuildContext context, int index) {
                       return RulesComponent(
                         index: index,
-                        rulesData: _rulesData[index],
+                        rulesData: _rulesData[_rulesData.length-1-index],
+                        wingId : wingId,
                         // onChange: (type) {
                         //   if (type == "false")
                         //     setState(() {

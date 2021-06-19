@@ -23,12 +23,13 @@ class DocumentScreen extends StatefulWidget {
 class _DocumentScreenState extends State<DocumentScreen> {
   List DocumentData = new List();
   bool isLoading = false;
-  String SocietyId;
+  String SocietyId,wingId;
   bool downloading = false;
 
   _getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     SocietyId = prefs.getString(constant.Session.SocietyId);
+    wingId = prefs.getString(constant.Session.WingId);
   }
 
   @override
@@ -65,7 +66,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
           isLoading = true;
         });
         var data = {
-          "societyId" : SocietyId
+          "societyId" : SocietyId,
+          "wingId" : wingId
         };
         Services.responseHandler(apiName: "admin/getSocietyDocs",body: data).then((data) async {
           setState(() {
@@ -106,8 +108,8 @@ class _DocumentScreenState extends State<DocumentScreen> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/HomeScreen');
-              },
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/HomeScreen', (route) => false);              },
             ),
           ],
         );
@@ -194,7 +196,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                "${DocumentData[index]["Title"]}",
+                                "${DocumentData[DocumentData.length- 1 -index]["Title"]}",
                                 softWrap: true,
                                 textAlign: TextAlign.start,
                                 overflow: TextOverflow.ellipsis,
@@ -202,7 +204,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                                 style: TextStyle(
                                     fontSize: 15, fontWeight: FontWeight.w600),
                               ),
-                              Text(DocumentData[index]["dateTime"][0],
+                              Text(DocumentData[DocumentData.length- 1 -index]["dateTime"][0],
                               )],
                           ),
                         ),
@@ -216,7 +218,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                     GestureDetector(
                       onTap: () {
                         _launchURL(Image_Url +
-                            "${DocumentData[index]["FileAttachment"]}");
+                            "${DocumentData[DocumentData.length- 1 -index]["FileAttachment"]}");
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(6.0),
@@ -238,7 +240,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                     ),
                     // GestureDetector(
                     //   onTap: () {
-                    //     _downloadFile("${DocumentData[index]["FileAttachment"]}");
+                    //     _downloadFile("${DocumentData[DocumentData.length- 1 -index]["FileAttachment"]}");
                     //   },
                     //   child: Padding(
                     //     padding: const EdgeInsets.all(6.0),
@@ -260,9 +262,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
                     // ),
                     GestureDetector(
                       onTap: () {
-                        print(constant.Image_Url + DocumentData[index]["FileAttachment"]);
-                        var array = DocumentData[index]["FileAttachment"].split(".");
-                        launch("${constant.Image_Url + DocumentData[index]["FileAttachment"]}"); // ask monil to make changes 6 - number - FileAttachment
+                        print(constant.Image_Url + DocumentData[DocumentData.length- 1 -index]["FileAttachment"]);
+                        var array = DocumentData[DocumentData.length- 1 -index]["FileAttachment"].split(".");
+                        launch("${constant.Image_Url + DocumentData[DocumentData.length- 1 -index]["FileAttachment"]}"); // ask monil to make changes 6 - number - FileAttachment
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(6.0),
@@ -294,52 +296,47 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pushReplacementNamed(context, '/HomeScreen');
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            'Documents',
-            style: TextStyle(fontSize: 18),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(10),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'Documents',
+          style: TextStyle(fontSize: 18),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(10),
           ),
         ),
-        body: isLoading
-            ? Container(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            : DocumentData.length > 0
-                ? AnimationLimiter(
-                    child: ListView.builder(
-                        itemBuilder: _SocietyDocument,
-                        itemCount: DocumentData.length),
-                  )
-                : Container(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset("images/file.png",
-                              width: 70, height: 70, color: Colors.grey[300]),
-                          Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Text("No Document Found",
-                                style: TextStyle(color: Colors.grey[400])),
-                          )
-                        ],
-                      ),
+      ),
+      body: isLoading
+          ? Container(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : DocumentData.length > 0
+              ? AnimationLimiter(
+                  child: ListView.builder(
+                      itemBuilder: _SocietyDocument,
+                      itemCount: DocumentData.length),
+                )
+              : Container(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset("images/file.png",
+                            width: 70, height: 70, color: Colors.grey[300]),
+                        Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Text("No Document Found",
+                              style: TextStyle(color: Colors.grey[400])),
+                        )
+                      ],
                     ),
                   ),
-      ),
+                ),
     );
   }
 }

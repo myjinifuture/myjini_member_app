@@ -227,7 +227,7 @@ class _EventGallaryState extends State<EventGallary> {
                         staggeredTileBuilder: (_) => StaggeredTile.fit(2),
                       ),
                     ))
-                : NoDataComponent(),
+                : Center(child: Text('No Data Found'),),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.pushReplacement(

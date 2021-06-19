@@ -32,6 +32,7 @@ class _SplashscreenState extends State<Splashscreen> {
           .then((value) {
         // constant.NODE_API = "https://myjini.herokuapp.com/";
         constant.NODE_API = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
+        constant.Image_Url = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
         print("constant.NODE_API");
         print(constant.NODE_API);
         if (MemberId != null && MemberId != ""){

@@ -105,7 +105,7 @@ class _amcListState extends State<amcList> {
                           },
                         ),
                       ),
-                      ): NoDataComponent(),
+                      ): Center(child: Text('No Data Found'),),
                       MaterialButton(
                           height: 45,
                           minWidth: MediaQuery.of(context).size.width,

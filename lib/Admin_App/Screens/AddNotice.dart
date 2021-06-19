@@ -8,6 +8,7 @@ import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Admin_App/Common/Constants.dart';
@@ -73,6 +74,7 @@ class _AddNoticeState extends State<AddNotice> {
       societyId = prefs.getString(Session.SocietyId);
       memberId = prefs.getString(cnst.Session.Member_Id);
     });
+    getWingsId(societyId);
   }
 
   setData() {
@@ -149,6 +151,14 @@ class _AddNoticeState extends State<AddNotice> {
         _dateTime != null &&
         _dateTime != '') {
       try {
+        selectedWingId.clear();
+        for (int i = 0; i < selectedWing.length; i++) {
+          for(int j=0;j<wingsNameData.length;j++){
+            if(selectedWing[i].toString() == wingsNameData[j]["Name"].toString()){
+              selectedWingId.add(wingsNameData[j]["Id"].toString());
+            }
+          }
+        }
         final result = await InternetAddress.lookup('google.com');
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
           // pr.show();
@@ -185,15 +195,27 @@ class _AddNoticeState extends State<AddNotice> {
                     filename: filename.toString())
                 : null,
             "adminId" : memberId,
-            "deviceType" : Platform.isAndroid ? "Android" : "IOS"
+            "deviceType" : Platform.isAndroid ? "Android" : "IOS",
+            "wingIds": selectedWingId.toString().replaceAll("[","").toString().replaceAll("]", "").replaceAll(" ", "")
           });
-
+          print({
+            "Title": txtTitle.text,
+            "Description": txtDescription.text,
+            "societyId": societyId,
+            "FileAttachment": (filePath != null && filePath != '')
+                ? await MultipartFile.fromFile(filePath,
+                filename: filename.toString())
+                : null,
+            "adminId" : memberId,
+            "deviceType" : Platform.isAndroid ? "Android" : "IOS",
+            "wingIds": selectedWingId.toString().replaceAll("[","").toString().replaceAll("]", "").replaceAll(" ", "")
+          });
           Services.responseHandler(apiName: "admin/addNotice",body: formData).then((data) async {
             // pr.hide();
             if (data.Data.length > 0 && data.IsSuccess == true) {
-setState(() {
-  disableSaveNotice=true;
-});              Fluttertoast.showToast(
+              print(data.Message);
+
+Fluttertoast.showToast(
                   msg: "Notice Saved Successfully",
                   backgroundColor: Colors.green,
                   gravity: ToastGravity.TOP);
@@ -212,6 +234,48 @@ setState(() {
       }
     } else {
       showMsg("Please Fill All The Data.", title: "Alert !");
+    }
+  }
+
+
+  List wingsNameData = [];
+  List selectedWingId = [];
+  List wingsList = [];
+  List selectedWing = [];
+
+  getWingsId(String societyId) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var body = {
+          "societyId" : societyId
+        };
+        Services.responseHandler(apiName: "admin/getAllWingOfSociety",body: body).then((data) async {
+          if (data !=null) {
+            setState(() {
+              for(int i=0;i<data.Data.length;i++){
+                if(data.Data[i]["totalFloor"].toString()!="0"){
+                  wingsList.add(data.Data[i]);
+                }
+              }
+              for(int i=0;i<wingsList.length;i++){
+                wingsNameData.add({
+                  "Name" : wingsList[i]["wingName"],
+                  "Id" : wingsList[i]["_id"],
+                });
+              }
+            });
+
+          }
+        }, onError: (e) {
+          showMsg("$e");
+        });
+      } else {
+        showMsg("No Internet Connection.");
+      }
+    } on SocketException catch (_) {
+      showMsg("Something Went Wrong");
     }
   }
 
@@ -283,37 +347,30 @@ setState(() {
                     style: TextStyle(color: Colors.black),
                   ),
                 ),
-/*
-                GestureDetector(
-                  onTap: () {
-                    _showDatePicker();
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding: EdgeInsets.all(15),
-                    margin: EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.calendar_today,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20),
-                          child: Text(
-                            "${_dateTime.toString().substring(8, 10)}-${_dateTime.toString().substring(5, 7)}-${_dateTime.toString().substring(0, 4)}",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        )
-                      ],
-                    ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: MultiSelectFormField(
+                    autovalidate: false,
+                    title: Text('Select Wing'),
+                    validator: (value) {
+                      if (value == null || value.length == 0) {
+                        return 'Please select one or more options';
+                      }
+                    },
+                    dataSource: wingsNameData,
+                    textField: 'Name',
+                    valueField: 'Name',
+                    okButtonLabel: 'OK',
+                    cancelButtonLabel: 'CANCEL',
+                    hintWidget: Text('No Wing Selected'),
+                    change: () => selectedWing,
+                    onSaved: (value) {
+                      setState(() {
+                        selectedWing = value;
+                      });
+                    },
                   ),
                 ),
-*/
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -413,6 +470,9 @@ setState(() {
                   padding: EdgeInsets.only(top: 10),
                   child: RaisedButton(
                     onPressed: disableSaveNotice==false?() {
+                      setState(() {
+                        disableSaveNotice=true;
+                      });
                       addNotice();
                     }:null,
                     color: appPrimaryMaterialColor[700],
