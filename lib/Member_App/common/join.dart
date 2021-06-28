@@ -129,7 +129,7 @@ class _JoinPageState extends State<JoinPage> with AutomaticKeepAliveClientMixin{
 
   Future<void> _initAgoraRtcEngine() async {
     await AgoraRtcEngine.create(APP_ID);
-    widget.fromMemberData["NotificationType"] == "VoiceCall"
+    widget.fromMemberData["NotificationType"] == "VoiceCall" || widget.fromMemberData["isAudioCall"]
         ? await AgoraRtcEngine.disableVideo()
         : await AgoraRtcEngine.enableVideo();
   }

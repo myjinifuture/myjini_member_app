@@ -350,6 +350,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       if (data["notificationType"].toString() == "AddEvent") {
         Get.to(() => Events());
       } else if (data["NotificationType"].toString() ==
+          "CallAlreadyAccepted") {
+        Get.to(() => BroadcastMessagePopUp(
+          broadcastMessage: data["Message"],
+        ));
+      }
+      else if (data["NotificationType"].toString() ==
           "BroadcastMessageFromSociety") {
         Get.to(() => BroadcastMessagePopUp(
               broadcastMessage: data["Message"],
@@ -433,7 +439,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         print('data');
         print(data);
         Get.to(
-          () => Ringing(fromMemberData: notification.payload.additionalData),
+          () => Ringing(
+              fromMemberData: notification.payload.additionalData),
         );
       } else if (data["NotificationType"] == "RejectVideoCallingBySender") {
         print('data');

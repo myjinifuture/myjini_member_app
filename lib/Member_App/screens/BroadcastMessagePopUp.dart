@@ -3,9 +3,9 @@ import 'package:dotted_decoration/dotted_decoration.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 
 class BroadcastMessagePopUp extends StatefulWidget {
-  var broadcastMessage;
+  var broadcastMessage,typeOfMessage;
 
-  BroadcastMessagePopUp({this.broadcastMessage});
+  BroadcastMessagePopUp({this.broadcastMessage,this.typeOfMessage});
 
   @override
   _BroadcastMessagePopUpState createState() => _BroadcastMessagePopUpState();
@@ -22,10 +22,10 @@ class _BroadcastMessagePopUpState extends State<BroadcastMessagePopUp> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
+          widget.typeOfMessage == "CallAlreadyAccepted" ? Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+               Text(
                 "Broadcast Message",
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -41,7 +41,7 @@ class _BroadcastMessagePopUpState extends State<BroadcastMessagePopUp> {
                 ),
               ),
             ],
-          ),
+          ):Container(),
           Container(
             decoration: DottedDecoration(
               shape: Shape.box,

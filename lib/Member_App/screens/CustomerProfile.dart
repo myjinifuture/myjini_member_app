@@ -363,6 +363,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
     }
   }
 
+  String residenceTypeOfParentMember = "";
   //get family api
   GetFamilyDetail() async {
     try {
@@ -372,7 +373,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
           isLoading = true;
         });
         var data = {"societyId": SocietyId, "wingId": WingId, "flatId": FlatId};
-        Services.responseHandler(apiName: "member/getFamilyMembers", body: data)
+        Services.responseHandler(apiName: "member/getFamilyMembers_v1", body: data)
             .then((data) async {
           setState(() {
             isLoading = false;
@@ -380,6 +381,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               FmemberData = data.Data;
+              residenceTypeOfParentMember = FmemberData[0]["society"]["ResidenceType"].toString();
               for (int i = 0; i < FmemberData.length; i++) {
                 if (FmemberData[i]["_id"].toString() == MemberId) {
                   FmemberData.remove(FmemberData[i]);
@@ -722,7 +724,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
                             child: Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
-                            "Family Member",
+                            "Flat Member",
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w600),
                           ),
@@ -807,6 +809,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
                                 } else {
                                   return FamilyMemberComponent(
                                     memberName: Name,
+                                    residenceTypeOfParentMember : residenceTypeOfParentMember,
                                     familyData: FmemberData[index],
                                     onDelete: GetFamilyDetail,
                                     onUpdate: () {

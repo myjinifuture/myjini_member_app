@@ -235,45 +235,46 @@ class _LoginScreenState extends State<LoginScreen> {
               setState(() {
                 logindata = data.Data;
               });
-              if(logindata[0]["society"]["isVerify"].toString() == "true") {
-                print("isMemberRegistered");
-                print(isMemberRegistered);
-                if(isMemberRegistered!=null){
-                  _getMemberSociety(_MobileNumber.text);
+              for(int i=0;i<logindata.length;i++){
+                if(logindata[i]["society"]["isVerify"].toString() == "true") {
+                  print("isMemberRegistered");
+                  print(isMemberRegistered);
+                  if(isMemberRegistered!=null){
+                    _getMemberSociety(_MobileNumber.text);
+                  }
+                  else {
+                    await localdata();
+                    Navigator.pushAndRemoveUntil(context,
+                        SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (
+                    //           context) =>
+                    //           OTP(
+                    //             mobileNo: _MobileNumber
+                    //                 .text
+                    //                 .toString(),
+                    //             onSuccess: () async {
+                    //               await localdata();
+                    //               Navigator.pushAndRemoveUntil(context,
+                    //                   SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);                                },
+                    //           ),
+                    //     ));
+                  }
+                  // _MallLoginApi();
                 }
-                else {
-                  // await mallLocalData();
-                  // await localdata();
-                  // Navigator.pushAndRemoveUntil(context,
-                  //     SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (
-                            context) =>
-                            OTP(
-                              mobileNo: _MobileNumber
-                                  .text
-                                  .toString(),
-                              onSuccess: () async {
-                                await localdata();
-                                Navigator.pushAndRemoveUntil(context,
-                                    SlideLeftRoute(page: HomeScreen(isAppOpenedAfterNotification: false,)), (route) => false);                                },
-                            ),
-                      ));
+                else{
+                  setState(() {
+                    isMemberRegistered = false;
+                  });
+                  Fluttertoast.showToast(
+                      msg: "Please wait for admin approval for society ${logindata[i]["SocietyData"][0]["Name"]}",
+                      toastLength: Toast.LENGTH_LONG,
+                      textColor: Colors.white,
+                      gravity: ToastGravity.TOP,
+                      backgroundColor: Colors.red);
                 }
-                // _MallLoginApi();
-              }
-              else{
-                setState(() {
-                  isMemberRegistered = false;
-                });
-                Fluttertoast.showToast(
-                    msg: "Please wait for admin approval",
-                    toastLength: Toast.LENGTH_LONG,
-                    textColor: Colors.white,
-                    gravity: ToastGravity.TOP,
-                    backgroundColor: Colors.red);
               }
               // Navigator.of(context).pushNamedAndRemoveUntil(
               //     '/HomeScreen', (Route<dynamic> route) => false);

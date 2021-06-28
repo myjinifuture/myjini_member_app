@@ -13,12 +13,12 @@ import '../screens/HomeScreen.dart';
 class Ringing extends StatefulWidget {
   Map fromMemberData = {};
   bool isVideoCallingInBackground = false;
-  bool isButtonPressed;
+  bool isButtonPressed,isAudioCall = false;
 
   Ringing(
       {this.fromMemberData,
         this.isVideoCallingInBackground,
-        this.isButtonPressed});
+        this.isButtonPressed,this.isAudioCall});
 
   @override
   _RingingState createState() => _RingingState();
@@ -97,17 +97,21 @@ class _RingingState extends State<Ringing> {
   sendVideoCallStatus(String callingId, int response,
       {bool acceptPressed}) async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
           "callingId": callingId,
           "response": response,
-          "deviceType": Platform.isAndroid ? "Android" : "IOS"
+          "deviceType": Platform.isAndroid ? "Android" : "IOS",
+          "playerId" : prefs.getString('playerId'),
+          "receiverId" : prefs.getString(Session.Member_Id),
+          "receiverType": 0
         };
         print("success");
         print(callingId);
         print(response);
-        Services.responseHandler(apiName: "member/responseToCall", body: data)
+        Services.responseHandler(apiName: "member/responseToCall_v1", body: data)
             .then((data) async {
           if (acceptPressed != null) {
             Navigator.push(
@@ -199,6 +203,7 @@ class _RingingState extends State<Ringing> {
 
   AcceptOrRejectForUnknownVisitor(bool Accepted) async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
@@ -206,12 +211,13 @@ class _RingingState extends State<Ringing> {
           "memberId": memberId,
           "societyId": societyId,
           "response": Accepted,
-          "flatId" : flatId
+          "flatId" : flatId,
+          "playerId" : prefs.getString('playerId')
         };
         print("success");
         print("data");
         print(data);
-        Services.responseHandler(apiName: "member/responseToUnknownVisitorEntry",body: data).then((data) async {
+        Services.responseHandler(apiName: "member/responseToUnknownVisitorEntry_v1",body: data).then((data) async {
           print("data.Data");
           print(data.Data);
           if(Accepted) {

@@ -177,6 +177,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       } else if (data["notificationType"].toString() == "RevokeAdminRole") {
         Get.to(LoginScreen());
       } else if (data["NotificationType"].toString() ==
+          "CallAlreadyAccepted") {
+        Get.to(() => BroadcastMessagePopUp(
+          broadcastMessage: data["Message"],
+          typeOfMessage : data["NotificationType"].toString()
+        ));
+      }
+      else if (data["NotificationType"].toString() ==
           "BroadcastMessageFromSociety") {
         Get.to(BroadcastMessagePopUp(
               broadcastMessage: data["Message"],

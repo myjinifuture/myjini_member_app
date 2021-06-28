@@ -14,11 +14,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class FamilyMemberComponent extends StatefulWidget {
-  var familyData, memberName;
+  var familyData, memberName,residenceTypeOfParentMember;
   Function onDelete, onUpdate;
 
   FamilyMemberComponent(
-      {this.familyData, this.onDelete, this.onUpdate, this.memberName});
+      {this.familyData, this.onDelete, this.onUpdate, this.memberName,this.residenceTypeOfParentMember});
 
   @override
   _FamilyMemberComponentState createState() => _FamilyMemberComponentState();
@@ -26,6 +26,16 @@ class FamilyMemberComponent extends StatefulWidget {
 
 class _FamilyMemberComponentState extends State<FamilyMemberComponent> {
   bool isLoading = false;
+  String relation = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(widget.residenceTypeOfParentMember != widget.familyData["society"]["ResidenceType"].toString()){
+      relation = "On Rent";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +95,14 @@ class _FamilyMemberComponentState extends State<FamilyMemberComponent> {
                                 color: Colors.black,
                                 fontWeight: FontWeight.w600),
                           ),
-                          Text(
+                          relation == "" ? Text(
                             "${widget.familyData["Relation"]}",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: appPrimaryMaterialColor,
+                            ),
+                          ):Text(
+                            relation,
                             style: TextStyle(
                               fontSize: 12,
                               color: appPrimaryMaterialColor,

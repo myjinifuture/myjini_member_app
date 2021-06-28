@@ -16,7 +16,7 @@ class MessageToWatchmanPopUp extends StatefulWidget {
 }
 
 class _MessageToWatchmanPopUpState extends State<MessageToWatchmanPopUp> {
-  TextEditingController messageToWatchmanController = TextEditingController();
+    TextEditingController messageToWatchmanController = TextEditingController();
   List watchmanData = [];
   List selectedWatchmanList = [];
   List selectedWatchmanIdList = [];

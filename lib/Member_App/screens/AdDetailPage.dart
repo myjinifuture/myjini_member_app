@@ -27,6 +27,7 @@ import 'package:smart_society_new/Member_App/screens/ViewProducts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as cnst;
+import 'package:dotted_decoration/dotted_decoration.dart';
 
 class AdDetailPage extends StatefulWidget {
   var data;
@@ -61,6 +62,8 @@ class _AdDetailPageState extends State<AdDetailPage> {
 
   @override
   void initState() {
+    print("details of advertiser");
+    print(widget.data);
     print(widget.data["EmailId"]);
     print(widget.data["WebsiteURL"]);
     print(widget.data["VideoLink"]);
@@ -263,6 +266,7 @@ class _AdDetailPageState extends State<AdDetailPage> {
       print('error: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -755,40 +759,40 @@ class _AdDetailPageState extends State<AdDetailPage> {
                             color: constant.appPrimaryMaterialColor,
                             textColor: Colors.white,
                             splashColor: Colors.white,
-                            child: Text("Get Offer",
+                            child: Text("Place Enquiry",
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600)),
                             onPressed: () {
-                              _settingModalBottomSheet(context, qrData);
+                              _settingModalBottomSheet(context, qrData,widget.data["_id"]);
                             }),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 5),
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: 35,
-                        child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            color: constant.appPrimaryMaterialColor,
-                            textColor: Colors.white,
-                            splashColor: Colors.white,
-                            child: Text("Services",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w600)),
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          ViewProducts(widget.data)));
-                            }),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: EdgeInsets.only(right: 5),
+                    // ),
+                    // Expanded(
+                    //   flex: 5,
+                    //   child: SizedBox(
+                    //     width: MediaQuery.of(context).size.width,
+                    //     height: 35,
+                    //     child: RaisedButton(
+                    //         shape: RoundedRectangleBorder(
+                    //             borderRadius: BorderRadius.circular(10)),
+                    //         color: constant.appPrimaryMaterialColor,
+                    //         textColor: Colors.white,
+                    //         splashColor: Colors.white,
+                    //         child: Text("Services",
+                    //             style: TextStyle(
+                    //                 fontSize: 18, fontWeight: FontWeight.w600)),
+                    //         onPressed: () {
+                    //           Navigator.push(
+                    //               context,
+                    //               MaterialPageRoute(
+                    //                   builder: (context) =>
+                    //                       ViewProducts(widget.data)));
+                    //         }),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -800,7 +804,50 @@ class _AdDetailPageState extends State<AdDetailPage> {
   }
 }
 
-void _settingModalBottomSheet(context, String qr) {
+TextEditingController messageToWatchmanController = TextEditingController();
+
+sendInquiryToAdvertiser(String advertisementId) async {
+  try {
+    final result = await InternetAddress.lookup('google.com');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String societyId = prefs.getString(cnst.Session.SocietyId);
+    String wingId = prefs.getString(cnst.Session.WingId);
+    String flatId = prefs.getString(cnst.Session.FlatId);
+    String memberId = prefs.getString(cnst.Session.Member_Id);
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      var body = {
+          "memberId": memberId,
+          "wingId": wingId,
+          "flatId": flatId,
+          "societyId": societyId,
+          "advertiseId": advertisementId,
+          "message": messageToWatchmanController.text,
+      };
+      Services.responseHandler(
+          apiName: "member/memberInquiry", body: body)
+          .then((data) async {
+        if (data.Data.length > 0 && data.IsSuccess == true) {
+          Fluttertoast.showToast(
+            msg: "Inquiry Placed Successfully!!",
+            gravity: ToastGravity.TOP,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+          messageToWatchmanController.clear();
+        }
+      }, onError: (e) {
+        // showMsg("$e");
+      });
+    } else {
+      // showMsg("No Internet Connection.");
+    }
+  } on SocketException catch (_) {
+    // showMsg("Something Went Wrong");
+  }
+}
+
+void _settingModalBottomSheet(context, String qr,String Id) {
   showModalBottomSheet(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -811,18 +858,42 @@ void _settingModalBottomSheet(context, String qr) {
         return Container(
           child: new Wrap(
             children: <Widget>[
-              Center(
-                child: QrImage(
-                  data: "${qr}",
-                  version: QrVersions.auto,
-                  size: 150.0,
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Container(
+                  decoration: DottedDecoration(
+                    shape: Shape.box,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: TextFormField(
+                    controller: messageToWatchmanController,
+                    keyboardType: TextInputType.text,
+                    maxLines: 6,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Start typing here ...",
+                      contentPadding: EdgeInsets.only(
+                        left: 10,
+                        top: 5,
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Center(
-                  child: Text(
-                "Scan QR",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              )),
+                child: FlatButton(
+                  color: Colors.purple,
+                  child: Text('Send',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    sendInquiryToAdvertiser(Id);
+                  },
+                ),
+              ),
             ],
           ),
         );
