@@ -1,20 +1,21 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
+import 'package:smart_society_new/Member_App/screens/AddCab.dart';
+import 'package:smart_society_new/Member_App/screens/App_Notification_Settings.dart';
+import 'package:smart_society_new/Member_App/screens/Committee.dart';
+import 'package:smart_society_new/Member_App/screens/MyInvoices.dart';
+import 'package:smart_society_new/Member_App/screens/Parcel.dart';
 import '../screens/AddFamilyMember.dart';
 import 'package:smart_society_new/Member_App/Services/SubServicesScreen.dart';
 import 'package:avatar_glow/avatar_glow.dart';
-import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:easy_permission_validator/easy_permission_validator.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_text_to_speech/flutter_text_to_speech.dart';
 import 'package:get/get.dart';
 import 'package:smart_society_new/Member_App/screens/Events.dart';
-import 'package:imei_plugin/imei_plugin.dart';
 import 'package:smart_society_new/Member_App/screens/DocumentScreen.dart';
 import 'package:smart_society_new/Member_App/screens/BroadcastMessagePopUp.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -48,6 +49,7 @@ import 'package:smart_society_new/Member_App/common/constant.dart';
 import 'package:smart_society_new/Member_App/common/join.dart';
 import 'package:smart_society_new/Member_App/screens/BannerScreen.dart';
 import 'package:smart_society_new/Member_App/screens/SOSDailog.dart';
+import '../screens/MyInvoice.dart';
 import 'package:vibration/vibration.dart';
 import '../screens/SOSpage.dart';
 import '../screens/AdDetailPage.dart';
@@ -62,6 +64,7 @@ import 'fromMemberScreen.dart';
 import 'package:easy_gradient_text/easy_gradient_text.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:smart_society_new/Member_App/Services/ServicesScreen.dart';
+import '../screens/vaccinationCenter.dart';
 
 const APP_STORE_URL = 'http://tinyurl.com/wz2aeao';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.itfuturz.mygenie_member';
@@ -989,7 +992,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: new Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
-                ;
               },
             ),
           ],
@@ -1321,7 +1323,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             societyAddress = data.Data["Society"][0]["Address"];
             // lat = double.parse(data.Data["Society"][0]["Location"]["lat"].toString()); // lat long are coming null from backend
             // long = double.parse(data.Data["Society"][0]["Location"]["long"].toString()); // ask monil for latitude and longitude
-
           } else {
             setState(() {
               isLoading = false;
@@ -1635,6 +1636,104 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                     ListTile(
                       title: Text(
+                        'Add Cab',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.delivery_dining,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>AddCab()));
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'App Notification Settings',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.notifications_active_outlined,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> App_Notification_Settings()));
+                       },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'MY Invoice',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.assignment_turned_in_outlined,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context,MaterialPageRoute(builder: (context)=>MyInvoice()));
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'MY Invoices',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.paste_rounded,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                         Navigator.push(context, MaterialPageRoute(builder: (context)=>MyInvoices()));
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Committee',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.person_rounded,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Committee()));
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Parcel',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.paste_rounded,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Parcel()));
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Vaccination Centers',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.home_work_outlined,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>VaccinationCenter()));
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
                         'Logout',
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
@@ -1805,12 +1904,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                           ),
                                         );
                                       },
-                                      child: Container(
+                                      /*child: Container(
                                           width:
                                               MediaQuery.of(context).size.width,
                                           child: Image.network(
                                               Image_Url + i["Image"][0],
-                                              fit: BoxFit.fill)),
+                                              fit: BoxFit.fill)),*/
                                     );
                                   });
                                 }).toList(),
@@ -1947,12 +2046,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                 ),
                                               );
                                             },
-                                            child: Container(
+                                            /*child: Container(
                                                 width:
                                                 MediaQuery.of(context).size.width,
                                                 child: Image.network(
                                                     Image_Url + i["Image"][0],
-                                                    fit: BoxFit.fill)),
+                                                    fit: BoxFit.fill
+                                                )),*/
                                           );
                                         });
                                   }).toList(),

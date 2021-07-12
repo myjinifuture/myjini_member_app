@@ -1259,7 +1259,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Member_App/common/Classlist.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
-import 'package:smart_society_new/Member_App/common/constant.dart';
+
 import '../common/constant.dart' as constant;
 
 class AddStaff extends StatefulWidget {

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -119,7 +118,7 @@ class _MySocietyState extends State<MySociety> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
               },
             ),
           ],

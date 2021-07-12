@@ -40,7 +40,6 @@ class Services {
         responseData.Message = data["Message"];
         responseData.IsSuccess = data["IsSuccess"];
         responseData.Data = data["Data"];
-
         return responseData;
       } else {
         print("error ->" + response.data.toString());
@@ -97,6 +96,4 @@ class Services {
       throw Exception(e.toString());
     }
   }
-
-
 }

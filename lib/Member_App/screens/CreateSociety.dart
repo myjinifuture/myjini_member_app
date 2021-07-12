@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,7 +10,6 @@ import 'package:smart_society_new/Member_App/common/Classlist.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:smart_society_new/Member_App/screens/SetupWings.dart';
-
 import 'OTP.dart';
 
 class CreateSociety extends StatefulWidget {

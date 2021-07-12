@@ -82,7 +82,7 @@ dependencies {
     //noinspection GradleDependency
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.firebase:firebase-messaging:21.0.0'
-    implementation 'com.google.firebase:firebase-auth:11.0.2'
+    implementation 'com.google.firebase:firebase-auth:15.0.0'
     implementation 'androidx.browser:browser:1.2.0'
 //    implementation platform('com.google.firebase:firebase-bom')
     testImplementation 'junit:junit:4.12'

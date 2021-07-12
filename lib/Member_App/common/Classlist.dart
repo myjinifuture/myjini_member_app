@@ -14,7 +14,20 @@ class ResponseDataClass {
   }
 }
 
-class SaveDataClass {
+class VaccinationResponseDataClass {
+  var centers;
+
+  VaccinationResponseDataClass({this.centers});
+
+  factory VaccinationResponseDataClass.fromJson(Map<String, dynamic> json) {
+    return VaccinationResponseDataClass(
+      centers: json['centers'] as dynamic,
+    );
+  }
+}
+
+
+class SaveDataClass{
   String Message;
   bool IsSuccess;
   String Data;

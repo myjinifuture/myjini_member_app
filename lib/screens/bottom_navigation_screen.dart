@@ -4,7 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smart_society_new/widget/speech_to_text.dart';
 import 'package:smart_society_new/widget/text_to_speech.dart';
 
-class BottomNavigationScreen extends StatefulWidget {
+class BottomNavigationScreen extends StatefulWidget{
+
   @override
   _BottomNavigationScreenState createState() => _BottomNavigationScreenState();
 }
@@ -28,7 +29,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       SpeechToText(),
       TextToSpeech()
     ];
-
     final _navBarItems = <BottomNavigationBarItem>[
       BottomNavigationBarItem(
         icon: Icon(
@@ -36,7 +36,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
           size: 23.0,
         ),
         title: Padding(
-          padding: const EdgeInsets.only(top: 4.0),
+          padding: EdgeInsets.only(top: 4.0),
           child: Text("Voice",
             style: TextStyle(
                 fontSize: 14.0,
@@ -74,7 +74,6 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
       body: SafeArea(
         child: _listPage[_currentTab]
       ),
-
       bottomNavigationBar: _bottomNavBar,
     );
   }

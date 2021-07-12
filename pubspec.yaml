@@ -40,7 +40,7 @@ dependencies:
   date_format: any
   multi_select_flutter: any
   flutter_swiper: ^1.1.6
-  dio: ^3.0.3
+  dio: any
   progress_dialog: ^1.2.0
   month_picker_dialog: any
   shared_preferences: ^0.5.3+4
@@ -88,7 +88,7 @@ dependencies:
   flutter_multiple_image_picker: ^0.0.1
   file_picker: ^1.4.2
   double_back_to_close_app: ^1.2.0
-  flutter_svg: ^0.17.3+1
+  flutter_svg: any
   flutter_share_me: ^0.9.1
   flutter_share: ^1.0.2+1
   flutter_rating_bar: ^3.0.1+1
@@ -103,7 +103,7 @@ dependencies:
   simple_animations: any
   #  permission_handler: ^5.0.1+1
   path_provider: any
-  intl: ^0.16.0
+  intl: any
   pull_to_refresh: any
 #  unique_identifier: any
   provider: any
@@ -133,6 +133,8 @@ dependencies:
   flutter_local_notifications: any
   rxdart: any
   lottie: any
+  geocode: any
+  flutter_switch: any
 
 
 dev_dependencies:
@@ -155,6 +157,7 @@ flutter:
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
   assets:
+    - assets/json/
     - images/Building.png
     - images/Back.png
     - images/verify.png

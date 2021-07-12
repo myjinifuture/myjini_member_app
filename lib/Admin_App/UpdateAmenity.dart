@@ -123,7 +123,7 @@ class _UpdateAmenityState extends State<UpdateAmenity> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
               },
             ),
           ],
