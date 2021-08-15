@@ -44,9 +44,6 @@ class _PollingState extends State<Polling> {
           "wingId" : wingId
           // "memberId" : memberId
         };
-        setState(() {
-          isLoading = true;
-        });
         _pollingList.clear();
         Services.responseHandler(apiName: "admin/getAllPollingQuestion_v1",body: data)
             .then((data) async {
@@ -60,7 +57,6 @@ class _PollingState extends State<Polling> {
               print("_pollingList ar starting");
               print(_pollingList);
               totalMembersInSociety = data.Data[data.Data.length-1]["MemberCount"].toString();
-              isLoading = false;
             });
           } else {
             setState(() {
@@ -87,9 +83,6 @@ class _PollingState extends State<Polling> {
         var data = {
           "pollQuestionId" : pollingQuestionId
         };
-        setState(() {
-          isLoading = true;
-        });
         Services.responseHandler(apiName: "admin/getResponseOfPoll",body: data)
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
@@ -147,9 +140,7 @@ class _PollingState extends State<Polling> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ),
-      body: isLoading
-          ? LoadingComponent()
-          : _pollingList.length > 0
+      body: _pollingList.length > 0
               ? AnimationLimiter(
                   child: ListView.builder(
                     itemCount: _pollingList.length,

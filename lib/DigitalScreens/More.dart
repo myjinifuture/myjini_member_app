@@ -87,11 +87,15 @@ class _MoreState extends State<More> {
 
   _logoutFunction() async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+       var playerID = await prefs.getString(cnst.Session.playId);
+       var memberID = prefs.getString(cnst.Session.Member_Id);
+       print(prefs.getString(cnst.Session.Member_Id));
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
-          "memberId" : memberId,
-          "playerId" : playerId,
+          "memberId" : memberID,
+          "playerId" :playerID,
           "IMEI" : uniqueId
         };
         print("data");

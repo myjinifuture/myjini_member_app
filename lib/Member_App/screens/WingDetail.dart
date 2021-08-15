@@ -639,7 +639,7 @@ class _WingDetailState extends State<WingDetail> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
           onPressed: () {
             print("laugh");
-            if(txtname.text=="" || txtfloor.text == "" || txtUnit.text=="" || _currentindex == null || txtParkingSlots == null){
+            if(txtname.text==""){
               Fluttertoast.showToast(
                   msg: "Please Fill All Details",
                   backgroundColor: Colors.red,

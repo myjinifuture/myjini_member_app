@@ -31,7 +31,7 @@ class _AddMemberSOSContactsState extends State<AddMemberSOSContacts> {
   bool isLoading = false;
 
   Future<void> requestPermission(PermissionGroup permission) async {
-    final List<PermissionGroup> permissions = <PermissionGroup>[
+    final List<PermissionGroup>permissions = <PermissionGroup>[
       PermissionGroup.contacts
     ];
     final Map<PermissionGroup, PermissionStatus> permissionRequestResult =

@@ -82,7 +82,7 @@ class _NoticeComponentState extends State<NoticeComponent> {
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.w600)),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
               },
             ),
             new FlatButton(

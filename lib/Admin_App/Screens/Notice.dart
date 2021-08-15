@@ -17,7 +17,7 @@ class Notice extends StatefulWidget {
 }
 
 class _NoticeState extends State<Notice> {
-  bool isLoading = true;
+  bool isLoading = false;
   List noticeData = new List();
   String SocietyId,wingId;
 
@@ -62,9 +62,6 @@ class _NoticeState extends State<Notice> {
           "societyId" : SocietyId,
           "wingId" : wingId
         };
-        setState(() {
-          isLoading = true;
-        });
         Services.responseHandler(apiName: "admin/getSocietyNotice",body: data).then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
@@ -119,9 +116,7 @@ class _NoticeState extends State<Notice> {
       ),
       body: Container(
         color: Colors.grey[200],
-        child: isLoading
-            ? LoadingComponent()
-            : noticeData.length > 0
+        child:noticeData.length > 0
                 ? AnimationLimiter(
                     child: ListView.builder(
                     itemCount: noticeData.length,
@@ -134,7 +129,7 @@ class _NoticeState extends State<Notice> {
                           });
                         else if (type == "loading")
                           setState(() {
-                            isLoading = true;
+                            isLoading = false;
                           });
                       });
                     },

@@ -39,7 +39,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:share/share.dart';
-  import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Mall_App/Screens/HomeScreen.dart' as home;
 import 'package:smart_society_new/Mall_App/transitions/fade_route.dart';
 import 'package:smart_society_new/Member_App/Model/ModelClass.dart';
@@ -58,6 +58,7 @@ import 'LoginScreen.dart';
 import 'NoticeBoard.dart';
 import 'Reminders.dart';
 import 'Ringing.dart';
+import '../screens/Homes.dart';
 import 'SOS.dart';
 import 'VerifiedOrNot.dart';
 import 'fromMemberScreen.dart';
@@ -85,6 +86,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _isInForeground;
   bool newNotification = false;
   AppLifecycleState _notification;
+  String _swipeDirection = "";
+  int Add;
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) {
@@ -107,7 +110,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         break;
     }
   }
-
   // GlobalKey<NavigatorState> navigatorKey;
 
   bool isFCMtokenLoading = false;
@@ -137,6 +139,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   final List<Menu> _allMenuList = Menu.allMenuItems();
 
+
   bool dialVisible = true;
   int _current = 0;
 
@@ -145,6 +148,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List _addData = [];
   VoiceController controller = FlutterTextToSpeech.instance.voiceController();
   ProgressDialog pr;
+  List getList = [];
+  List getList1 = [];
 
   double serviceRating;
 
@@ -160,155 +165,158 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 //onesignal function for notifications
   Future<void> initOneSignalNotification() async {
     OneSignal.shared.setNotificationOpenedHandler(
-        (OSNotificationOpenedResult result) async {
-      isButtonPressed = true;
-      print("Opened notification");
-      print(result.notification.jsonRepresentation().replaceAll("\\n", "\n"));
-      print(result.notification.payload.additionalData);
-      dynamic data = result.notification.payload.additionalData;
-      print("data came from notification 123");
-      print(data);
-      print("value of _isinforeground");
-      Vibration.vibrate(
-        duration: 700,
-      );
-      if (data["notificationType"].toString() == "AddEvent") {
-        Get.to(Events());
-      }
-      if (data["notificationType"].toString() == "JoinSociety") {
-        Get.to(getPendingApprovals());
-      } else if (data["notificationType"].toString() == "RevokeAdminRole") {
-        Get.to(LoginScreen());
-      } else if (data["NotificationType"].toString() ==
-          "CallAlreadyAccepted") {
-        Get.to(() => BroadcastMessagePopUp(
-          broadcastMessage: data["Message"],
-          typeOfMessage : data["NotificationType"].toString()
-        ));
-      }
-      else if (data["NotificationType"].toString() ==
-          "BroadcastMessageFromSociety") {
-        Get.to(BroadcastMessagePopUp(
+            (OSNotificationOpenedResult result) async {
+          isButtonPressed = true;
+          print("Opened notification");
+          print(
+              result.notification.jsonRepresentation().replaceAll("\\n", "\n"));
+          print(result.notification.payload.additionalData);
+          dynamic data = result.notification.payload.additionalData;
+          print("data came from notification 123");
+          print(data);
+          print("value of _isinforeground");
+          Vibration.vibrate(
+            duration: 700,
+          );
+          if (data["notificationType"].toString() == "AddEvent") {
+            Get.to(Events());
+          }
+          if (data["notificationType"].toString() == "JoinSociety") {
+            Get.to(getPendingApprovals());
+          } else if (data["notificationType"].toString() == "RevokeAdminRole") {
+            Get.to(LoginScreen());
+          } else if (data["NotificationType"].toString() ==
+              "CallAlreadyAccepted") {
+            Get.to(() =>
+                BroadcastMessagePopUp(
+                    broadcastMessage: data["Message"],
+                    typeOfMessage: data["NotificationType"].toString()
+                ));
+          }
+          else if (data["NotificationType"].toString() ==
+              "BroadcastMessageFromSociety") {
+            Get.to(BroadcastMessagePopUp(
               broadcastMessage: data["Message"],
             ));
-      } else if (data["notificationType"].toString() == "AssignAdminRole") {
-        Get.to(LoginScreen());
-      } else if (data["notificationType"].toString() == "AddDocument") {
-        Get.to(DocumentScreen());
-      } else if (data["notificationType"].toString() == "AddGallery") {
-        Get.to(GalleryScreen());
-      } else if (data["notificationType"].toString() == "StaffEntry" ||
-          data["notificationType"].toString() == "StaffLeave") {
-        Get.to(NoticeBoard(message: data));
-      } else if (data["notificationType"] == 'Visitor') {
-        Get.to(NotificationPopup(
+          } else if (data["notificationType"].toString() == "AssignAdminRole") {
+            Get.to(LoginScreen());
+          } else if (data["notificationType"].toString() == "AddDocument") {
+            Get.to(DocumentScreen());
+          } else if (data["notificationType"].toString() == "AddGallery") {
+            Get.to(GalleryScreen());
+          } else if (data["notificationType"].toString() == "StaffEntry" ||
+              data["notificationType"].toString() == "StaffLeave") {
+            Get.to(NoticeBoard(message: data));
+          } else if (data["notificationType"] == 'Visitor') {
+            Get.to(NotificationPopup(
               data,
               unknownEntry: true,
             ));
-      } else if (data["notificationType"] == 'SendComplainToAdmin') {
-        Get.to(NotificationPopup(data, unknownEntry: false));
-      } else if (data["NotificationType"] == "SOS") {
-        Get.to(SOS(
+          } else if (data["notificationType"] == 'SendComplainToAdmin') {
+            Get.to(NotificationPopup(data, unknownEntry: false));
+          } else if (data["NotificationType"] == "SOS") {
+            Get.to(SOS(
               data,
               body: result.notification.payload.body,
             ));
-        //for vibration
-      } else if (data["CallResponseIs"] == "Accepted" &&
-          data["NotificationType"] == "VideoCalling") {
-        print('data');
-        print(data);
-        Get.to(JoinPage(
-            unknownEntry: false,
-            againPreviousScreen: false,
-            fromMemberData: result.notification.payload.additionalData));
-      } else if (data["CallResponseIs"] == "Accepted" &&
-          data["NotificationType"] == "VoiceCall") {
-        print('data');
-        print(data);
-        Get.to(JoinPage(
-            unknownEntry: false,
-            againPreviousScreen: false,
-            fromMemberData: result.notification.payload.additionalData));
-      } else if (data["CallResponseIs"] == "Rejected" &&
-          data["NotificationType"] == "VideoCalling") {
-        print('data');
-        print(data);
-        Get.to(FromMemberScreen(
-            fromMemberData: result.notification.payload.additionalData,
-            rejected: "rejected"));
-      } else if (data["CallResponseIs"] == "Rejected" &&
-          data["NotificationType"] == "VoiceCall") {
-        print('data');
-        print(data);
-        Get.to(FromMemberScreen(
-            fromMemberData: result.notification.payload.additionalData,
-            rejected: "rejected"));
-      } else if (data["NotificationType"] == "VideoCalling") {
-        print('data');
-        print(data);
-        Get.to(
-          Ringing(
-            fromMemberData: result.notification.payload.additionalData,
-          ),
-        );
-      } else if (data["notificationType"] == "UnknownVisitor" &&
-          data["CallStatus"] == "Accepted") {
-        print('data');
-        print(data);
-        Get.to(
-          JoinPage(
-              unknownEntry: false,
-              againPreviousScreen: false,
-              fromMemberData: result.notification.payload.additionalData),
-        );
-      } else if (data["notificationType"] == "UnknownVisitor") {
-        print('data');
-        print(data);
-        Get.to(
-          Ringing(
-              fromMemberData: result.notification.payload.additionalData),
-        );
-      } else if (data["NotificationType"] == "RejectVideoCallingBySender") {
-        print('data');
-        print(data);
-        Get.to(
-          FromMemberScreen(
-              fromMemberData: result.notification.payload.additionalData,
-              rejected: "rejected"),
-        );
-      } else if (data["NotificationType"] == "RejectVideoCallingByReceiver") {
-        print('data');
-        print(data);
-        Get.to(
-          FromMemberScreen(
-              fromMemberData: result.notification.payload.additionalData,
-              rejected: "rejected"),
-        );
-      } else if (data["NotificationType"] == "RejectVoiceCallBySender") {
-        print('data');
-        print(data);
-        Get.to(
-          FromMemberScreen(
-              fromMemberData: result.notification.payload.additionalData,
-              rejected: "rejected"),
-        );
-      } else if (data["NotificationType"] == "RejectVoiceCallByReceiver") {
-        print('data');
-        print(data);
-        Get.to(
-          FromMemberScreen(
-              fromMemberData: result.notification.payload.additionalData,
-              rejected: "rejected"),
-        );
-      } else if (data["NotificationType"] == "VoiceCall") {
-        print('data');
-        print(data);
-        Get.to(
-          Ringing(
-              fromMemberData: result.notification.payload.additionalData),
-        );
-      }
-    });
+            //for vibration
+          } else if (data["CallResponseIs"] == "Accepted" &&
+              data["NotificationType"] == "VideoCalling") {
+            print('data');
+            print(data);
+            Get.to(JoinPage(
+                unknownEntry: false,
+                againPreviousScreen: false,
+                fromMemberData: result.notification.payload.additionalData));
+          } else if (data["CallResponseIs"] == "Accepted" &&
+              data["NotificationType"] == "VoiceCall") {
+            print('data');
+            print(data);
+            Get.to(JoinPage(
+                unknownEntry: false,
+                againPreviousScreen: false,
+                fromMemberData: result.notification.payload.additionalData));
+          } else if (data["CallResponseIs"] == "Rejected" &&
+              data["NotificationType"] == "VideoCalling") {
+            print('data');
+            print(data);
+            Get.to(FromMemberScreen(
+                fromMemberData: result.notification.payload.additionalData,
+                rejected: "rejected"));
+          } else if (data["CallResponseIs"] == "Rejected" &&
+              data["NotificationType"] == "VoiceCall") {
+            print('data');
+            print(data);
+            Get.to(FromMemberScreen(
+                fromMemberData: result.notification.payload.additionalData,
+                rejected: "rejected"));
+          } else if (data["NotificationType"] == "VideoCalling") {
+            print('data');
+            print(data);
+            Get.to(
+              Ringing(
+                fromMemberData: result.notification.payload.additionalData,
+              ),
+            );
+          } else if (data["notificationType"] == "UnknownVisitor" &&
+              data["CallStatus"] == "Accepted") {
+            print('data');
+            print(data);
+            Get.to(
+              JoinPage(
+                  unknownEntry: false,
+                  againPreviousScreen: false,
+                  fromMemberData: result.notification.payload.additionalData),
+            );
+          } else if (data["notificationType"] == "UnknownVisitor") {
+            print('data');
+            print(data);
+            Get.to(
+              Ringing(
+                  fromMemberData: result.notification.payload.additionalData),
+            );
+          } else if (data["NotificationType"] == "RejectVideoCallingBySender") {
+            print('data');
+            print(data);
+            Get.to(
+              FromMemberScreen(
+                  fromMemberData: result.notification.payload.additionalData,
+                  rejected: "rejected"),
+            );
+          } else
+          if (data["NotificationType"] == "RejectVideoCallingByReceiver") {
+            print('data');
+            print(data);
+            Get.to(
+              FromMemberScreen(
+                  fromMemberData: result.notification.payload.additionalData,
+                  rejected: "rejected"),
+            );
+          } else if (data["NotificationType"] == "RejectVoiceCallBySender") {
+            print('data');
+            print(data);
+            Get.to(
+              FromMemberScreen(
+                  fromMemberData: result.notification.payload.additionalData,
+                  rejected: "rejected"),
+            );
+          } else if (data["NotificationType"] == "RejectVoiceCallByReceiver") {
+            print('data');
+            print(data);
+            Get.to(
+              FromMemberScreen(
+                  fromMemberData: result.notification.payload.additionalData,
+                  rejected: "rejected"),
+            );
+          } else if (data["NotificationType"] == "VoiceCall") {
+            print('data');
+            print(data);
+            Get.to(
+              Ringing(
+                  fromMemberData: result.notification.payload.additionalData),
+            );
+          }
+        });
   }
 
   changePreferenceAgain() async {
@@ -357,16 +365,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             .then((data) async {
           if (data.Data.length > 0 && data.IsSuccess == true && spoke) {
             SharedPreferences preferences =
-                await SharedPreferences.getInstance();
+            await SharedPreferences.getInstance();
             // await preferences.setString('data', data.Data);
             // await for camera and mic permissions before pushing video page
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => FromMemberScreen(
-                    fromMemberData: dataofMember,
-                    id: data.Data[0]["_id"],
-                    isVideoCall: isVideoCall.toString()),
+                builder: (context) =>
+                    FromMemberScreen(
+                        fromMemberData: dataofMember,
+                        id: data.Data[0]["_id"],
+                        isVideoCall: isVideoCall.toString()),
               ),
             );
             /*Navigator.push(
@@ -397,207 +406,216 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (available) {
         setState(() => _isListening = true);
         _speech.listen(
-          onResult: (val) => setState(() {
-            _text = val.recognizedWords;
-            if (val.hasConfidenceRating && val.confidence > 0) {
-              bool isDirectoryScreen = false;
-              bool isSocietyVendor = false;
-              bool isOtherVendor = false;
-              bool isVideoCall = false;
-              print(_text.replaceAll(" ", "").toUpperCase());
-              var vendorName, vendorId;
+          onResult: (val) =>
               setState(() {
-                resultText.text = _text;
-              });
-              if(_text.toUpperCase().contains('POSITIVE')){
-                _text.toUpperCase().replaceAll('POSITIVE', '+');
-              }
-              if(_text.toUpperCase().contains('NEGATIVE')){
-                _text.toUpperCase().replaceAll('NEGATIVE', '-');
-              }
-              if (_text
-                  .replaceAll(" ", "")
-                  .toUpperCase()
-                  .contains("ADDFAMILYMEMBER")) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddFamilyMember(),
-                  ),
-                );
-              } else if (_BirthDate != null &&
-                  (_text.replaceAll(" ", "").contains("birthdate") ||
-                      _text.replaceAll(" ", "").contains("birthday"))) {
-                setState(() {
-                  _isListening = false;
-                });
-                speak("Your birthdate is" +
-                    DateFormat("yMMMMd").format(_BirthDate).split(" ")[1] +
-                    DateFormat("yMMMMd").format(_BirthDate).split(" ")[0] +
-                    DateFormat("yMMMMd").format(_BirthDate).split(" ")[2]);
-              } else if (_text
-                      .replaceAll(" ", "")
-                      .toUpperCase()
-                      .contains("VIDEOCALL") ||
-                  _text
-                      .replaceAll(" ", "")
-                      .toUpperCase()
-                      .contains("AUDIOCALL") ||
-                  _text.replaceAll(" ", "").toUpperCase().contains("CALL")) {
-                print("video call entered");
-                for (int i = 0; i < memberData.length; i++) {
-                  if (_text
-                      .toUpperCase()
-                      .replaceAll(" ", "")
-                      .contains(Name.replaceAll(" ", ""))) {
-                    speak("Sorry you cannot Call to yourself");
-                  } else if (_text.toUpperCase().replaceAll(" ", "").contains(
-                      memberData[i]["Name"]
-                          .toString()
-                          .toUpperCase()
-                          .replaceAll(" ", ""))) {
-                    if (_text
-                        .replaceAll(" ", "")
-                        .toUpperCase()
-                        .contains("AUDIOCALL")) {
-                      memberToMemberCalling(false, memberData[i]);
-                    } else {
-                      memberToMemberCalling(true, memberData[i]);
-                    }
-                  }
-                }
-                setState(() {
-                  _isListening = false;
-                });
-              } else {
-                for (int i = 0; i < societyVendorDetails.length; i++) {
-                  societyVendorDetails[i]["ServiceNameFull"] =
-                      societyVendorDetails[i]["ServiceName"] + "ian";
-                  if (societyVendorDetails[i]["ServiceName"]
-                      .toString()
-                      .toUpperCase()
-                      .contains(_text.toUpperCase())) {
-                    isSocietyVendor = true;
-                    setState(() {
-                      _isListening = false;
-                    });
-                  }
-                }
-                print(_text);
-                print("isSocietyVendor");
-                print(isSocietyVendor);
-                if (isSocietyVendor) {
-                  speak("Searching for" + _text);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ServicesScreen(
-                              search: _text.toUpperCase(), initialIndex: 0)));
+                _text = val.recognizedWords;
+                if (val.hasConfidenceRating && val.confidence > 0) {
+                  bool isDirectoryScreen = false;
+                  bool isSocietyVendor = false;
+                  bool isOtherVendor = false;
+                  bool isVideoCall = false;
+                  print(_text.replaceAll(" ", "").toUpperCase());
+                  var vendorName, vendorId;
                   setState(() {
-                    _isListening = false;
+                    resultText.text = _text;
                   });
-                } else {
-                  print(_text.toUpperCase());
-                  for (int i = 0; i < vendorsDataList.length; i++) {
-                    if (vendorsDataList[i]["vendorCategoryName"]
-                        .toString()
-                        .trim()
-                        .toUpperCase()
-                        .contains(_text.toUpperCase())) {
-                      isOtherVendor = true;
-                      vendorName = vendorsDataList[i]["vendorCategoryName"];
-                      vendorId = vendorsDataList[i]["_id"];
-                    }
+                  if (_text.toUpperCase().contains('POSITIVE')) {
+                    _text.toUpperCase().replaceAll('POSITIVE', '+');
                   }
-                  print("isOtherVendor");
-                  print(isOtherVendor);
-                  if (isOtherVendor) {
-                    speak("Searching for" + _text);
+                  if (_text.toUpperCase().contains('NEGATIVE')) {
+                    _text.toUpperCase().replaceAll('NEGATIVE', '-');
+                  }
+                  if (_text
+                      .replaceAll(" ", "")
+                      .toUpperCase()
+                      .contains("ADDFAMILYMEMBER")) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SubServicesScreen(
-                          vendorName.toString(),
-                          vendorId.toString(),
-                        ),
+                        builder: (context) => AddFamilyMember(),
                       ),
                     );
+                  } else if (_BirthDate != null &&
+                      (_text.replaceAll(" ", "").contains("birthdate") ||
+                          _text.replaceAll(" ", "").contains("birthday"))) {
+                    setState(() {
+                      _isListening = false;
+                    });
+                    speak("Your birthdate is" +
+                        DateFormat("yMMMMd").format(_BirthDate).split(" ")[1] +
+                        DateFormat("yMMMMd").format(_BirthDate).split(" ")[0] +
+                        DateFormat("yMMMMd").format(_BirthDate).split(" ")[2]);
+                  } else if (_text
+                      .replaceAll(" ", "")
+                      .toUpperCase()
+                      .contains("VIDEOCALL") ||
+                      _text
+                          .replaceAll(" ", "")
+                          .toUpperCase()
+                          .contains("AUDIOCALL") ||
+                      _text.replaceAll(" ", "").toUpperCase().contains(
+                          "CALL")) {
+                    print("video call entered");
+                    for (int i = 0; i < memberData.length; i++) {
+                      if (_text
+                          .toUpperCase()
+                          .replaceAll(" ", "")
+                          .contains(Name.replaceAll(" ", ""))) {
+                        speak("Sorry you cannot Call to yourself");
+                      } else
+                      if (_text.toUpperCase().replaceAll(" ", "").contains(
+                          memberData[i]["Name"]
+                              .toString()
+                              .toUpperCase()
+                              .replaceAll(" ", ""))) {
+                        if (_text
+                            .replaceAll(" ", "")
+                            .toUpperCase()
+                            .contains("AUDIOCALL")) {
+                          memberToMemberCalling(false, memberData[i]);
+                        } else {
+                          memberToMemberCalling(true, memberData[i]);
+                        }
+                      }
+                    }
                     setState(() {
                       _isListening = false;
                     });
                   } else {
-                    for (int i = 0; i < memberData.length; i++) {
-                      print((memberData[i]["WingData"][0]["wingName"] +
-                              memberData[i]["FlatData"][0]["flatNo"])
+                    for (int i = 0; i < societyVendorDetails.length; i++) {
+                      societyVendorDetails[i]["ServiceNameFull"] =
+                          societyVendorDetails[i]["ServiceName"] + "ian";
+                      if (societyVendorDetails[i]["ServiceName"]
                           .toString()
                           .toUpperCase()
-                          .replaceAll("-", ""));
-                      print(_text.toUpperCase().trim().replaceAll(" ", ""));
-                      if (memberData[i]["Name"]
-                              .toString()
-                              .split(" ")[0]
-                              .toUpperCase()
-                              .contains(
-                                  _text.split(" ")[0].toUpperCase().trim()) ||
-                          memberData[i]["ContactNo"]
-                              .toString()
-                              .toUpperCase()
-                              .contains(_text
-                                  .toUpperCase()
-                                  .trim()
-                                  .replaceAll(" ", "")) ||
-                          memberData[i]["BloodGroup"]
-                              .toString()
-                              .toUpperCase()
-                              .contains(_text
-                              .toUpperCase()
-                              .trim()
-                              .replaceAll(" ", "")) ||
-                          memberData[i]["Vehicles"]
-                              .toString()
-                              .toUpperCase()
-                              .replaceAll("-", "")
-                              .contains(_text
-                                  .toUpperCase()
-                                  .trim()
-                                  .replaceAll(" ", "").replaceAll("-", "")) ||
-                          (memberData[i]["WingData"][0]["wingName"] +
-                                  memberData[i]["FlatData"][0]["flatNo"])
-                              .toString()
-                              .toUpperCase()
-                              .replaceAll("-", "")
-                              .contains(
-                                  _text.toUpperCase().trim().replaceAll(" ", ""))) {
-                        print("found true");
-                        isDirectoryScreen = true;
+                          .contains(_text.toUpperCase())) {
+                        isSocietyVendor = true;
                         setState(() {
                           _isListening = false;
                         });
                       }
                     }
-                    if (isDirectoryScreen) {
+                    print(_text);
+                    print("isSocietyVendor");
+                    print(isSocietyVendor);
+                    if (isSocietyVendor) {
                       speak("Searching for" + _text);
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DirecotryScreen(
-                              searchMemberName: _text.toUpperCase().trim()),
-                        ),
-                      );
-                    } else {
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ServicesScreen(
+                                      search: _text.toUpperCase(),
+                                      initialIndex: 0)));
                       setState(() {
                         _isListening = false;
                       });
-                      speak("Sorry Could Not Search That");
+                    } else {
+                      print(_text.toUpperCase());
+                      for (int i = 0; i < vendorsDataList.length; i++) {
+                        if (vendorsDataList[i]["vendorCategoryName"]
+                            .toString()
+                            .trim()
+                            .toUpperCase()
+                            .contains(_text.toUpperCase())) {
+                          isOtherVendor = true;
+                          vendorName = vendorsDataList[i]["vendorCategoryName"];
+                          vendorId = vendorsDataList[i]["_id"];
+                        }
+                      }
+                      print("isOtherVendor");
+                      print(isOtherVendor);
+                      if (isOtherVendor) {
+                        speak("Searching for" + _text);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SubServicesScreen(
+                                  vendorName.toString(),
+                                  vendorId.toString(),
+                                ),
+                          ),
+                        );
+                        setState(() {
+                          _isListening = false;
+                        });
+                      } else {
+                        for (int i = 0; i < memberData.length; i++) {
+                          print((memberData[i]["WingData"][0]["wingName"] +
+                              memberData[i]["FlatData"][0]["flatNo"])
+                              .toString()
+                              .toUpperCase()
+                              .replaceAll("-", ""));
+                          print(_text.toUpperCase().trim().replaceAll(" ", ""));
+                          if (memberData[i]["Name"]
+                              .toString()
+                              .split(" ")[0]
+                              .toUpperCase()
+                              .contains(
+                              _text.split(" ")[0].toUpperCase().trim()) ||
+                              memberData[i]["ContactNo"]
+                                  .toString()
+                                  .toUpperCase()
+                                  .contains(_text
+                                  .toUpperCase()
+                                  .trim()
+                                  .replaceAll(" ", "")) ||
+                              memberData[i]["BloodGroup"]
+                                  .toString()
+                                  .toUpperCase()
+                                  .contains(_text
+                                  .toUpperCase()
+                                  .trim()
+                                  .replaceAll(" ", "")) ||
+                              memberData[i]["Vehicles"]
+                                  .toString()
+                                  .toUpperCase()
+                                  .replaceAll("-", "")
+                                  .contains(_text
+                                  .toUpperCase()
+                                  .trim()
+                                  .replaceAll(" ", "").replaceAll("-", "")) ||
+                              (memberData[i]["WingData"][0]["wingName"] +
+                                  memberData[i]["FlatData"][0]["flatNo"])
+                                  .toString()
+                                  .toUpperCase()
+                                  .replaceAll("-", "")
+                                  .contains(
+                                  _text.toUpperCase().trim().replaceAll(" ",
+                                      ""))) {
+                            print("found true");
+                            isDirectoryScreen = true;
+                            setState(() {
+                              _isListening = false;
+                            });
+                          }
+                        }
+                        if (isDirectoryScreen) {
+                          speak("Searching for" + _text);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  DirecotryScreen(
+                                      searchMemberName: _text.toUpperCase()
+                                          .trim()),
+                            ),
+                          );
+                        } else {
+                          setState(() {
+                            _isListening = false;
+                          });
+                          speak("Sorry Could Not Search That");
+                        }
+                      }
+                      setState(() {
+                        _isListening = false;
+                      });
                     }
                   }
-                  setState(() {
-                    _isListening = false;
-                  });
                 }
-              }
-            }
-          }),
+              }),
         );
       }
     } else {
@@ -662,6 +680,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
     permissionValidator.camera();
     _getLocaldata();
+    _getFunctionalitylist();
     print("initstate executed");
     try {
       versionCheck(context);
@@ -670,6 +689,111 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
     getSocietyDetails();
     getVendorCategory();
+  }
+
+  List getMenuList = [];
+
+  _getFunctionalitylist() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var societyId = prefs.getString(Session.SocietyId);
+      final internetResult = await InternetAddress.lookup('google.com');
+      if (internetResult.isNotEmpty &&
+          internetResult[0].rawAddress.isNotEmpty) {
+        var body = {
+          "societyId": societyId
+        };
+        print(body);
+        Services.responseHandler(
+            apiName: "admin/getFunctionality", body: body)
+            .then((responseData) {
+          if (responseData.Data.length > 0) {
+            print(responseData.Data);
+            setState(() {
+              getMenuList = responseData.Data;
+              getList1 = getMenuList[0]["functionality"] as List;
+              print("987654321");
+              print(getList1);
+              for (var i = 0; i < getList1.length; i++) {
+                print("123456789");
+                if (getList1[i]["isDisplay"] == true) {
+                  print("123456789");
+                  getList.add(getList1[i]);
+                  print(getList);
+                }
+              }
+            });
+            print("print Id +++++++++++++++++++++");
+            print(getMenuList);
+            print("print Id +++++++++++++++++++++End");
+            setState(() {
+              isLoading = false;
+            });
+          } else {
+            print(responseData);
+            setState(() {
+              isLoading = false;
+            });
+            Fluttertoast.showToast(
+              msg: "${responseData.Message}",
+              backgroundColor: Colors.white,
+              textColor: appPrimaryMaterialColor,
+            );
+          }
+        }).catchError((error) {
+          setState(() {
+            isLoading = false;
+          });
+          Fluttertoast.showToast(
+            msg: "Error $error",
+            backgroundColor: Colors.white,
+            textColor: appPrimaryMaterialColor,
+          );
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      Fluttertoast.showToast(
+        msg: "You aren't connected to the Internet !",
+        backgroundColor: Colors.white,
+        textColor: appPrimaryMaterialColor,
+      );
+    }
+  }
+
+  removeAccount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var memberID = prefs.getString(constant.Session.Member_Id);
+    var wingID = prefs.getString(constant.Session.WingId);
+    var flatID = prefs.getString(constant.Session.FlatId);
+    var societyID = prefs.getString(constant.Session.SocietyId);
+    final result = await InternetAddress.lookup('google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      var data = {
+        "memberId":memberID,
+        "isVerify":false,
+        "wingId":wingID,
+        "flatId":flatID,
+        "societyId":societyID
+      };
+      print(data);
+      Services.responseHandler(apiName: "admin/memberApproval_V1", body: data)
+          .then((data) async {
+        if (data.Data != null && data.Data.toString() == "0") {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.clear();
+          DefaultCacheManager().emptyCache();
+          Navigator.pushReplacementNamed(context, "/LoginScreen");
+        } else {
+          // setState(() {});
+        }
+      },onError: (e) {
+        showMsg("Something Went Wrong Please Try Again");
+        setState(() {});
+      });
+  }
   }
 
   List vendorsDataList = [];
@@ -683,7 +807,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           isLoading = true;
         });
         Services.responseHandler(
-                apiName: "admin/getAllVendorCategory", body: body)
+            apiName: "admin/getAllVendorCategory", body: body)
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
@@ -737,7 +861,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     //Get Current installed version of app
     final PackageInfo info = await PackageInfo.fromPlatform();
     double currentVersion =
-        double.parse(info.version.trim().replaceAll(".", ""));
+    double.parse(info.version.trim().replaceAll(".", ""));
 
     //Get Latest version info from firebase config
     final RemoteConfig remoteConfig = await RemoteConfig.instance;
@@ -773,14 +897,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     var tempDate;
     if (date != "" || date != null) {
       tempDate = date.toString().split("-");
-      if (tempDate[2].toString().length == 1) {
+      if (tempDate[2]
+          .toString()
+          .length == 1) {
         tempDate[2] = "0" + tempDate[2].toString();
       }
-      if (tempDate[1].toString().length == 1) {
+      if (tempDate[1]
+          .toString()
+          .length == 1) {
         tempDate[1] = "0" + tempDate[1].toString();
       }
       final_date = "${tempDate[2].toString().substring(0, 2)}-"
-              "${tempDate[1].toString().substring(0, 2)}-${tempDate[0].toString()}"
+          "${tempDate[1].toString().substring(0, 2)}-${tempDate[0].toString()}"
           .toString();
     }
     return final_date;
@@ -828,6 +956,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   bool isAdmin = false;
 
+
   updateMemberPlayerId(String memberId, String mobileNo, String playerId,
       String IMEI, String isAdmin) async {
     try {
@@ -844,7 +973,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         print("data during update");
         print(data);
         Services.responseHandler(
-                apiName: "member/updateMemberPlayerId", body: data)
+            apiName: "member/updateMemberPlayerId", body: data)
             .then((data) async {
           print("data");
           print(data);
@@ -915,33 +1044,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         String btnLabelCancel = "Later";
         return Platform.isIOS
             ? new CupertinoAlertDialog(
-                title: Text(title),
-                content: Text(message),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text(btnLabel),
-                    onPressed: () => launch(APP_STORE_URL),
-                  ),
-                  FlatButton(
-                    child: Text(btnLabelCancel),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              )
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(btnLabel),
+              onPressed: () => launch(APP_STORE_URL),
+            ),
+            FlatButton(
+              child: Text(btnLabelCancel),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        )
             : new AlertDialog(
-                title: Text(title),
-                content: Text(message),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text(btnLabel),
-                    onPressed: () => launch(PLAY_STORE_URL),
-                  ),
-                  FlatButton(
-                    child: Text(btnLabelCancel),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              );
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(btnLabel),
+              onPressed: () => launch(PLAY_STORE_URL),
+            ),
+            FlatButton(
+              child: Text(btnLabelCancel),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        );
       },
     );
   }
@@ -956,19 +1085,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           isLoading = true;
         });
         Services.responseHandler(apiName: "admin/getBanner", body: {}).then(
-            (data) async {
-          if (data.Data != null && data.Data.length > 0) {
-            setState(() {
-              banners = data.Data;
-              isLoading = false;
-            });
-          } else {
-            setState(() {
-              isLoading = false;
-              banners = data.Data;
-            });
-          }
-        }, onError: (e) {
+                (data) async {
+              if (data.Data != null && data.Data.length > 0) {
+                setState(() {
+                  banners = data.Data;
+                  isLoading = false;
+                });
+              } else {
+                setState(() {
+                  isLoading = false;
+                  banners = data.Data;
+                });
+              }
+            }, onError: (e) {
           showMsg("Something Went Wrong.\nPlease Try Again");
           setState(() {
             isLoading = false;
@@ -1003,13 +1132,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget _getMenuItem(BuildContext context, int index) {
     return AnimationConfiguration.staggeredGrid(
       position: index,
-      duration: const Duration(milliseconds: 375),
-      columnCount: 4,
+      duration: Duration(milliseconds: 375),
+      columnCount: 2,
       child: SlideAnimation(
         child: ScaleAnimation(
           child: GestureDetector(
-            onTap: () {
-              if (_allMenuList[index].IconName == "Bills") {
+            onTap: () async {
+              if (getList[index]["name"] == "Bills") {
                 Fluttertoast.showToast(
                     msg: "Coming Soon!!!",
                     toastLength: Toast.LENGTH_SHORT,
@@ -1020,7 +1149,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               }
               else {
                 Navigator.pushNamed(
-                    context, '/${_allMenuList[index].IconName}');
+                    context, '/${getList[index]["name"]}');
               }
             },
             child: Stack(
@@ -1028,34 +1157,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 Container(
                   decoration: BoxDecoration(
                     border: Border(
-                        //  bottom: BorderSide(width: ,color: Colors.black54),
+                      //  bottom: BorderSide(width: ,color: Colors.black54),
                         top: BorderSide(width: 0.1, color: Colors.black)),
                   ),
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border(
-                      left: BorderSide(width: 0.2, color: Colors.grey[600]),
-                    )),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset(
-                            "images/" + _allMenuList[index].Icon,
-                            width: 25,
-                            height: 25,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 5),
-                            child: Text(
-                              _allMenuList[index].IconLabel,
-                              textAlign: TextAlign.center,
-                              style:
-                                  TextStyle(fontSize: 11, color: Colors.black,fontFamily: "OpenSans"),
+                          left: BorderSide(width: 0.2, color: Colors.grey[600]),
+                        )),
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 5.0, bottom: 5.0),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Image.network("http://3.7.94.50/" +
+                                getList[index]["image"], width: 25,
+                              height: 25,),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5, bottom: 5),
+                              child: Text(
+                                getList[index]["name"],
+                                textAlign: TextAlign.center,
+                                style:
+                                TextStyle(fontSize: 11,
+                                    color: Colors.black,
+                                    fontFamily: "OpenSans"),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -1063,25 +1195,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 newNotification == false
                     ? Container()
                     : Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Container(
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                  color: Colors.amberAccent,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: Center(
-                                child: Text(
-                                  '1',
-                                ),
-                              ),
-                            ),
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(5.0),
+                      child: Container(
+                        color: Colors.grey,
+                        height: 15,
+                        width: 20,
+                        decoration: BoxDecoration(
+                            color: Colors.amberAccent,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Center(
+                          child: Text(
+                            '1',
                           ),
-                        ],
+                        ),
                       ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -1118,8 +1251,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: new Text("Yes"),
               onPressed: () {
                 Navigator.of(context).pop();
-
                 _logoutFunction();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showRemoveAccountDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("MYJINI"),
+          content: new Text("Are You Sure You Want To Remove Account ....?"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                ;
+              },
+            ),
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                removeAccount();
               },
             ),
           ],
@@ -1144,33 +1305,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> initPlatformState() async {
     if (!mounted) return;
-
-
   }
 
   _logoutFunction() async {
     try {
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences preferences = await SharedPreferences.getInstance();
+      var playerId = preferences.getString(constant.Session.playId);
+      var memberID = preferences.getString(constant.Session.Member_Id);
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {
-          "memberId": memberId,
-          "playerId": preferences.getString('playerId'),
+          "memberId": memberID,
+          "playerId": playerId,
           "IMEI": uniqueId
         };
         print("data");
         print(data);
         Services.responseHandler(apiName: "member/logout", body: data).then(
-            (data) async {
-          if (data.Data != null && data.Data.toString() == "1") {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            prefs.clear();
-            DefaultCacheManager().emptyCache();
-            Navigator.pushReplacementNamed(context, "/LoginScreen");
-          } else {
-            // setState(() {});
-          }
-        }, onError: (e) {
+                (data) async {
+              if (data.Data != null && data.Data.toString() == "1") {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.clear();
+                DefaultCacheManager().emptyCache();
+                Navigator.pushReplacementNamed(context, "/LoginScreen");
+              } else {
+                // setState(() {});
+              }
+            }, onError: (e) {
           showMsg("Something Went Wrong Please Try Again");
           setState(() {});
         });
@@ -1193,7 +1354,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       Name = prefs.getString(constant.Session.Name);
       Wing = prefs.getString(constant.Session.Wing).toUpperCase();
       FlatNo = prefs.getString(constant.Session.FlatNo).toUpperCase();
+
       memberId = prefs.getString(constant.Session.Member_Id);
+
       // Profile = prefs.getString(constant.Session.Profile);
       ContactNo = prefs.getString(constant.Session.session_login);
       Address = prefs.getString(constant.Session.Address);
@@ -1216,15 +1379,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           "societyId": id,
         };
         Services.responseHandler(apiName: "member/getVendors", body: data).then(
-            (data) async {
-          print("data");
-          print(data.Data);
-          if (data.Data != null && data.Data.length > 0) {
-            setState(() {
-              societyVendorDetails = data.Data;
-            });
-          } else {}
-        }, onError: (e) {
+                (data) async {
+              print("data");
+              print(data.Data);
+              if (data.Data != null && data.Data.length > 0) {
+                setState(() {
+                  societyVendorDetails = data.Data;
+                });
+              } else {}
+            }, onError: (e) {
           showMsg("Something Went Wrong.\nPlease Try Again");
         });
       }
@@ -1254,7 +1417,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       PermissionGroup.microphone
     ];
     final Map<PermissionGroup, PermissionStatus> permissionRequestResult =
-        await PermissionHandler().requestPermissions(permissions);
+    await PermissionHandler().requestPermissions(permissions);
 
     setState(() {
       print(permissionRequestResult);
@@ -1295,8 +1458,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  String societyName = "", societyAddress = "";
-  double lat = 0.0, long = 0.0;
+  String societyName = "",
+      societyAddress = "";
+  double lat = 0.0,
+      long = 0.0;
   String societyCode;
   var shareMyAddressContent;
   var shareMySocietyDetailsContent;
@@ -1312,7 +1477,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         });
         var data = {"societyCode": societyCode};
         Services.responseHandler(
-                apiName: "member/getSocietyDetails", body: data)
+            apiName: "member/getSocietyDetails", body: data)
             .then((data) async {
           setState(() {
             isLoading = false;
@@ -1320,6 +1485,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           // getBanner();
           if (data.Data != null && data.Data.length > 0) {
             societyName = data.Data["Society"][0]["Name"];
+            print("Society & Community Name+++++++++++++++++++++++++++");
+            print(societyName);
             societyAddress = data.Data["Society"][0]["Address"];
             // lat = double.parse(data.Data["Society"][0]["Location"]["lat"].toString()); // lat long are coming null from backend
             // long = double.parse(data.Data["Society"][0]["Location"]["long"].toString()); // ask monil for latitude and longitude
@@ -1360,9 +1527,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         Services.responseHandler(
             apiName: "admin/shareMemberSocietyDetails", body: body)
             .then((data) async {
-          if (data.Data!=null) {
+          if (data.Data != null) {
             setState(() {
-              shareMyAddressContent=data.Data;
+              shareMyAddressContent = data.Data;
             });
           }
         }, onError: (e) {
@@ -1381,6 +1548,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String name = prefs.getString(constant.Session.societyName);
+      print(name);
+      print("print Socity name......");
       String mapLink = prefs.getString(constant.Session.mapLink);
       String address = prefs.getString(constant.Session.Address);
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -1394,9 +1563,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         Services.responseHandler(
             apiName: "admin/shareSocietyDetails", body: body)
             .then((data) async {
-          if (data.Data!=null) {
+          if (data.Data != null) {
             setState(() {
-              shareMySocietyDetailsContent=data.Data;
+              shareMySocietyDetailsContent = data.Data;
             });
           }
         }, onError: (e) {
@@ -1416,11 +1585,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       onWillPop: onWillPop,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            "MYJINI",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("MYJINI",
+                  style: TextStyle(fontFamily: "OpenSans",
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
+                ),
+                Text("${societyName}",
+                    style: TextStyle(fontFamily: "OpenSans", fontSize: 12)),
+              ]
           ),
-          centerTitle: true,
+          //centerTitle: true,
           actions: <Widget>[
             IconButton(
               onPressed: () {
@@ -1437,33 +1614,34 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             IconButton(
               icon: isAdmin
                   ? Padding(
-                      padding: const EdgeInsets.only(left: 12.0),
-                      child: Icon(
-                        Icons.share,
-                      ),
-                    )
+                padding: const EdgeInsets.only(left: 12.0),
+                child: Icon(
+                  Icons.share,
+                ),
+              )
                   : Padding(
-                      padding: const EdgeInsets.only(left: 4.0),
-                      child: Icon(
-                        Icons.share,
-                      ),
-                    ),
+                padding: const EdgeInsets.only(left: 4.0),
+                child: Icon(
+                  Icons.share,
+                ),
+              ),
               onPressed: () {
                 print("maplink :");
                 print(mapLink);
                 Share.share(
-                    shareMySocietyDetailsContent);
+                    shareMySocietyDetailsContent
+                );
               },
             ),
             isAdmin
                 ? IconButton(
-                    icon: Padding(
-                      padding: EdgeInsets.only(left: 5.0),
-                      child: Icon(Icons.add_to_home_screen),
-                    ),
-                    onPressed: () {
-                        Navigator.pushNamed(context, "/Dashboard");
-                    })
+                icon: Padding(
+                  padding: EdgeInsets.only(left: 5.0),
+                  child: Icon(Icons.add_to_home_screen),
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/Dashboard");
+                })
                 : Container(),
           ],
           bottom: PreferredSize(
@@ -1474,7 +1652,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 child:
                 Container(
                   margin:
-                      EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 10),
+                  EdgeInsets.only(top: 5, left: 10, right: 10, bottom: 10),
                   height: 40,
                   padding: EdgeInsets.only(left: 10, right: 10),
                   //width: MediaQuery.of(context).size.width - 50,
@@ -1547,19 +1725,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ClipOval(
                                   child: Profile != "null" && Profile != ""
                                       ? FadeInImage.assetNetwork(
-                                          placeholder:
-                                                "images/man.png",
-                                          image:
-                                              constant.Image_Url + '$Profile',
-                                          width: 70,
-                                          height: 70,
-                                          fit: BoxFit.cover,
-                                        )
+                                    placeholder:
+                                    "images/man.png",
+                                    image:
+                                    constant.Image_Url + '$Profile',
+                                    width: 70,
+                                    height: 70,
+                                    fit: BoxFit.cover,
+                                  )
                                       : Image.asset(
-                                          "images/man.png",
-                                          width: 70,
-                                          height: 70,
-                                        ),
+                                    "images/man.png",
+                                    width: 70,
+                                    height: 70,
+                                  ),
                                 ),
                               ],
                               alignment: Alignment.center,
@@ -1574,14 +1752,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                       padding: const EdgeInsets.only(top: 40.0),
                                       child: Text("$Name".toUpperCase(),
                                           style: TextStyle(
-                                              //color: Colors.white,
+                                            //color: Colors.white,
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold)),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(
                                           top: 2, left: 0),
-                                      child: Text("$Wing" " - " "$FlatNo"),
+                                      child: Row(
+                                        children: [
+                                          Text("$Wing"" - "),
+                                          Text("$FlatNo"),
+                                        ],
+                                      ),
                                     )
                                   ],
                                 ),
@@ -1636,6 +1819,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                     ListTile(
                       title: Text(
+                        'Homes',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.home_outlined,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (
+                            context) => Homes()));
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
                         'Add Cab',
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
@@ -1645,7 +1843,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>AddCab()));
+                        Navigator.push(context, MaterialPageRoute(builder: (
+                            context) => AddCab()));
                       },
                     ),
                     ListTile(
@@ -1659,8 +1858,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=> App_Notification_Settings()));
-                       },
+                        Navigator.push(context, MaterialPageRoute(builder: (
+                            context) => App_Notification_Settings()));
+                      },
                     ),
                     ListTile(
                       title: Text(
@@ -1673,7 +1873,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(context,MaterialPageRoute(builder: (context)=>MyInvoice()));
+                        Navigator.push(context, MaterialPageRoute(builder: (
+                            context) => MyInvoice()));
                       },
                     ),
                     ListTile(
@@ -1687,7 +1888,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                       onTap: () {
                         Navigator.pop(context);
-                         Navigator.push(context, MaterialPageRoute(builder: (context)=>MyInvoices()));
+                        Navigator.push(context, MaterialPageRoute(builder: (
+                            context) => MyInvoices()));
                       },
                     ),
                     ListTile(
@@ -1701,7 +1903,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Committee()));
+                        Navigator.push(context, MaterialPageRoute(builder: (
+                            context) => Committee()));
                       },
                     ),
                     ListTile(
@@ -1715,7 +1918,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Parcel()));
+                        Navigator.push(context, MaterialPageRoute(builder: (
+                            context) => Parcel()));
                       },
                     ),
                     ListTile(
@@ -1729,7 +1933,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>VaccinationCenter()));
+                        Navigator.push(context, MaterialPageRoute(builder: (
+                            context) => VaccinationCenter()));
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        'Remove Account',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      leading: Icon(
+                        Icons.remove_circle_outline_outlined,
+                        color: constant.appPrimaryMaterialColor,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showRemoveAccountDialog();
+                        // _showConfirmDialog();
                       },
                     ),
                     ListTile(
@@ -1777,15 +1997,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         children: <Widget>[
                           GestureDetector(
                             onTap: () {
-                              launch("tel:9023803870");
+                              launch("https://www.youtube.com/watch?v=0gyXg3AeNg4");
                             },
                             child: Column(
                               children: <Widget>[
-                                Image.asset("images/call.png",
+                                Image.asset("assets/image/youtube.png",
                                     height: 24, width: 24),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 5),
-                                  child: Text("Call",
+                                  child: Text("youTube",
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600)),
                                 )
@@ -1856,285 +2076,315 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ),
         body: isLoading
             ? Container(
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              )
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        )
             : Column(
+          children: <Widget>[
+            _advertisementData.length > 0
+                ? GestureDetector(
+              // onTap: () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => AdDetailPage(
+              //         data:i,
+              //       ),
+              //     ),
+              //   );
+              // },
+              child: Stack(
+                alignment: Alignment.bottomCenter,
                 children: <Widget>[
-                  _advertisementData.length > 0
-                      ? GestureDetector(
-                          // onTap: () {
-                          //   Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (context) => AdDetailPage(
-                          //         data:i,
-                          //       ),
-                          //     ),
-                          //   );
-                          // },
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: <Widget>[
-                              CarouselSlider(
-                                viewportFraction: 1.0,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.218,
-                                autoPlayAnimationDuration:
-                                    Duration(milliseconds: 1000),
-                                reverse: false,
-                                autoPlayCurve: Curves.fastOutSlowIn,
-                                autoPlay: true,
-                                onPageChanged: (index) {
-                                  setState(() {
-                                    _current = index;
-                                  });
-                                },
-                                items: _advertisementData.map((i) {
-                                  return Builder(
-                                      builder: (BuildContext context) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => AdDetailPage(
-                                                data: i, index: _current),
-                                          ),
-                                        );
-                                      },
-                                      /*child: Container(
+                  CarouselSlider(
+                    viewportFraction: 1.0,
+                    height:
+                    MediaQuery
+                        .of(context)
+                        .size
+                        .height * 0.218,
+                    autoPlayAnimationDuration:
+                    Duration(milliseconds: 1000),
+                    reverse: false,
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    autoPlay: true,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _current = index;
+                      });
+                    },
+                    items: _advertisementData.map((i) {
+                      return Builder(
+                          builder: (BuildContext context) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        AdDetailPage(
+                                            data: i, index: _current),
+                                  ),
+                                );
+                              },
+                              /*child: Container(
                                           width:
                                               MediaQuery.of(context).size.width,
                                           child: Image.network(
                                               Image_Url + i["Image"][0],
                                               fit: BoxFit.fill)),*/
-                                    );
-                                  });
-                                }).toList(),
+                            );
+                          });
+                    }).toList(),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: map<Widget>(
+                      _advertisementData,
+                          (index, url) {
+                        return Container(
+                          width: 7.0,
+                          height: 7.0,
+                          margin: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 2.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(5)),
+                              color: _current == index
+                                  ? Colors.white
+                                  : Colors.grey),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            )
+                : banners.length == 0
+                ? Center(
+              child: CircularProgressIndicator(),
+            )
+                : CarouselSlider(
+              height: 160,
+              viewportFraction: 1.0,
+              autoPlayAnimationDuration:
+              Duration(milliseconds: 1000),
+              reverse: false,
+              autoPlayCurve: Curves.fastOutSlowIn,
+              autoPlay: true,
+              onPageChanged: (index) {
+                setState(() {
+                  _current = index;
+                });
+              },
+              items: banners.map((i) {
+                return Builder(builder: (BuildContext context) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AdDetailPage(
+                                data: i,
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: map<Widget>(
-                                  _advertisementData,
-                                  (index, url) {
-                                    return Container(
-                                      width: 7.0,
-                                      height: 7.0,
-                                      margin: EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 2.0),
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          color: _current == index
-                                              ? Colors.white
-                                              : Colors.grey),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : banners.length == 0
-                          ? Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : CarouselSlider(
-                              height: 160,
-                              viewportFraction: 1.0,
-                              autoPlayAnimationDuration:
-                                  Duration(milliseconds: 1000),
-                              reverse: false,
-                              autoPlayCurve: Curves.fastOutSlowIn,
-                              autoPlay: true,
-                              onPageChanged: (index) {
-                                setState(() {
-                                  _current = index;
-                                });
-                              },
-                              items: banners.map((i) {
-                                return Builder(builder: (BuildContext context) {
+                        ),
+                      );
+                    },
+                    child: Container(
+                        width:
+                        MediaQuery
+                            .of(context)
+                            .size
+                            .width,
+                        child: Image.network(
+                            Image_Url + i["image"],
+                            fit: BoxFit.fill)),
+                  );
+                });
+              }).toList(),
+            ),
+            Expanded(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    height: MediaQuery
+                        .of(context)
+                        .size
+                        .height / 3.3,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                color: Colors.grey[500], width: 0.3))),
+                    child: AnimationLimiter(
+                      child: GridView.builder(
+                        physics: BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemBuilder: _getMenuItem,
+                        itemCount: getList.length,
+                        gridDelegate:
+                        SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: MediaQuery
+                              .of(context)
+                              .size
+                              .width /
+                              (MediaQuery
+                                  .of(context)
+                                  .size
+                                  .height / 1.7),
+                        ),
+                      ),
+                    ),
+                  ),
+                  _advertisementData.length > 0
+                      ? GestureDetector(
+                    // onTap: () {
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) => AdDetailPage(
+                    //         data:i,
+                    //       ),
+                    //     ),
+                    //   );
+                    // },
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: <Widget>[
+                        CarouselSlider(
+                          viewportFraction: 1.0,
+                          height:
+                          MediaQuery
+                              .of(context)
+                              .size
+                              .height * 0.218,
+                          autoPlayAnimationDuration:
+                          Duration(milliseconds: 1000),
+                          reverse: false,
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          autoPlay: true,
+                          onPageChanged: (index) {
+                            setState(() {
+                              _current = index;
+                            });
+                          },
+                          items: _advertisementData.map((i) {
+                            return Builder(
+                                builder: (BuildContext context) {
                                   return GestureDetector(
                                     onTap: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => AdDetailPage(
-                                            data: i,
-                                          ),
+                                          builder: (context) =>
+                                              AdDetailPage(
+                                                  data: i, index: _current),
                                         ),
                                       );
                                     },
-                                    child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        child: Image.network(
-                                            Image_Url + i["image"],
-                                            fit: BoxFit.fill)),
+                                    /*child: Container(
+                                              width:
+                                              MediaQuery.of(context).size.width,
+                                              child: Image.network(
+                                                  Image_Url + i["Image"][0],
+                                                  fit: BoxFit.fill
+                                              )),*/
                                   );
                                 });
-                              }).toList(),
-                            ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    bottom: BorderSide(
-                                        color: Colors.grey[500], width: 0.3))),
-                            child: AnimationLimiter(
-                              child: GridView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemBuilder: _getMenuItem,
-                                itemCount: _allMenuList.length,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 4,
-                                  childAspectRatio:
-                                      MediaQuery.of(context).size.width /
-                                          (MediaQuery.of(context).size.height /
-                                              2.3),
-                                ),
-                              ),
-                            ),
-                          ),
-                          _advertisementData.length > 0
-                              ? GestureDetector(
-                            // onTap: () {
-                            //   Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //       builder: (context) => AdDetailPage(
-                            //         data:i,
-                            //       ),
-                            //     ),
-                            //   );
-                            // },
-                            child: Stack(
-                              alignment: Alignment.bottomCenter,
-                              children: <Widget>[
-                                CarouselSlider(
-                                  viewportFraction: 1.0,
-                                  height:
-                                  MediaQuery.of(context).size.height * 0.218,
-                                  autoPlayAnimationDuration:
-                                  Duration(milliseconds: 1000),
-                                  reverse: false,
-                                  autoPlayCurve: Curves.fastOutSlowIn,
-                                  autoPlay: true,
-                                  onPageChanged: (index) {
-                                    setState(() {
-                                      _current = index;
-                                    });
-                                  },
-                                  items: _advertisementData.map((i) {
-                                    return Builder(
-                                        builder: (BuildContext context) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => AdDetailPage(
-                                                      data: i, index: _current),
-                                                ),
-                                              );
-                                            },
-                                            /*child: Container(
-                                                width:
-                                                MediaQuery.of(context).size.width,
-                                                child: Image.network(
-                                                    Image_Url + i["Image"][0],
-                                                    fit: BoxFit.fill
-                                                )),*/
-                                          );
-                                        });
-                                  }).toList(),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: map<Widget>(
-                                    _advertisementData,
-                                        (index, url) {
-                                      return Container(
-                                        width: 7.0,
-                                        height: 7.0,
-                                        margin: EdgeInsets.symmetric(
-                                            vertical: 10.0, horizontal: 2.0),
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5)),
-                                            color: _current == index
-                                                ? Colors.white
-                                                : Colors.grey),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                              : banners.length == 0
-                              ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                              : CarouselSlider(
-                            height: 160,
-                            viewportFraction: 1.0,
-                            autoPlayAnimationDuration:
-                            Duration(milliseconds: 1000),
-                            reverse: false,
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            autoPlay: true,
-                            onPageChanged: (index) {
-                              setState(() {
-                                _current = index;
-                              });
+                          }).toList(),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: map<Widget>(
+                            _advertisementData,
+                                (index, url) {
+                              return Container(
+                                width: 7.0,
+                                height: 7.0,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 2.0),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(5)),
+                                    color: _current == index
+                                        ? Colors.white
+                                        : Colors.grey),
+                              );
                             },
-                            items: banners.map((i) {
-                              return Builder(builder: (BuildContext context) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => AdDetailPage(
-                                          data: i,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                      width:
-                                      MediaQuery.of(context).size.width,
-                                      child: Image.network(
-                                          Image_Url + i["image"],
-                                          fit: BoxFit.fill)),
-                                );
-                              });
-                            }).toList(),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   )
+                      : banners.length == 0
+                      ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                      : CarouselSlider(
+                    height: 160,
+                    viewportFraction: 1.0,
+                    autoPlayAnimationDuration:
+                    Duration(milliseconds: 1000),
+                    reverse: false,
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    autoPlay: true,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _current = index;
+                      });
+                    },
+                    items: banners.map((i) {
+                      return Builder(builder: (BuildContext context) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    AdDetailPage(
+                                      data: i,
+                                    ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                              width:
+                              MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width,
+                              child: Image.network(
+                                  Image_Url + i["image"],
+                                  fit: BoxFit.fill)),
+                        );
+                      });
+                    }).toList(),
+                  ),
                 ],
               ),
+            )
+          ],
+        ),
         floatingActionButton: SizedBox(
           child: AvatarGlow(
             animate: _isListening,
-            glowColor: Theme.of(context).primaryColor,
+            glowColor: Theme
+                .of(context)
+                .primaryColor,
             endRadius: 25.0,
             duration: const Duration(milliseconds: 2000),
             repeatPauseDuration: const Duration(milliseconds: 100),
             repeat: true,
-            child: FloatingActionButton(backgroundColor: constant.appPrimaryMaterialColor.withOpacity(0.8),
+            child: FloatingActionButton(
+              backgroundColor: constant.appPrimaryMaterialColor.withOpacity(
+                  0.8),
               onPressed: _listen,
               child: Icon(
                 _isListening ? Icons.mic : Icons.mic_none,
@@ -2165,7 +2415,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top:4.0),
+                        padding: const EdgeInsets.only(top: 4.0),
                         child: GradientText(
                           text: 'SOS',
                           colors: <Color>[
@@ -2202,7 +2452,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top:4.0),
+                        padding: const EdgeInsets.only(top: 4.0),
                         child: GradientText(
                           text: 'VISITORS',
                           colors: <Color>[
@@ -2237,7 +2487,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top:4.0),
+                        padding: const EdgeInsets.only(top: 4.0),
                         child: GradientText(
                           text: 'IN-STAFF',
                           colors: <Color>[
@@ -2272,7 +2522,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top:4.0),
+                        padding: const EdgeInsets.only(top: 4.0),
                         child: GradientText(
                           text: 'PROFILE',
                           colors: <Color>[
@@ -2293,7 +2543,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => CustomerProfile(
+                            builder: (context) =>
+                                CustomerProfile(
                                   isAdmin: isAdmin,
                                 )));
                   },
@@ -2406,6 +2657,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 //     Navigator.pushAndRemoveUntil(
 //         context, SlideLeftRoute(page: HomeScreen()), (route) => false);
 //   }
+
 }
 
 class Continue extends StatefulWidget {
@@ -2422,48 +2674,51 @@ class _ContinueState extends State<Continue> {
     return AlertDialog(
       content: SingleChildScrollView(
           child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Center(
-            child: Image.asset(
-              "images/StarRating.jpg",
-              width: MediaQuery.of(context).size.width,
-              height: 90,
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Expanded(
-                child: Padding(
-                  child: Text(
-                    "Thank you for sharing your valuable feedback!",
-                    style: TextStyle(fontWeight: FontWeight.w600),
+              Center(
+                child: Image.asset(
+                  "images/StarRating.jpg",
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  height: 90,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                    child: Padding(
+                      child: Text(
+                        "Thank you for sharing your valuable feedback!",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      padding: const EdgeInsets.all(8.0),
+                    ),
                   ),
-                  padding: const EdgeInsets.all(8.0),
+                ],
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, "/HomeScreen", (Route<dynamic> route) => false);
+                  // Navigator.pop(context);
+                },
+                child: Center(
+                  child: Padding(
+                    child: Text(
+                      "Done",
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.justify,
+                    ),
+                    padding: const EdgeInsets.all(8.0),
+                  ),
                 ),
               ),
             ],
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, "/HomeScreen", (Route<dynamic> route) => false);
-              // Navigator.pop(context);
-            },
-            child: Center(
-              child: Padding(
-                child: Text(
-                  "Done",
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.justify,
-                ),
-                padding: const EdgeInsets.all(8.0),
-              ),
-            ),
-          ),
-        ],
-      )),
+          )),
     );
   }
 }

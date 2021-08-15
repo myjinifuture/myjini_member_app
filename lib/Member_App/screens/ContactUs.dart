@@ -60,10 +60,10 @@ class _ContactUsState extends State<ContactUs> {
             Divider(),
             GestureDetector(
               onTap: () {
-                _launchURL("https://www.myjini.in");
+                _launchURL("http://www.myjini.in/");
               },
               child: ListTile(
-                title: Text("www.myjini.in"),
+                title: Text("https://www.myjini.in"),
                 subtitle: Text("Website"),
                 leading: Icon(
                   Icons.web,

@@ -1,3 +1,5 @@
+//Update
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
@@ -11,6 +13,7 @@ import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:smart_society_new/Member_App/screens/SetupWings.dart';
 import 'OTP.dart';
+import '../screens/CreateGroups.dart';
 
 class CreateSociety extends StatefulWidget {
   @override
@@ -43,7 +46,7 @@ class _CreateSocietyState extends State<CreateSociety> {
 
   List societyCategoriesList = [];
 
-  String Price_dropdownValue ;
+  String _societyType;
   TextEditingController txtname = new TextEditingController();
   TextEditingController txtmobile = new TextEditingController();
   TextEditingController txtwings = new TextEditingController();
@@ -62,8 +65,8 @@ class _CreateSocietyState extends State<CreateSociety> {
         progressWidget: Container(
           padding: EdgeInsets.all(15),
           child: CircularProgressIndicator(
-              //backgroundColor: cnst.appPrimaryMaterialColor,
-              ),
+            //backgroundColor: cnst.appPrimaryMaterialColor,
+          ),
         ),
         elevation: 10.0,
         insetAnimCurve: Curves.easeInOut,
@@ -328,43 +331,43 @@ class _CreateSocietyState extends State<CreateSociety> {
           if (data.Data != null && data.Data.length > 0) {
             areaClassList.clear();
             setState(() {
-                for(int i=0;i<data.Data.length;i++){
-                  if(!areaClassList.contains(DropdownMenuItem(
-                    child: Column(
-                      children: [
-                        Text(data.Data[i]["Title"]),
-                        Padding(
-                          padding: const EdgeInsets.only(top:12.0),
-                          child: Container(
-                            color: Colors.black,
-                            height: 0.5,
-                          ),
+              for(int i=0;i<data.Data.length;i++){
+                if(!areaClassList.contains(DropdownMenuItem(
+                  child: Column(
+                    children: [
+                      Text(data.Data[i]["Title"]),
+                      Padding(
+                        padding: const EdgeInsets.only(top:12.0),
+                        child: Container(
+                          color: Colors.black,
+                          height: 0.5,
                         ),
-                      ],
-                    ),
-                    value: data.Data[i]["Title"],
-                  ))) {
-                    areaClassList.add(
-                        DropdownMenuItem(
-                          child: Column(
-                            children: [
-                              Text(data.Data[i]["Title"]),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 12.0),
-                                child: Container(
-                                  color: Colors.black,
-                                  height: 0.5,
-                                ),
+                      ),
+                    ],
+                  ),
+                  value: data.Data[i]["Title"],
+                ))) {
+                  areaClassList.add(
+                      DropdownMenuItem(
+                        child: Column(
+                          children: [
+                            Text(data.Data[i]["Title"]),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12.0),
+                              child: Container(
+                                color: Colors.black,
+                                height: 0.5,
                               ),
-                            ],
-                          ),
-                          value: data.Data[i]["Title"],
-                        ));
-                  }
-                  // allSocieties.add(data.Data[i]["Address"]);
+                            ),
+                          ],
+                        ),
+                        value: data.Data[i]["Title"],
+                      ));
                 }
-                print("areaClassList");
-                allAreas = data.Data;
+                // allSocieties.add(data.Data[i]["Address"]);
+              }
+              print("areaClassList");
+              allAreas = data.Data;
               // areaClassList = data.Data;
               areaAddedToDatabase = true;
             });
@@ -428,20 +431,31 @@ class _CreateSocietyState extends State<CreateSociety> {
           if (data.IsSuccess==true) {
             // pr.show();
             Fluttertoast.showToast(
-              msg: "Society Created Successfully",
+              msg: data.Message,
               gravity: ToastGravity.BOTTOM,
             );
             print("code before wing setup");
             print(data.Data[0]["societyCode"]);
+            _societyType == "Society" ?
             Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (BuildContext context) => SetupWings(
-                  Price_dropdownValue:Price_dropdownValue,
+                  Price_dropdownValue:_societyType,
                   wingData: txtwings.text,
                   societyId: data.Data[0]["_id"].toString(),
                   mobileNo : txtmobile.text,
-                    societyCode :data.Data[0]["societyCode"],
+                  societyCode :data.Data[0]["societyCode"],
                   isEdit: false,
-                )));
+                ))):
+            _societyType == "Community" ?
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (BuildContext context) => CreateGroups(
+                  Price_dropdownValue:_societyType,
+                  wingData: txtwings.text,
+                  societyId: data.Data[0]["_id"].toString(),
+                  mobileNo : txtmobile.text,
+                  societyCode :data.Data[0]["societyCode"],
+                  isEdit: false,
+                ))): Container();
           }
         }, onError: (e) {
           showMsg("$e");
@@ -511,11 +525,11 @@ class _CreateSocietyState extends State<CreateSociety> {
       );
       PlacesDetailsResponse detail =
       await _places.getDetailsByPlaceId(p.placeId);
-        setState(() {
-          txtAddress.text = p.description;
-          lat = detail.result.geometry.location.lat;
-          long = detail.result.geometry.location.lng;
-        });
+      setState(() {
+        txtAddress.text = p.description;
+        lat = detail.result.geometry.location.lat;
+        long = detail.result.geometry.location.lng;
+      });
     } catch (e) {
       return;
     }
@@ -585,7 +599,7 @@ class _CreateSocietyState extends State<CreateSociety> {
             children: <Widget>[
               Padding(
                 padding:
-                    const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
+                const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
                 child: Row(
                   children: <Widget>[
                     Text("Type",
@@ -607,35 +621,39 @@ class _CreateSocietyState extends State<CreateSociety> {
                       style: BorderStyle.solid,
                       width: 0.6),
                 ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: Price_dropdownValue,
-                    icon: Icon(Icons.arrow_drop_down),
-                    iconSize: 24,
-                    elevation: 16,
-                    style: TextStyle(color: Colors.black),
-                    underline: Container(
-                      height: 2,
-                      color: Colors.black,
+                child:DropdownButtonHideUnderline(
+                  child: ButtonTheme(
+                    alignedDropdown: true,
+                    child: DropdownButton<String>(
+                      value: _societyType,
+                      iconSize: 30,
+                      dropdownColor: Colors.deepPurple[50],
+                      icon: (null),
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 14,
+                          fontFamily: "OpenSans"),
+                      hint: Text('Select'),
+                      onChanged: (String newValue) {
+                        setState(() {
+                          _societyType = newValue;
+                          print("print...."+_societyType);
+                        });
+                      },
+                      items: societyCategoriesList?.map((itemSocietyType) {
+                        return DropdownMenuItem(
+                          child: Text(itemSocietyType['categoryName']),
+                          value: itemSocietyType['categoryName'].toString(),
+                        );
+                      })?.toList() ??
+                          [],
                     ),
-                    onChanged: (String newValue) {
-                      setState(() {
-                        Price_dropdownValue = newValue;
-                      });
-                    },
-                    hint: Text("Select"),
-                    items: societyCategoriesList.map<DropdownMenuItem<String>>((dynamic value) {
-                      return DropdownMenuItem<String>(
-                        value: value["categoryName"],
-                        child: Text(value["categoryName"]),
-                      );
-                    }).toList(),
                   ),
                 ),
               ),
               Padding(
                 padding:
-                    const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
+                const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
                 child: Row(
                   children: <Widget>[
                     Text("Society",
@@ -697,19 +715,19 @@ class _CreateSocietyState extends State<CreateSociety> {
                     textCapitalization: TextCapitalization.words,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(5.0),
-                          borderSide: new BorderSide(),
-                        ),
-                        // labelText: "Society Name",
-                        hintText: 'Pick Society Address',
-                        hintStyle: TextStyle(fontSize: 14,),),
+                      border: new OutlineInputBorder(
+                        borderRadius: new BorderRadius.circular(5.0),
+                        borderSide: new BorderSide(),
+                      ),
+                      // labelText: "Society Name",
+                      hintText: 'Pick Society Address',
+                      hintStyle: TextStyle(fontSize: 14,),),
                   ),
                 ),
               ),
               Padding(
                 padding:
-                    const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
+                const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
                 child: Row(
                   children: <Widget>[
                     Text("Mobile",
@@ -737,15 +755,15 @@ class _CreateSocietyState extends State<CreateSociety> {
                         counterText: "",
                         fillColor: Colors.grey[200],
                         contentPadding:
-                            EdgeInsets.only(top: 5, left: 10, bottom: 5),
+                        EdgeInsets.only(top: 5, left: 10, bottom: 5),
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(5)),
                             borderSide:
-                                BorderSide(width: 0, color: Colors.black)),
+                            BorderSide(width: 0, color: Colors.black)),
                         enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(4)),
                             borderSide:
-                                BorderSide(width: 0, color: Colors.black)),
+                            BorderSide(width: 0, color: Colors.black)),
                         hintText: 'Enter Mobile No',
                         // labelText: "Mobile",
                         hintStyle: TextStyle(color: Colors.grey, fontSize: 14)),
@@ -824,9 +842,9 @@ class _CreateSocietyState extends State<CreateSociety> {
                   ),
                 ),
               ),
-              Price_dropdownValue.toString()=="Society"||Price_dropdownValue==null?Padding(
+              _societyType.toString()=="Society"||_societyType==null?Padding(
                 padding:
-                    const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
+                const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
                 child: Row(
                   children: <Widget>[
                     Text("Total Wings",
@@ -835,7 +853,7 @@ class _CreateSocietyState extends State<CreateSociety> {
                   ],
                 ),
               ):Container(),
-              Price_dropdownValue.toString()=="Society"||Price_dropdownValue==null?Padding(
+              _societyType.toString()=="Society"||_societyType==null?Padding(
                 padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 6.0),
                 child: SizedBox(
                   height: 50,
@@ -854,16 +872,62 @@ class _CreateSocietyState extends State<CreateSociety> {
                         counterText: "",
                         fillColor: Colors.grey[200],
                         contentPadding:
-                            EdgeInsets.only(top: 5, left: 10, bottom: 5),
+                        EdgeInsets.only(top: 5, left: 10, bottom: 5),
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(5)),
                             borderSide:
-                                BorderSide(width: 0, color: Colors.black)),
+                            BorderSide(width: 0, color: Colors.black)),
                         enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(4)),
                             borderSide:
-                                BorderSide(width: 0, color: Colors.black)),
+                            BorderSide(width: 0, color: Colors.black)),
                         hintText: 'Enter Total No of Wings',
+                        // labelText: "Wings",
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14)),
+                  ),
+                ),
+              ):Container(),
+
+              _societyType.toString()=="Community"||_societyType==null?Padding(
+                padding:
+                const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
+                child: Row(
+                  children: <Widget>[
+                    Text("Total Groups",
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w500))
+                  ],
+                ),
+              ):Container(),
+              _societyType.toString()=="Community"||_societyType==null?Padding(
+                padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 6.0),
+                child: SizedBox(
+                  height: 50,
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value.trim() == "") {
+                        return 'Enter Total Group';
+                      }
+                      return null;
+                    },
+                    maxLength: 2,
+                    keyboardType: TextInputType.number,
+                    controller: txtwings,
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                        counterText: "",
+                        fillColor: Colors.grey[200],
+                        contentPadding:
+                        EdgeInsets.only(top: 5, left: 10, bottom: 5),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                            borderSide:
+                            BorderSide(width: 0, color: Colors.black)),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                            borderSide:
+                            BorderSide(width: 0, color: Colors.black)),
+                        hintText: 'Enter Total No of Group',
                         // labelText: "Wings",
                         hintStyle: TextStyle(color: Colors.grey, fontSize: 14)),
                   ),
@@ -872,7 +936,7 @@ class _CreateSocietyState extends State<CreateSociety> {
 
               Padding(
                 padding:
-                    const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
+                const EdgeInsets.only(top: 15.0, right: 5.0, left: 5.0),
                 child: Row(
                   children: <Widget>[
                     Text("State",
@@ -979,85 +1043,85 @@ class _CreateSocietyState extends State<CreateSociety> {
                     print(selectedArea);
                   },
                   closeButton: RaisedButton(
-                    color: constant.appPrimaryMaterialColor,
-                    child: Text("Add New Area",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    ),
-                    onPressed: () {
-                      txtArea.text = "";
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            // title: Text("Simple Alert"),
-                            content:Padding(
-                              padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 15.0),
-                              child: SizedBox(
-                                height: 50,
-                                child: TextFormField(
-                                  validator: (value) {
-                                    if (value.trim() == "") {
-                                      return 'Enter Your Area';
-                                    }
-                                    return null;
-                                  },
-                                  // maxLength: 2,
-                                  // keyboardType: TextInputType.number,
-                                  controller: txtArea,
-                                  textInputAction: TextInputAction.next,
-                                  decoration: InputDecoration(
-                                      counterText: "",
-                                      fillColor: Colors.grey[200],
-                                      contentPadding:
-                                      EdgeInsets.only(top: 5, left: 10, bottom: 5),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                                          borderSide:
-                                          BorderSide(width: 0, color: Colors.black)),
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(Radius.circular(4)),
-                                          borderSide:
-                                          BorderSide(width: 0, color: Colors.black)),
-                                      hintText: 'Enter Area',
-                                      // labelText: "Wings",
-                                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14)),
+                      color: constant.appPrimaryMaterialColor,
+                      child: Text("Add New Area",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onPressed: () {
+                        txtArea.text = "";
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              // title: Text("Simple Alert"),
+                              content:Padding(
+                                padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 15.0),
+                                child: SizedBox(
+                                  height: 50,
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value.trim() == "") {
+                                        return 'Enter Your Area';
+                                      }
+                                      return null;
+                                    },
+                                    // maxLength: 2,
+                                    // keyboardType: TextInputType.number,
+                                    controller: txtArea,
+                                    textInputAction: TextInputAction.next,
+                                    decoration: InputDecoration(
+                                        counterText: "",
+                                        fillColor: Colors.grey[200],
+                                        contentPadding:
+                                        EdgeInsets.only(top: 5, left: 10, bottom: 5),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                                            borderSide:
+                                            BorderSide(width: 0, color: Colors.black)),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                                            borderSide:
+                                            BorderSide(width: 0, color: Colors.black)),
+                                        hintText: 'Enter Area',
+                                        // labelText: "Wings",
+                                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14)),
+                                  ),
                                 ),
                               ),
-                            ),
-                            actions: [
-                              RaisedButton(
-                                  color: constant.appPrimaryMaterialColor,
-                                  child: Text("Submit",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                              actions: [
+                                RaisedButton(
+                                    color: constant.appPrimaryMaterialColor,
+                                    child: Text("Submit",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  ),
-                                  onPressed: () {
-                                    bool exist = false;
-                                    for(int i=0;i<allAreas.length;i++){
-                                      if(allAreas[i]["Title"].toString().toLowerCase() == txtArea.text){
-                                        exist = true;
-                                        Fluttertoast.showToast(
-                                          msg: "Already Exist!!",
-                                          gravity: ToastGravity.TOP,
-                                          backgroundColor: Colors.red,
-                                          textColor: Colors.white,
-                                        );
+                                    onPressed: () {
+                                      bool exist = false;
+                                      for(int i=0;i<allAreas.length;i++){
+                                        if(allAreas[i]["Title"].toString().toLowerCase() == txtArea.text){
+                                          exist = true;
+                                          Fluttertoast.showToast(
+                                            msg: "Already Exist!!",
+                                            gravity: ToastGravity.TOP,
+                                            backgroundColor: Colors.red,
+                                            textColor: Colors.white,
+                                          );
+                                        }
                                       }
-                                    }
-                                    if(!exist){
-                                      addArea(txtArea.text);
-                                    }
-                                  }),
-                            ],
-                          );
-                        },
-                      );
-                    }),
+                                      if(!exist){
+                                        addArea(txtArea.text);
+                                      }
+                                    }),
+                              ],
+                            );
+                          },
+                        );
+                      }),
                   onChanged: (newValue) {
                     setState(() {
                       isAreaSelected = true;
@@ -1199,7 +1263,7 @@ class _CreateSocietyState extends State<CreateSociety> {
                       print(txtname.text);
                       print(txtmobile.text);
                       print(txtwings.text);
-                      if (Price_dropdownValue == "Select" ||
+                      if (_societyType == "Select" ||
                           txtname.text == "" ||
                           txtmobile.text == "" ||
                           // txtwings.text == "" ||
@@ -1220,25 +1284,25 @@ class _CreateSocietyState extends State<CreateSociety> {
                         });
                         getAllSocieties();
                         // addArea(txtArea.text);
-                       // createNewSociety(txtname.text, txtAddress.text, txtYourName.text, txtmobile.text,
-                       //     selectedStateCode, selectedCity,selectedArea, "http://maps.google.com/maps?q=$lat,$long",
-                       //      lat.toString(),long.toString(), txtEmail.text, Price_dropdownValue, txtwings.text);
+                        // createNewSociety(txtname.text, txtAddress.text, txtYourName.text, txtmobile.text,
+                        //     selectedStateCode, selectedCity,selectedArea, "http://maps.google.com/maps?q=$lat,$long",
+                        //      lat.toString(),long.toString(), txtEmail.text, Price_dropdownValue, txtwings.text);
                         if(!societyExist && areaAddedToDatabase) {
-                          // createNewSociety(
-                          //     txtname.text,
-                          //     txtAddress.text,
-                          //     txtYourName.text,
-                          //     txtmobile.text,
-                          //     selectedStateCode,
-                          //     selectedCity,
-                          //     selectedArea,
-                          //     "http://maps.google.com/maps?q=$lat,$long",
-                          //     lat.toString(),
-                          //     long.toString(),
-                          //     txtEmail.text,
-                          //     Price_dropdownValue,
-                          //     txtwings.text);
-                          Navigator.push(
+                          createNewSociety(
+                              txtname.text,
+                              txtAddress.text,
+                              txtYourName.text,
+                              txtmobile.text,
+                              selectedStateCode,
+                              selectedCity,
+                              selectedArea,
+                              "http://maps.google.com/maps?q=$lat,$long",
+                              lat.toString(),
+                              long.toString(),
+                              txtEmail.text,
+                              _societyType,
+                              txtwings.text);
+                          /*Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
@@ -1260,7 +1324,7 @@ class _CreateSocietyState extends State<CreateSociety> {
                                               Price_dropdownValue,
                                               txtwings.text);
                                         }),
-                              ));
+                              ));*/
                         }
                         else{
                           Fluttertoast.showToast(

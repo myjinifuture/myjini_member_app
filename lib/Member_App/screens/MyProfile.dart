@@ -505,12 +505,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text("$FlatNo",
+                        FlatNo != 'null' && FlatNo != ''
+                          ?Text("$FlatNo",
                             style: TextStyle(
                               color: Colors.grey[800],
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
-                            )),
+                            )): Text(''),
                         Text("Flat Number",
                             style: TextStyle(
                               color: Colors.grey[800],

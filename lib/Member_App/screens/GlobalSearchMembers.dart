@@ -198,7 +198,7 @@ class _GlobalSearchMembersState extends State<GlobalSearchMembers> {
       print(_permissionStatus);
     });
     if (permissionRequestResult[permission] == PermissionStatus.granted) {
-     /* setState(() {
+      /* setState(() {
         _searchcontroller.text = "";
       });*/
     } else
@@ -336,7 +336,7 @@ class _GlobalSearchMembersState extends State<GlobalSearchMembers> {
         } else {
           for (int i = 0; i < memberData.length; i++) {
             print((memberData[i]["WingData"][0]["wingName"] +
-                memberData[i]["FlatData"][0]["flatNo"])
+                memberData[i]["FlatData"]["flatNo"])
                 .toString()
                 .toUpperCase()
                 .replaceAll("-", ""));
@@ -371,7 +371,7 @@ class _GlobalSearchMembersState extends State<GlobalSearchMembers> {
                     .trim()
                     .replaceAll(" ", "")) ||
                 (memberData[i]["WingData"][0]["wingName"] +
-                    memberData[i]["FlatData"][0]["flatNo"])
+                    memberData[i]["FlatData"]["flatNo"])
                     .toString()
                     .toUpperCase()
                     .replaceAll("-", "")
@@ -474,146 +474,146 @@ class _GlobalSearchMembersState extends State<GlobalSearchMembers> {
       ),
       body: isLoading
           ? Container(
-              child: Center(
-                child: CircularProgressIndicator(),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      )
+          : SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          children: <Widget>[
+            searchMemberData.length > 0
+                ? Card(
+              child: Container(
+                height: serviceData.length > 0
+                    ? MediaQuery.of(context).size.height / 2.2
+                    : MediaQuery.of(context).size.height,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.only(
+                          top: 5, left: 5, bottom: 5),
+                      color: Colors.grey,
+                      width: MediaQuery.of(context).size.width,
+                      child: Text(
+                        "Member Matches",
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.separated(
+                        physics: BouncingScrollPhysics(),
+                        itemCount: searchMemberData.length,
+                        itemBuilder:
+                            (BuildContext context, int index) {
+                          return GlobalMemberComponent(
+                              searchMemberData[index]);
+                        },
+                        separatorBuilder:
+                            (BuildContext context, int index) {
+                          return Divider();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
-          : SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: Column(
-                children: <Widget>[
-                  searchMemberData.length > 0
-                      ? Card(
-                          child: Container(
-                            height: serviceData.length > 0
-                                ? MediaQuery.of(context).size.height / 2.2
-                                : MediaQuery.of(context).size.height,
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  padding: EdgeInsets.only(
-                                      top: 5, left: 5, bottom: 5),
-                                  color: Colors.grey,
-                                  width: MediaQuery.of(context).size.width,
-                                  child: Text(
-                                    "Member Matches",
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: ListView.separated(
-                                    physics: BouncingScrollPhysics(),
-                                    itemCount: searchMemberData.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return GlobalMemberComponent(
-                                          searchMemberData[index]);
-                                    },
-                                    separatorBuilder:
-                                        (BuildContext context, int index) {
-                                      return Divider();
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      : Container(),
-                  // serviceData.length > 0
-                  //     ? Card(
-                  //         child: Container(
-                  //           height: searchMemberData.length > 0
-                  //               ? MediaQuery.of(context).size.height / 2.2
-                  //               : MediaQuery.of(context).size.height,
-                  //           child: Column(
-                  //             children: <Widget>[
-                  //               Container(
-                  //                 padding: EdgeInsets.only(
-                  //                     top: 5, left: 5, bottom: 5),
-                  //                 color: Colors.grey,
-                  //                 width: MediaQuery.of(context).size.width,
-                  //                 child: Text(
-                  //                   "Services Matches",
-                  //                   style: TextStyle(
-                  //                       fontSize: 13,
-                  //                       color: Colors.white,
-                  //                       fontWeight: FontWeight.w600),
-                  //                 ),
-                  //               ),
-                  //               Expanded(
-                  //                 child: ListView.separated(
-                  //                   physics: BouncingScrollPhysics(),
-                  //                   itemCount: serviceData.length,
-                  //                   itemBuilder:
-                  //                       (BuildContext context, int index) {
-                  //                     return GestureDetector(
-                  //                       onTap: () {
-                  //                         Navigator.push(
-                  //                           context,
-                  //                           MaterialPageRoute(
-                  //                             builder: (context) => ServiceList(
-                  //                               serviceData[index],"",""
-                  //                             ),
-                  //                           ),
-                  //                         );
-                  //                       },
-                  //                       child: Container(
-                  //                         child: Row(
-                  //                           children: <Widget>[
-                  //                             FadeInImage.assetNetwork(
-                  //                               placeholder: "",
-                  //                               image: constant.Image_Url +
-                  //                                   serviceData[index]
-                  //                                       ["BannerImage"],
-                  //                               width: 70,
-                  //                               height: 70,
-                  //                             ),
-                  //                             Padding(
-                  //                                 padding: EdgeInsets.only(
-                  //                                     left: 12)),
-                  //                             Column(
-                  //                               crossAxisAlignment:
-                  //                                   CrossAxisAlignment.start,
-                  //                               children: <Widget>[
-                  //                                 Text(
-                  //                                   "${serviceData[index]["Title"]}",
-                  //                                   style: TextStyle(
-                  //                                       fontWeight:
-                  //                                           FontWeight.w600,
-                  //                                       color: constant
-                  //                                           .appPrimaryMaterialColor),
-                  //                                 ),
-                  //                                 Text(
-                  //                                   "${serviceData[index]["Description"]}",
-                  //                                   style: TextStyle(
-                  //                                       fontSize: 13,
-                  //                                       color: Colors.grey),
-                  //                                 ),
-                  //                               ],
-                  //                             ),
-                  //                           ],
-                  //                         ),
-                  //                       ),
-                  //                     );
-                  //                   },
-                  //                   separatorBuilder:
-                  //                       (BuildContext context, int index) {
-                  //                     return Divider();
-                  //                   },
-                  //                 ),
-                  //               ),
-                  //             ],
-                  //           ),
-                  //         ),
-                  //       )
-                  //     : Container(),
-                ],
-              ),
-            ),
+                : Container(),
+            // serviceData.length > 0
+            //     ? Card(
+            //         child: Container(
+            //           height: searchMemberData.length > 0
+            //               ? MediaQuery.of(context).size.height / 2.2
+            //               : MediaQuery.of(context).size.height,
+            //           child: Column(
+            //             children: <Widget>[
+            //               Container(
+            //                 padding: EdgeInsets.only(
+            //                     top: 5, left: 5, bottom: 5),
+            //                 color: Colors.grey,
+            //                 width: MediaQuery.of(context).size.width,
+            //                 child: Text(
+            //                   "Services Matches",
+            //                   style: TextStyle(
+            //                       fontSize: 13,
+            //                       color: Colors.white,
+            //                       fontWeight: FontWeight.w600),
+            //                 ),
+            //               ),
+            //               Expanded(
+            //                 child: ListView.separated(
+            //                   physics: BouncingScrollPhysics(),
+            //                   itemCount: serviceData.length,
+            //                   itemBuilder:
+            //                       (BuildContext context, int index) {
+            //                     return GestureDetector(
+            //                       onTap: () {
+            //                         Navigator.push(
+            //                           context,
+            //                           MaterialPageRoute(
+            //                             builder: (context) => ServiceList(
+            //                               serviceData[index],"",""
+            //                             ),
+            //                           ),
+            //                         );
+            //                       },
+            //                       child: Container(
+            //                         child: Row(
+            //                           children: <Widget>[
+            //                             FadeInImage.assetNetwork(
+            //                               placeholder: "",
+            //                               image: constant.Image_Url +
+            //                                   serviceData[index]
+            //                                       ["BannerImage"],
+            //                               width: 70,
+            //                               height: 70,
+            //                             ),
+            //                             Padding(
+            //                                 padding: EdgeInsets.only(
+            //                                     left: 12)),
+            //                             Column(
+            //                               crossAxisAlignment:
+            //                                   CrossAxisAlignment.start,
+            //                               children: <Widget>[
+            //                                 Text(
+            //                                   "${serviceData[index]["Title"]}",
+            //                                   style: TextStyle(
+            //                                       fontWeight:
+            //                                           FontWeight.w600,
+            //                                       color: constant
+            //                                           .appPrimaryMaterialColor),
+            //                                 ),
+            //                                 Text(
+            //                                   "${serviceData[index]["Description"]}",
+            //                                   style: TextStyle(
+            //                                       fontSize: 13,
+            //                                       color: Colors.grey),
+            //                                 ),
+            //                               ],
+            //                             ),
+            //                           ],
+            //                         ),
+            //                       ),
+            //                     );
+            //                   },
+            //                   separatorBuilder:
+            //                       (BuildContext context, int index) {
+            //                     return Divider();
+            //                   },
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       )
+            //     : Container(),
+          ],
+        ),
+      ),
     );
   }
 }

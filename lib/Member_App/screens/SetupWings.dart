@@ -91,7 +91,7 @@ class _SetupWingsState extends State<SetupWings> {
             for(int i=0;i<winglistClassList.length;i++){
               if(winglistClassList[i]["totalFloor"].toString()!="0"){
                 wingfilled = prefs.getString('madeAtleastOneWing');
-                setState(() {
+                setState((){
                   filledAtleastOneWing = true;
                 });
                 break;
@@ -120,7 +120,7 @@ class _SetupWingsState extends State<SetupWings> {
             new FlatButton(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -274,17 +274,17 @@ class _SetupWingsState extends State<SetupWings> {
                               print("code before wingdetail screen");
                               print(widget.societyCode);
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      WingDetail(
-                                          wingName: "${alphabets[index]
-                                              .toString()}",
-                                          wingId: "${winglistClassList[index]["_id"]}",
-                                          societyId: "${winglistClassList[index]["societyId"]}",
-                                          societyCode: widget.societyCode,
-                                          noOfWings: widget.wingData,
-                                          mobileNo: widget.mobileNo,
-                                          isEdit: widget.isEdit,
-                                      ),
+                                builder: (BuildContext context) =>
+                                    WingDetail(
+                                      wingName: "${alphabets[index]
+                                          .toString()}",
+                                      wingId: "${winglistClassList[index]["_id"]}",
+                                      societyId: "${winglistClassList[index]["societyId"]}",
+                                      societyCode: widget.societyCode,
+                                      noOfWings: widget.wingData,
+                                      mobileNo: widget.mobileNo,
+                                      isEdit: widget.isEdit,
+                                    ),
                               ),
                               );
                             }

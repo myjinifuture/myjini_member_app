@@ -87,7 +87,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -183,10 +183,18 @@ class _GalleryScreenState extends State<GalleryScreen> {
           ),
         ),
       ),
-      body: isLoading
-          ? LoadingComponent()
-          : EventData.length > 0
-          ? Container(
+      body: EventData.length < 0 ?
+           Center(
+             child: Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+               children: [
+                 CircularProgressIndicator(),
+                 Padding(padding: EdgeInsets.only(top:10),),
+                 Text("No Data Found ... !",style:TextStyle(fontSize: 16,fontFamily: "OpenSans"),),
+               ],
+             ),
+           ) :
+           Container(
           color: Colors.grey[100],
           child: AnimationLimiter(
             child: ListView.builder(
@@ -360,7 +368,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
               itemCount: EventData.length,
             ),
           ))
-          : Center(child: Text('No Data Found'),),
     );
   }
 }

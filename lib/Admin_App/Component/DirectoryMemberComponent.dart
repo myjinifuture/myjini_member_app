@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,10 +15,12 @@ import 'package:smart_society_new/Admin_App/Common/Constants.dart' as cnst;
 import 'package:esys_flutter_share/esys_flutter_share.dart' as S;
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:share/share.dart';
+import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
+
 
 class DirectoryMemberComponent extends StatefulWidget {
   var MemberData, search, wingName;
-  Function onAdminUpdate;
+    Function onAdminUpdate;
 
   int index;
 
@@ -91,6 +93,60 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
       },
     );
   }
+  showMsg(String msg, {String title = 'MYJINI'}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text(title),
+          content: new Text(msg),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  removeMember() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var memberID = widget.MemberData["_id"];
+
+    var wingID = prefs.getString(constant.Session.WingId);
+    var flatID = prefs.getString(constant.Session.FlatId);
+    var societyID = prefs.getString(constant.Session.SocietyId);
+    final result = await InternetAddress.lookup('google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      var data = {
+        "memberId":memberID,
+        "isVerify":false,
+        "wingId":wingID,
+        "flatId":flatID,
+        "societyId":societyID
+      };
+      print(data);
+      Services.responseHandler(apiName: "admin/memberApproval_V1", body: data)
+          .then((data) async {
+        if (data.Data != null && data.Data.toString() == "0") {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.clear();
+          DefaultCacheManager().emptyCache();
+          Navigator.pop(context);
+        } else {
+          // setState(() {});
+        }
+      },onError: (e) {
+        showMsg("Something Went Wrong Please Try Again");
+        setState(() {});
+      });
+    }
+  }
+
   var shareMyAddressContent;
 
   shareMyAddress() async {
@@ -149,7 +205,7 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
             "receiverWingId":
                 widget.MemberData["WingData"][0]["_id"].toString(),
             "receiverFlatId":
-                widget.MemberData["FlatData"][0]["_id"].toString(),
+                widget.MemberData["FlatData"]["_id"].toString(),
             "contactNo": widget.MemberData["ContactNo"].toString(),
             "AddedBy": "Member",
             "isVideoCall": isVideoCall,
@@ -259,7 +315,7 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                                       ? Container()
                                       : Text(" - "),
                                   Text(
-                                      "${widget.MemberData["FlatData"][0]["flatNo"]}"
+                                      "${widget.MemberData["FlatData"]["flatNo"]}"
                                           .toUpperCase()),
                                 ],
                               ),
@@ -335,7 +391,7 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                         child: Icon(
                           Icons.video_call,
                           color: Colors.red,
-                          size: 31,
+                          size: 30,
                         ),
                       ),
                       GestureDetector(
@@ -368,7 +424,7 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                         ),
                       ),
                       IconButton(
-                          icon: Icon(Icons.remove_red_eye,
+                          icon: Icon(Icons.remove_red_eye,size: 20,
                               color: cnst.appPrimaryMaterialColor),
                           onPressed: () {
                             Navigator.push(
@@ -391,6 +447,12 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
                             Share.share(
                                 shareMyAddressContent);
                           }),
+                      /*IconButton(
+                          icon: Icon(Icons.delete_outline,size: 25,
+                              color: Colors.red),
+                          onPressed: () {
+                            AlertDialogopen();
+                          }),*/
                     ],
                   ),
                 )
@@ -401,4 +463,76 @@ class _DirectoryMemberComponentState extends State<DirectoryMemberComponent> {
       ),
     );
   }
+ /* AlertDialogopen() {
+    return showGeneralDialog(
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionBuilder: (context, a1, a2, widget) {
+          return Transform.scale(
+            scale: a1.value,
+            child: Opacity(
+                opacity: a1.value,
+                child: AlertDialog(
+                  backgroundColor: Colors.white,
+                  shape: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.0)),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Are You Sure You Want To \nDelete....?",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 40.0),
+                      ),
+                    ],
+                  ),
+                  content: Container(
+                    height: MediaQuery.of(context).size.height/14,
+                    child: Column(children: [
+                      Row(
+                        children: [
+                          RaisedButton(
+                            onPressed: () {
+                              removeMember();
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            color: Colors.deepPurple,
+                            child: Text(
+                              "Delete",
+                              style: TextStyle(color: Colors.white, fontSize: 15),
+                            ),
+                          ),
+                          Padding(padding: EdgeInsets.only(left:20),),
+                          RaisedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            color: Colors.deepPurple,
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(color: Colors.white, fontSize: 15),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ]),
+                  ),
+                )),
+          );
+        },
+        transitionDuration: Duration(milliseconds: 200),
+        barrierDismissible: false,
+        barrierLabel: '',
+        context: context,
+        pageBuilder: (context, animation1, animation2) {
+          return Column(
+            children: [],
+          );
+        });
+  }*/
 }

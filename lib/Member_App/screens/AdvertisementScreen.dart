@@ -5,12 +5,12 @@ import 'package:smart_society_new/Member_App/screens/AdDetailPage.dart';
 
 import 'package:flutter/material.dart';
 
-class AdvertisementScreen extends StatefulWidget {
+class Advertisements extends StatefulWidget {
   @override
-  _AdvertisementScreenState createState() => _AdvertisementScreenState();
+  AdvertisementsState createState() => AdvertisementsState();
 }
 
-class _AdvertisementScreenState extends State<AdvertisementScreen> {
+class AdvertisementsState extends State<Advertisements> {
   bool isLoading = false;
   List _advertisementData = [];
 

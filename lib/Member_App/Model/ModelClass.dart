@@ -18,7 +18,6 @@ class Menu {
         IconLabel: "Complaints"));
     listofmenus.add(new Menu(
         Icon: "directory.png", IconName: "Directory", IconLabel: "Directory"));
-
     listofmenus.add(new Menu(
         Icon: "mySociety.png", IconName: "MySociety", IconLabel: "My Society"));
     listofmenus.add(new Menu(
@@ -27,7 +26,6 @@ class Menu {
         Icon: "polling.png", IconName: "Polling", IconLabel: "Polling"));
     listofmenus.add(new Menu(
         Icon: "gallery.png", IconName: "Gallery", IconLabel: "Gallery"));
-
     // listofmenus
     //     .add(new Menu(Icon: "bill.png", IconName: "Bills", IconLabel: "Bills"));
     listofmenus.add(new Menu(
@@ -42,7 +40,6 @@ class Menu {
     //     Icon: "deals.png", IconName: "OffersScreen", IconLabel: "Offers"));
     listofmenus.add(new Menu(
         Icon: "online-marketing.png", IconName: "AdvertisementScreen", IconLabel: "Advertisements"));
-
     return listofmenus;
   }
 }

@@ -1,17 +1,25 @@
 import 'dart:io';
-
+import 'package:calendar_timeline/calendar_timeline.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
-import 'package:smart_society_new/Member_App/common/constant.dart';
+
 import 'package:smart_society_new/Member_App/Services/ServiceList.dart';
 import 'package:easy_gradient_text/easy_gradient_text.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:smart_society_new/Member_App/common/constant.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart' as constant;
 import 'package:smart_society_new/Member_App/screens/RateVendorScreen.dart';
 import 'package:smart_society_new/Member_App/screens/StaffReviewListingScreen.dart';
+import 'package:intl/intl.dart';
+import '../common/Services1.dart';
+import '../screens/VendorRequest.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class SubServicesScreen extends StatefulWidget {
   var ServiceData, Id;
@@ -26,10 +34,14 @@ class SubServicesScreen extends StatefulWidget {
 }
 
 class _SubServicesScreenState extends State<SubServicesScreen> {
+
+  TextEditingController _txtdescription = TextEditingController();
   bool isLoading = false;
   List ServiceData = new List();
   List subCategoryList = [];
   List otherVendorData = [];
+  List societyVendorDetails = [];
+  List Time = ["7:00am","7:30am"];
 
   @override
   void initState() {
@@ -83,6 +95,78 @@ class _SubServicesScreenState extends State<SubServicesScreen> {
     } on SocketException catch (_) {
       showHHMsg("No Internet Connection.", "");
     }
+  }
+
+  DateTime selectedDate = DateTime.now();
+
+  vendorRequest(id,int index,DateTime date,String description) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var categoryId = prefs.getString(Session.VendorCateId);
+      var memId = prefs.getString(Session.Member_Id);
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var body = {
+          "memberId": memId,
+          "memberTime": index,
+          "date": DateFormat('dd/MM/yyyy').format(date),
+          "description": description,
+          "vendorCategoryId":categoryId,
+          "vendorId": id
+        };
+        print(body);
+        setState(() {
+          isLoading = true;
+        });
+        Services.responseHandler(apiName: "member/addVendorDate", body: body)
+            .then((data) async {
+          if (data.Data != null) {
+            setState(() {
+              print(data.Data);
+              Fluttertoast.showToast(
+                  msg: "Request Successfully..!!",
+                  backgroundColor: Colors.green,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.white);
+              Navigator.pop(context);
+            });
+          } else if (data.Data.toString() == "0") {
+            setState(() {
+              Fluttertoast.showToast(
+                  msg: "Vendor Rejected!!!",
+                  backgroundColor: Colors.red,
+                  gravity: ToastGravity.TOP,
+                  textColor: Colors.white);
+              isLoading = false;
+            });
+          } else {
+            setState(() {
+              isLoading = false;
+            });
+          }
+        }, onError: (e) {
+          showMsg("Something Went Wrong Please Try Again");
+          setState(() {
+            isLoading = false;
+          });
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
+  }
+
+  _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate, // Refer step 1
+      firstDate: DateTime.now(),
+      lastDate: DateTime(30000),
+    );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
   }
 
   // _getSubCategory() async {
@@ -262,17 +346,15 @@ class _SubServicesScreenState extends State<SubServicesScreen> {
     "https://i.ytimg.com/vi/FTguamlXGWs/maxresdefault.jpg"
   ];
 
+
+  var _index = 0;
+
   @override
   Widget build(BuildContext context) {
     print("otherVendorData");
     print(otherVendorData);
     return Scaffold(
       appBar: AppBar(
-        // leading: IconButton(
-        //     icon: Icon(Icons.arrow_back),
-        //     onPressed: () {
-        //       Navigator.pop(context);
-        //     },),
         centerTitle: true,
         title: Text(
           '${widget.ServiceData}',
@@ -319,14 +401,10 @@ class _SubServicesScreenState extends State<SubServicesScreen> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Container(
-                    child: isLoading
-                        ? Container(
-                            child: Center(child: CircularProgressIndicator()),
-                          )
-                        : otherVendorData.length > 0
+                    child: otherVendorData.length > 0
                             ? ListView.builder(
                                 physics: BouncingScrollPhysics(),
-                                // shrinkWrap: true,
+                                 shrinkWrap: true,
                                 itemCount: otherVendorData.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return GestureDetector(
@@ -760,10 +838,7 @@ class _SubServicesScreenState extends State<SubServicesScreen> {
                                                             builder: (context) =>
                                                                 RateVendorScreen(
                                                               type: 1,
-                                                              otherVendorId:
-                                                                  otherVendorData[
-                                                                          index]
-                                                                      ["_id"],
+                                                              otherVendorId: otherVendorData[index]["_id"],
                                                               onAddOtherVendorReview:
                                                                   getVendorCategoryWise,
                                                             ),
@@ -821,7 +896,31 @@ class _SubServicesScreenState extends State<SubServicesScreen> {
                                                   ],
                                                 ),
                                               ),
-                                              IconButton(
+                                              RaisedButton(
+                                                onPressed: () {
+                                                    var Id =otherVendorData[index]["_id"];
+                                                  //Navigator.push(context, MaterialPageRoute(builder: (context)=>VendorRequest()));
+                                                    AlertDialogopen(Id);
+                                                },
+                                                child: Text("Request",
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                        "OpenSans",
+                                                        color:
+                                                        Colors.white)),
+                                                color: Colors.deepPurple,
+                                                shape:
+                                                RoundedRectangleBorder(
+                                                    borderRadius:
+                                                    BorderRadius
+                                                        .circular(
+                                                        8)),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                    right: 10.0),
+                                              )
+                                             /* IconButton(
                                                 icon: Image.asset(
                                                   "images/whatsapp.png",
                                                   width: 50,
@@ -842,7 +941,7 @@ class _SubServicesScreenState extends State<SubServicesScreen> {
                                                   launch(
                                                       "tel:${otherVendorData[index]["ContactNo"]}");
                                                 },
-                                              ),
+                                              ),*/
                                             ],
                                           ),
                                           SizedBox(
@@ -868,5 +967,153 @@ class _SubServicesScreenState extends State<SubServicesScreen> {
         ),
       ),
     );
+  }
+  AlertDialogopen(String id) {
+    return showGeneralDialog(
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionBuilder: (context, a1, a2, widget) {
+          return Transform.scale(
+            scale: a1.value,
+            child: Opacity(
+                opacity: a1.value,
+                child: AlertDialog(
+                  backgroundColor: Colors.white,
+                  shape: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.0)),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Vendor Request",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 80.0),
+                      ),
+                      InkWell(
+                        child: Icon(
+                          Icons.close_sharp,
+                          color: Colors.black,
+                          size: 20.0,
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
+                  content: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    child: Column(
+                        children: [
+                     Row(
+                        children: [
+                          IconButton(
+                            icon: Image.asset("assets/image/calender.png"),
+                            onPressed: () {
+                              _selectDate(context);
+                            },
+                          ),
+                          Text(
+                            DateFormat('dd/MM/yyyy').format(selectedDate),
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                          /*CalendarTimeline(
+                            firstDate: DateTime.now(),
+                            initialDate: selectedDate,
+                            lastDate: DateTime.now().add(Duration(days: 365)),
+                            onDateSelected: (date) {
+                              selectedDate = date;
+                              print(selectedDate);
+                            },
+                            monthColor: Colors.transparent,
+                            dayColor: Colors.deepPurple,
+                            dotsColor: Colors.transparent,
+                            activeDayColor: Colors.purple,
+                            activeBackgroundDayColor: Colors.grey[200],
+                            selectableDayPredicate: (date) => date.weekday != 7,
+                          ),*/
+                          Padding(padding: EdgeInsets.only(top:10.0)),
+                          Container(
+                              height: 100,
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                color: Colors.deepPurple[200],
+                              ),
+                              child: CupertinoPicker(
+                                itemExtent: 50,
+                                onSelectedItemChanged: (value) {
+                                  setState(() {
+                                    _index = value;
+                                    print("print _index value......");
+                                    print(_index);
+                                  });
+                                },
+                                children:[
+
+                                  textTime("8:00am"),
+                                  textTime("8:30am"),
+                                  textTime("9:00am"),
+                                  textTime("9:30am"),
+                                  textTime("10:00am"),
+                                  textTime("10:30am"),
+                                  textTime("11:00am"),
+                                  textTime("11:30am"),
+                                  textTime("12:00pm"),
+                                  textTime("12:30pm"),
+                                  textTime("1:00pm"),
+                                  textTime("1:30pm"),
+                                ],
+                              )),
+                          Padding(padding: EdgeInsets.only(top:20.0)),
+                      TextFormField(
+                          controller: _txtdescription,
+                          maxLines: 2,
+                          decoration: InputDecoration(
+                            hintText: "Description",
+                            isDense: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          )),
+                      // ignore: deprecated_member_use
+                      RaisedButton(
+                        onPressed: () {
+                          setState(() {
+                            vendorRequest(id,_index,selectedDate,_txtdescription.text);
+                          });
+                        },
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        color: Colors.deepPurple,
+                        child: Text(
+                          "Submit",
+                          style: TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                      ),
+                    ]),
+                  ),
+                )),
+          );
+        },
+        transitionDuration: Duration(milliseconds: 200),
+        barrierDismissible: false,
+        barrierLabel: '',
+        context: context,
+        pageBuilder: (context, animation1, animation2) {
+          return Column(
+            children: [],
+          );
+        });
+  }
+
+  textTime(text){
+    return Text(text,style : TextStyle(fontSize: 24,
+        color:Colors.black ));
   }
 }

@@ -14,17 +14,58 @@ class ResponseDataClass {
   }
 }
 
-class VaccinationResponseDataClass {
-  var centers;
+class ResponseMyjini2DataClass {
+  String Message;
+  bool IsSuccess;
+  var Data;
 
-  VaccinationResponseDataClass({this.centers});
+  ResponseMyjini2DataClass({this.Message, this.IsSuccess, this.Data});
 
-  factory VaccinationResponseDataClass.fromJson(Map<String, dynamic> json) {
-    return VaccinationResponseDataClass(
-      centers: json['centers'] as dynamic,
+  factory ResponseMyjini2DataClass.fromJson(Map<String, dynamic> json) {
+    return ResponseMyjini2DataClass(
+      Message: json['Message'] as String,
+      IsSuccess: json['IsSuccess'] as bool,
+      Data: json['Data'] as dynamic,
     );
   }
 }
+
+class VaccinationResponseDataClass {
+  var states;
+
+  VaccinationResponseDataClass({this.states});
+
+  factory VaccinationResponseDataClass.fromJson(Map<String, dynamic> json) {
+    return VaccinationResponseDataClass(
+      states: json['states'] as dynamic,
+    );
+  }
+}
+
+class VaccinationDistrictResponseDataClass {
+  var districts;
+
+  VaccinationDistrictResponseDataClass({this.districts});
+
+  factory VaccinationDistrictResponseDataClass.fromJson(Map<String, dynamic> json) {
+    return VaccinationDistrictResponseDataClass(
+      districts: json['districts'] as dynamic,
+    );
+  }
+}
+
+class VaccinationPincodeResponseDataClass {
+  var sessions;
+
+  VaccinationPincodeResponseDataClass({this.sessions});
+
+  factory VaccinationPincodeResponseDataClass.fromJson(Map<String, dynamic> json) {
+    return VaccinationPincodeResponseDataClass(
+      sessions: json['sessions'] as dynamic,
+    );
+  }
+}
+
 
 
 class SaveDataClass{

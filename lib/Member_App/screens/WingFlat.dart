@@ -434,7 +434,7 @@ class _WingFlatState extends State<WingFlat> {
             // Navigator.pushReplacementNamed(context, "/SetupWings");
             // formatGrid();
           }
-        }, onError: (e) {
+        },onError: (e) {
           showMsg("$e");
         });
       } else {
@@ -553,11 +553,11 @@ class _WingFlatState extends State<WingFlat> {
             ),*/
             Expanded(
               child:
-                  // SingleChildScrollView(
-                  //   child:
-                  // Column(
-                  //   children:
-                  getFloorAndFlat(),
+              // SingleChildScrollView(
+              //   child:
+              // Column(
+              //   children:
+              getFloorAndFlat(),
               // ),
               // ),
             ),
@@ -603,52 +603,52 @@ class _WingFlatState extends State<WingFlat> {
               width: MediaQuery.of(context).size.width,
               height: 40,
               child: RaisedButton(
-                  child: isSubmitPressed ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(3.0),
-                      child: CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-                        strokeWidth: 5,
-                      ),
-                    ),
-                  ):Text(
-                    "Submit",
-                    style: TextStyle(
-                        color: Colors.white,
+                child: isSubmitPressed ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: CircularProgressIndicator(
+                      valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 5,
                     ),
                   ),
+                ):Text(
+                  "Submit",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
                 color:constant.appPrimaryMaterialColor,
-                  onPressed:(){
-                    setState(() {
-                      isSubmitPressed=true;
-                    });
-                    print("color");
-                    print(constant.appPrimaryMaterialColor[500].toString());
-                    for(int index=0;index<flatList.length;index++){
-                      if(flatList[index]["flatTypeColor"].toString() == "MaterialColor(primary value: Color(0x997222a9))"){
-                        flatList[index]["FlatType"] = "0";
-                      }
-                      else if(flatList[index]["flatTypeColor"].toString() == "MaterialColor(primary value: Color(0xff9e9e9e))"){
-                        flatList[index]["FlatType"] = "1";
-                      }
-                      else if(flatList[index]["flatTypeColor"].toString() == "MaterialColor(primary value: Color(0xffff9800))"){
-                        flatList[index]["FlatType"] = "2";
-                      }
-                      else if(flatList[index]["flatTypeColor"].toString() == "Color(0xff000000)"){
-                        flatList[index]["FlatType"] = "3";
-                      }
-                      else if(flatList[index]["flatTypeColor"].toString() == "MaterialAccentColor(primary value: Color(0xff448aff))"){
-                        flatList[index]["FlatType"] = "4";
-                      }
-                      if(index == flatList.length-1){
-                        allchecked = true;
-                      }
+                onPressed:(){
+                  setState(() {
+                    isSubmitPressed=true;
+                  });
+                  print("color");
+                  print(constant.appPrimaryMaterialColor[500].toString());
+                  for(int index=0;index<flatList.length;index++){
+                    if(flatList[index]["flatTypeColor"].toString() == "MaterialColor(primary value: Color(0x997222a9))"){
+                      flatList[index]["FlatType"] = "0";
                     }
-                    print(flatList);
-                    if(allchecked) {
-                      createNewWing();
+                    else if(flatList[index]["flatTypeColor"].toString() == "MaterialColor(primary value: Color(0xff9e9e9e))"){
+                      flatList[index]["FlatType"] = "1";
                     }
-                  },
+                    else if(flatList[index]["flatTypeColor"].toString() == "MaterialColor(primary value: Color(0xffff9800))"){
+                      flatList[index]["FlatType"] = "2";
+                    }
+                    else if(flatList[index]["flatTypeColor"].toString() == "Color(0xff000000)"){
+                      flatList[index]["FlatType"] = "3";
+                    }
+                    else if(flatList[index]["flatTypeColor"].toString() == "MaterialAccentColor(primary value: Color(0xff448aff))"){
+                      flatList[index]["FlatType"] = "4";
+                    }
+                    if(index == flatList.length-1){
+                      allchecked = true;
+                    }
+                  }
+                  print(flatList);
+                  if(allchecked) {
+                    createNewWing();
+                  }
+                },
               ),
             )
           ],

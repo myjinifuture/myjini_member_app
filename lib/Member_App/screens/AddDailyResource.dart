@@ -1087,7 +1087,6 @@ class _AddDailyResourceState extends State<AddDailyResource> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text("Selected Wing & Flat"),
                     ),*//*
-
 */
 /*
                     Padding(

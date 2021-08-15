@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'package:smart_society_new/Member_App/component/MemberContactList.dart';
 
+import 'ContactList.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Mall_App/transitions/slide_route.dart';
@@ -13,7 +16,10 @@ import 'OTP.dart';
 
 class AddFamilyMember extends StatefulWidget {
   Function onAddFamily;
-  AddFamilyMember({this.onAddFamily});
+  String name, mobileNo;
+
+  Function newMemberAdded;
+  AddFamilyMember({this.onAddFamily, this.name, this.mobileNo});
   @override
   AddFamilyMemberState createState() => AddFamilyMemberState();
 }
@@ -25,6 +31,8 @@ class AddFamilyMemberState extends State<AddFamilyMember> {
   String Relation;
   ProgressDialog pr;
   String MemberId, WingId, WingName, flatId, Address, Residenttype, SocietyId;
+
+  PermissionStatus _permissionStatus = PermissionStatus.unknown;
 
   getLocaldata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -41,9 +49,40 @@ class AddFamilyMemberState extends State<AddFamilyMember> {
 
   @override
   void initState() {
+    if(widget.name!=null){
+      txtname.text = widget.name;
+      txtmobile.text = widget.mobileNo;
+    }
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(message: 'Please Wait');
     getLocaldata();
+  }
+
+  Future<void> requestPermission(PermissionGroup permission) async {
+    final List<PermissionGroup> permissions = <PermissionGroup>[
+      PermissionGroup.contacts
+    ];
+    final Map<PermissionGroup, PermissionStatus> permissionRequestResult =
+    await PermissionHandler().requestPermissions(permissions);
+
+    setState(() {
+      print(permissionRequestResult);
+      _permissionStatus = permissionRequestResult[permission];
+      print(_permissionStatus);
+    });
+    if (permissionRequestResult[permission] == PermissionStatus.granted) {
+      // Navigator.pushNamed(context, "/ContactList");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MemberContactList(addMem:false,),
+        ),
+      );
+    } else
+      Fluttertoast.showToast(
+          msg: "Permission Not Granted",
+          gravity: ToastGravity.TOP,
+          toastLength: Toast.LENGTH_SHORT);
   }
 
   TextEditingController txtname = new TextEditingController();
@@ -113,8 +152,10 @@ class AddFamilyMemberState extends State<AddFamilyMember> {
               child: new Text("Close"),
               onPressed: () {
                 // Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pop(context);
+                //Navigator.pop(context);
+                //Navigator.pop(context);
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/CustomerProfile', (route) => false);
                 widget.onAddFamily();
                 //widget.onAddFamily();
 
@@ -312,6 +353,38 @@ class AddFamilyMemberState extends State<AddFamilyMember> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width / 1.6,
+                margin: EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                    borderRadius:
+                    BorderRadius.all(Radius.circular(10))),
+                child: MaterialButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(10.0)),
+                  color: Colors.deepPurple,
+                  onPressed: () {
+                    requestPermission(PermissionGroup.contacts);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Icon(
+                        Icons.contact_phone,
+                        color: Colors.white,
+                        size: 17,
+                      ),
+                      Text(
+                        "Choose From Contact List",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Padding(

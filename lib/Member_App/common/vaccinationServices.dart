@@ -19,10 +19,10 @@ class VaccinationServices{
       print(body);
       if (response.statusCode == 200) {
         VaccinationResponseDataClass responseData =  VaccinationResponseDataClass(
-            centers: "");
+            states: "");
         var data = response.data;
-        print(response.data["centers"]);
-        responseData.centers = data["centers"];
+        print(response.data["states"]);
+        responseData.states = data["states"];
         return responseData;
       } else {
         print("error ->" + response.data.toString());

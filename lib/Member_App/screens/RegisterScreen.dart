@@ -450,7 +450,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         print(data);
         Services.responseHandler(apiName: "member/addMember",body: data).then((data) async {
           // pr.hide();
-          if (data.Data.length > 0 ) {
+          if(data.Data.length > 0 ) {
             prefs.setString(constant.Session.selFlatHolderType, selFlatHolderType);
             // showHHMsg("Registration Successfully", "");
             Fluttertoast.showToast(
@@ -608,8 +608,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         constant.Session.IsVerified, logindata[0]["society"]["isVerify"].toString());
     await prefs.setString(constant.Session.ResidenceType,
         logindata[0]["society"]["ResidenceType"].toString());
-/*    await prefs.setString(
-        constant.Session.FlatNo, logindata[0]["FlatNo"].toString());*/
+    prefs.getString(constant.Session.SocietyCommunityCode) == "COMMUNITY-461540" ? "": prefs.setString(
+        constant.Session.FlatNo, logindata[0]["FlatNo"].toString());
     await prefs.setString(
         constant.Session.Name, logindata[0]["Name"].toString());
     await prefs.setString(

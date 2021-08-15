@@ -1,14 +1,13 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Admin_App/Common/Constants.dart' as cnst;
 import 'package:smart_society_new/Admin_App/Component/DirectoryMemberComponent.dart';
 import 'package:smart_society_new/Admin_App/Component/LoadingComponent.dart';
-import 'package:smart_society_new/Admin_App/Component/NoDataComponent.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
+
 //member directory in admin member app
 class DirectoryMember extends StatefulWidget {
   @override
@@ -70,8 +69,10 @@ class _DirectoryMemberState extends State<DirectoryMember> {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {"societyId": SocietyId};
-        // setState(() {
+        var data = {
+          "societyId": SocietyId
+        };
+        //setState(() {
         //   isLoading = true;
         // });
         Services.responseHandler(apiName: "admin/directoryListing", body: data)
@@ -112,7 +113,6 @@ class _DirectoryMemberState extends State<DirectoryMember> {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var data = {"societyId": societyId};
-
         setState(() {
           isLoading = true;
         });
@@ -121,11 +121,14 @@ class _DirectoryMemberState extends State<DirectoryMember> {
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
+              print("print wingOFSociety...........................");
+              print(data.Data);
               for (int i = 0; i < data.Data.length; i++) {
                 if (data.Data[i]["totalFloor"].toString() != "0") {
                   _wingList.add(data.Data[i]);
                 }
-              };
+              }
+              ;
               // _wingList = data.Data;
               isLoading = false;
               selectedWing = data.Data[0]["_id"].toString();
@@ -179,6 +182,7 @@ class _DirectoryMemberState extends State<DirectoryMember> {
           ],
         );
       },
+
     );
   }
 
@@ -315,8 +319,21 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                         ),
                       )
                     : Expanded(
-                        child:memberData.length > 0 && memberData != null
-                                ? searchMemberData.length != 0
+                        child: memberData.length > 0 && memberData != null
+                            ? searchMemberData.length != 0
+                                ? AnimationLimiter(
+                                    child: ListView.builder(
+                                      padding: EdgeInsets.all(0),
+                                      itemCount: searchMemberData.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return DirectoryMemberComponent(
+                                            MemberData: searchMemberData[index],
+                                            index: index);
+                                      },
+                                    ),
+                                  )
+                                : _isSearching && isfirst
                                     ? AnimationLimiter(
                                         child: ListView.builder(
                                           padding: EdgeInsets.all(0),
@@ -324,41 +341,29 @@ class _DirectoryMemberState extends State<DirectoryMember> {
                                           itemBuilder: (BuildContext context,
                                               int index) {
                                             return DirectoryMemberComponent(
-                                                MemberData:searchMemberData[index],
-                                                index:index);
+                                                MemberData:
+                                                    searchMemberData[index],
+                                                index: index);
                                           },
                                         ),
                                       )
-                                    : _isSearching && isfirst
-                                        ? AnimationLimiter(
-                                            child: ListView.builder(
-                                              padding: EdgeInsets.all(0),
-                                              itemCount:
-                                                  searchMemberData.length,
-                                              itemBuilder:
-                                                  (BuildContext context,
-                                                      int index) {
-                                                return DirectoryMemberComponent(
-                                                    MemberData:searchMemberData[index],
-                                                    index:index);
-                                              },
-                                            ),
-                                          )
-                                        : AnimationLimiter(
-                                            child: ListView.builder(
-                                              padding: EdgeInsets.all(0),
-                                              itemCount: memberData.length,
-                                              itemBuilder:
-                                                  (BuildContext context,
-                                                      int index) {
-                                                return DirectoryMemberComponent(
-                                                    MemberData:memberData[index],index: index);
-                                              },
-                                            ),
-                                          )
-                                : !dataFound ? Container(
-                          child: Center(),
-                        ) : Center(
+                                    : AnimationLimiter(
+                                        child: ListView.builder(
+                                          padding: EdgeInsets.all(0),
+                                          itemCount: memberData.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return DirectoryMemberComponent(
+                                                MemberData: memberData[index],
+                                                index: index);
+                                          },
+                                        ),
+                                      )
+                            : !dataFound
+                                ? Container(
+                                    child: Center(),
+                                  )
+                                : Center(
                                     child: Text('No Data Found'),
                                   ),
                       ),

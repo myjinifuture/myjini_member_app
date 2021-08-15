@@ -22,13 +22,15 @@ import 'OTP.dart';
 
 class LoginScreen extends StatefulWidget {
   String playerId ;
+  String PlayId;
   GlobalKey<NavigatorState> navigatorKey;
-  LoginScreen({this.playerId,this.navigatorKey});
+  LoginScreen({this.playerId,this.navigatorKey,this.PlayId});
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  //var player_Id = widget.playerId;
   TextEditingController _MobileNumber = new TextEditingController();
   bool isLoading = false;
   ProgressDialog pr;
@@ -44,8 +46,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    print("playerId at login screen");
-    print(widget.playerId);
+    print("playerId at login screen=======");
+    print(widget.PlayId);
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
     pr.style(message: 'Please Wait');
     // getOTPStatus();
@@ -158,8 +160,8 @@ class _LoginScreenState extends State<LoginScreen> {
     //     constant.Session.Profile, logindata[0]["Image"].toString());
     await prefs.setString(constant.Session.ResidenceType,
         logindata[0]["society"]["ResidenceType"].toString());
-/*    await prefs.setString(
-        constant.Session.FlatNo, logindata[0]["FlatNo"].toString());*/
+    await prefs.setString(
+        constant.Session.FlatNo, logindata[0]["FlatNo"].toString());
     await prefs.setString(
         constant.Session.Name, logindata[0]["Name"].toString());
     await prefs.setString(
@@ -179,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
     await prefs.setString(
         constant.Session.Wing, logindata[0]["WingData"][0]["wingName"].toString());
     await prefs.setString(
-        constant.Session.FlatNo, logindata[0]["FlatData"][0]["flatNo"].toString());
+       constant.Session.FlatNo,logindata[0]["FlatData"][0]["flatNo"].toString());
 
     await prefs.setString(
         constant.Session.isPrivate, logindata[0]["IsPrivate"].toString());
@@ -188,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
     await prefs.setString(
         constant.Session.WingId, logindata[0]["society"]["wingId"].toString());
     await prefs.setString(
-        constant.Session.FlatId, logindata[0]["society"]["flatId"].toString());
+       constant.Session.FlatId, logindata[0]["society"]["flatId"].toString());
     await prefs.setString(
         constant.Session.SocietyCode, logindata[0]["SocietyData"][0]["societyCode"].toString());
     await prefs.setString(
@@ -221,11 +223,12 @@ class _LoginScreenState extends State<LoginScreen> {
           }:data = {
             "MobileNo" : _MobileNumber.text,
             // "fcmToken" : fcmToken,
-            "playerId" : widget.playerId.toString(),
+            "playerId" : widget.PlayId.toString(),
             "IMEI" : uniqueId,
             "DeviceType" : Platform.isAndroid ? "Android" : "IOS",
           };
-          print("data");
+
+          print("print Data ............................");
           print(data);
           Services.responseHandler(apiName: "member/login",body: data).then((data) async {
             // pr.hide();
@@ -234,6 +237,8 @@ class _LoginScreenState extends State<LoginScreen> {
             if (data.Data != null && data.Data.length > 0) {
               setState(() {
                 logindata = data.Data;
+                print("logindata+++++++++++++++++");
+                print(logindata);
               });
               for(int i=0;i<logindata.length;i++){
                 if(logindata[i]["society"]["isVerify"].toString() == "true") {
@@ -423,7 +428,6 @@ class _LoginScreenState extends State<LoginScreen> {
               print(societyNames.length);
               print("societyData");
               print(societyData.length);
-
             });
             if(data.Data.length > 1){
               setState(() {
@@ -599,12 +603,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   color: Colors.black,
                                                   fontWeight: FontWeight.w600,
                                                 ),
-                                                onChanged: (newValue) {
+                                                onChanged: (newValue) async{
+                                                  SharedPreferences  prefs = await SharedPreferences.getInstance(); 
                                                   print("soceityename");
                                                   print(societyNames);
                                                   print(newValue);
                                                   print("societyData");
                                                   print(societyData);
+                                                  prefs.setString(constant.Session.SocietyCommunityCode,societyData[0]["societyCode"]); 
+                                                  print("print socitey....Community++++");
+                                                  
+                                                  print(prefs.getString(constant.Session.SocietyCommunityCode));
                                                   print("societyNames");
                                                   print(societyNames);
 

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 const String API_URL = "http://mywatcher.itfuturz.com/api/AppAPI/";
  String NODE_API = "";
+ String Node_Api = "";
  String Image_Url = "";
 const String Image_Url1 = "http://mywatcher.itfuturz.com";
 const Inr_Rupee = "₹";
@@ -23,6 +24,7 @@ class MESSAGES {
 
 class Session {
   static const String session_login = "Login_data";
+  static const String playId = "play_Id";
   static const String Member_Id = "Member_id";
   static const String selFlatHolderType = "selFlatHolderType";
   static const String SocietyId = "SocietyId";
@@ -40,12 +42,15 @@ class Session {
   static const String FlatNo = "FlatNo";
   static const String FlatId = "FlatId";
   static const String SocietyCode = "SocietyCode";
+  static const String SocietyCommunityCode = "SocietyComCode";
   static const String Wing = "Wing";
   static const String WingId = "WingId";
   static const String Address = "Address";
   static const String isPrivate = "isPrivate";
   static const String ParentId = "ParentId";
   static const String ProfileUpdateFlag = "ProfileUpdateFlag";
+  static const String VendorId = "VendorId";
+  static const String VendorCateId = "categoryId";
 
   static const String EventId = "EventId";
   static const String digital_Id = "digital_Id";

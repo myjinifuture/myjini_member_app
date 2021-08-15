@@ -16,6 +16,7 @@ import 'package:smart_society_new/Admin_App/Screens/AddAmenitiesScreen.dart';
 import 'package:smart_society_new/Admin_App/Screens/AddDocument.dart';
 import 'package:smart_society_new/Admin_App/Screens/AddEvent.dart';
 
+
 //admin App screens
 import 'package:smart_society_new/Admin_App/Screens/AddGallary.dart';
 import 'package:smart_society_new/Admin_App/Screens/AddNotice.dart';
@@ -142,6 +143,8 @@ import 'package:smart_society_new/Member_App/screens/AddStaff.dart';
 import 'package:vibration/vibration.dart';
 import 'package:smart_society_new/Member_App/screens/BroadcastMessagePopUp.dart';
 
+import 'package:smart_society_new/Member_App/screens/Networking.dart';
+
 import './Member_App/./screens/Ringing.dart';
 import './Member_App/screens/SOS.dart';
 import 'Admin_App/Screens/AddAMC.dart';
@@ -182,7 +185,6 @@ void main() async {
             OSiOSSettings.inAppLaunchUrl: true,
           },
         );
-
   OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.none);
   runApp(
     // MultiProvider(
@@ -216,6 +218,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   String MemberId = "";
+
   rejectCall() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     MemberId = prefs.getString(cnst.Session.Member_Id);
@@ -231,34 +234,31 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         //       context, SlideLeftRoute(page: HomeScreen()), (route) => false);
         // }
         // else {
-        var body = {
-          "memberId": MemberId,
-          "watchmanId": ""
-        };
+        var body = {"memberId": MemberId, "watchmanId": ""};
         print("body");
         print(body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        Services.responseHandler(apiName: "member/rejectCallForMemberWatchman", body: body)
-            .then(
-                (data) async {
-                  if (data.Data.toString() == '1') {
-                // Navigator.pushReplacementNamed(context, "/HomeScreen");
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => DirecotryScreen(),
-                //   ),
-                // );
-              } else {
-                print("else called");
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => DirecotryScreen(),
-                // ),
-                // );
-              }
-            }, onError: (e) {
+        Services.responseHandler(
+                apiName: "member/rejectCallForMemberWatchman", body: body)
+            .then((data) async {
+          if (data.Data.toString() == '1') {
+            // Navigator.pushReplacementNamed(context, "/HomeScreen");
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => DirecotryScreen(),
+            //   ),
+            // );
+          } else {
+            print("else called");
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => DirecotryScreen(),
+            // ),
+            // );
+          }
+        }, onError: (e) {
           // showHHMsg("Something Went Wrong Please Try Again", "");
         });
       }
@@ -269,6 +269,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   // FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
   // final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   static const platform = const MethodChannel('com.myjini_member.app');
@@ -309,10 +310,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   var playerId;
 
   void _handleSendNotification() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     var status = await OneSignal.shared.getPermissionSubscriptionState();
 
     playerId = status.subscriptionStatus.userId;
-    print("playerid");
+    print("playerid++++++++");
+    prefs.setString(cnst.Session.playId,playerId);
+    print("playerid+++++++++++End");
+    print(prefs.getString(cnst.Session.playId));
+
     print(playerId);
   }
 
@@ -349,13 +355,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       );
       if (data["notificationType"].toString() == "AddEvent") {
         Get.to(() => Events());
-      } else if (data["NotificationType"].toString() ==
-          "CallAlreadyAccepted") {
+      } else if (data["NotificationType"].toString() == "CallAlreadyAccepted") {
         Get.to(() => BroadcastMessagePopUp(
-          broadcastMessage: data["Message"],
-        ));
-      }
-      else if (data["NotificationType"].toString() ==
+              broadcastMessage: data["Message"],
+            ));
+      } else if (data["NotificationType"].toString() ==
           "BroadcastMessageFromSociety") {
         Get.to(() => BroadcastMessagePopUp(
               broadcastMessage: data["Message"],
@@ -439,8 +443,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         print('data');
         print(data);
         Get.to(
-          () => Ringing(
-              fromMemberData: notification.payload.additionalData),
+          () => Ringing(fromMemberData: notification.payload.additionalData),
         );
       } else if (data["NotificationType"] == "RejectVideoCallingBySender") {
         print('data');
@@ -1192,7 +1195,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 isAppOpenedAfterNotification: isAppOpenedAfterNotification,
                 navigatorKey: Get.key,
               ),
-          '/LoginScreen': (context) => LoginScreen(playerId: playerId),
+          '/LoginScreen': (context) => LoginScreen(playerId: playerId,PlayId: playerId,),
           '/GetPass': (context) => GetPass(),
           '/HomeScreen': (context) => HomeScreen(),
           '/getEmergencyNumberSocietyWise': (context) =>
@@ -1219,7 +1222,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           '/EditDocument': (context) => EditDocument(),
           '/AllRemindersScreen': (context) => AllRemindersScreen(),
           '/AddReminderScreen': (context) => AddReminderScreen(),
-          '/AdvertisementScreen': (context) => AdvertisementScreen(),
+          '/Advertisements': (context) => Advertisements(),
           '/UpdateProfile': (context) => UpdateProfile(),
           '/AddGuest': (context) => AddGuest(),
           '/AddStaff': (context) => AddStaff(),
@@ -1244,7 +1247,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 initialIndex: 0,
               ),
           '/MyServiceRequests': (context) => MyServiceRequests(),
-          '/AdvertisementList': (context) => AdvertisementList(),
+          '/Advertisement': (context) => AdvertisementList(),
           '/MyWishList': (context) => MyWishList(),
           '/IntroScreen': (context) => IntroScreen(),
           '/VendorsAdminScreen': (context) => VendorsAdminScreen(),
@@ -1256,6 +1259,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           '/WingFlat': (context) => WingFlat(),
           '/CustomerProfile': (context) => CustomerProfile(),
           '/AddDailyResource': (context) => AddDailyResource(),
+
 
           '/AdvertisementManage': (context) => AdvertisementManage(),
           '/ContactList': (context) => ContactList(),
@@ -1274,6 +1278,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           '/BuildingInfo': (context) => BuildingInfo(),
           '/Events': (context) => Events(),
           '/EventDetail': (context) => EventDetail(),
+          '/Networking': (context) => Networking(),
+
           //---------------- Digital Card  -------------------------------
           '/RegistrationDC': (context) => RegistrationDC(),
 

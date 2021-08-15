@@ -2,6 +2,8 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:smart_society_new/Member_App/common/Services.dart';
+import 'dart:io';
 
 class Parcel extends StatefulWidget {
   @override
@@ -11,9 +13,126 @@ class Parcel extends StatefulWidget {
 class _ParcelState extends State<Parcel> {
   TextEditingController _txtDelivervPername = TextEditingController();
   TextEditingController _txtMobileno = TextEditingController();
+  TextEditingController _txtGroupName = TextEditingController();
   bool isbottomBar = false;
+  bool isSecurity = false;
   int _value = 1;
-  DateTime _datetime1;
+  DateTime _datetime1 = DateTime.now();
+  var id;
+
+  String _currentparcel;
+  List companyList = [];
+  List parcelAddList = [];
+
+  var companyId;
+  var Personname;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getParcelData();
+  }
+
+  showMsg(String msg, {String title = 'MYJINI'}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text(title),
+          content: new Text(msg),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  getaddParcelData(String id,personName,mobileNo,date,security) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {
+          "companyName": id,
+          "deliveryPersonName": _txtDelivervPername.text,
+          "contactNo": _txtMobileno.text,
+          "estimatedArrivalDate": DateFormat('dd/MM/yyyy').format(_datetime1),
+          "isSecurity" : isSecurity
+        };
+        print(data);
+        Services.responseHandler(apiName:"member/addParcelDetail",body: data).then(
+                (data) async {
+              if (data.Data.length > 0) {
+                setState(() {
+                  parcelAddList = data.Data;
+                  print(data.Data);
+                });
+              }
+            }, onError: (e) {
+          print(e);
+          showMsg("Something Went Wrong.\nPlease Try Again");// direct aa message print kare 6
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
+  }
+
+  getParcelData() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {};
+        Services.responseHandler(apiName: "member/getParcelCompanyDetail", body: data)
+            .then((data) async {
+          print("data");
+          print(data.Data);
+          if (data.Data != null && data.Data.length > 0) {
+            setState(() {
+              companyList = data.Data;
+              print(data.Data);
+            });
+            }
+        }, onError: (e) {
+          showMsg("Something Went Wrong.\nPlease Try Again");
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
+  }
+
+  /*getParcelData() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        var data = {};
+        print(data);
+        Services.responseHandler(apiName:"member/getParcelCompanyDetail",body: data).then(
+                (data) async {
+                  if (data.Data.length > 0) {
+                    setState(() {
+                      companyList = data.Data;
+                      print(data.Data);
+                    });
+                  }
+
+            }, onError: (e) {
+                  print(e);
+          showMsg("Something Went Wrong.\nPlease Try Again");// direct aa message print kare 6
+        });
+      }
+    } on SocketException catch (_) {
+      showMsg("No Internet Connection.");
+    }
+  }*/
+
 
   @override
   Widget build(BuildContext context) {
@@ -124,45 +243,45 @@ class _ParcelState extends State<Parcel> {
                   style: TextStyle(fontFamily: "OpenSans"),
                 ),
                 Padding(padding: EdgeInsets.only(top: 6.0)),
-                Container(
-                  height: MediaQuery.of(context).size.height / 18,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(5.0)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: DropdownButton(
-                          underline: SizedBox(),
-                          isExpanded: true,
-                          icon: Icon(Icons.arrow_right),
-                          value: _value,
-                          items: [
-                            DropdownMenuItem(
-                              child: Text(
-                                "IT FUTURZ",
-                                style: TextStyle(
-                                    fontFamily: "OpenSans", fontSize: 12),
-                              ),
-                              value: 1,
-                            ),
-                            DropdownMenuItem(
-                              child: Text(
-                                "MYJINI",
-                                style: TextStyle(
-                                    fontFamily: "OpenSans", fontSize: 12),
-                              ),
-                              value: 2,
-                            ),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              _value = value;
-                            });
-                          }),
+              Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: DropdownButtonHideUnderline(
+                    child: ButtonTheme(
+                      alignedDropdown: true,
+                      child: DropdownButton<String>(
+                        value: _currentparcel,
+                        iconSize: 30,
+                        dropdownColor: Colors.deepPurple[50],
+                        icon: (null),
+                        style: TextStyle(
+                          fontFamily: "OpenSans",
+                          color: Colors.black54,
+                          fontSize: 14,
+                        ),
+                        hint: Text('Select Company'),
+                        onChanged: (String newValue){
+                         setState(() {
+                           _currentparcel = newValue;
+                           print(_currentparcel);
+                         });
+                        },
+                        items: companyList?.map((itemState) {
+                          return DropdownMenuItem(
+                            child: Text(itemState['companyName']),
+                            value:itemState['_id'].toString(),
+                          );
+                        })?.toList() ??
+                            [],
+                      ),
                     ),
                   ),
                 ),
+              ),
                 Padding(padding: EdgeInsets.only(top: 6.0)),
                 Row(
                   children: [
@@ -246,7 +365,7 @@ class _ParcelState extends State<Parcel> {
                         children: [
                           Text(_datetime1 == null
                               ? 'No date Select!'
-                              : '${DateFormat('dd MMMM yyyy').format(_datetime1)}'),
+                              : '${DateFormat('dd/MM/yyyy').format(_datetime1)}'),
                           Padding(padding: EdgeInsets.only(left: 195)),
                           InkWell(
                             child: Icon(
@@ -279,14 +398,25 @@ class _ParcelState extends State<Parcel> {
                           fontWeight: FontWeight.bold, fontFamily: "OpenSans"),
                     ),
                     Padding(padding: EdgeInsets.only(left: 70)),
-                    IconButton(
-                        icon: Icon(Icons.crop_square_sharp), onPressed: () {})
+                  Checkbox(
+                    checkColor: Colors.white,
+                    value: isSecurity,
+                    onChanged: (bool value) {
+                      setState(() {
+                        isSecurity = value;
+                      });
+                    },
+                  ),
                   ],
                 ),
                 Padding(padding: EdgeInsets.only(top: 6.0)),
                 Center(
                   child: RaisedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        getaddParcelData(id,_txtDelivervPername.text,_txtMobileno.text,_datetime1,isSecurity);
+                      });
+                    },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(6)),
                     color: Colors.deepPurple,

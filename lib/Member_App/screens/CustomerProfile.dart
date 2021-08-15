@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../common/Services1.dart';
 
 import 'package:dotted_decoration/dotted_decoration.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +82,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
             print(shareMyJINIAppDetailsContent);
           }
         }, onError: (e) {
-              print("this is the error");
+          print("this is the error");
           showMsg("$e");
         });
       } else {
@@ -237,19 +238,26 @@ class _CustomerProfileState extends State<CustomerProfile> {
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
-
-
   }
 
   _logout() async {
     try {
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences preferences = await SharedPreferences.getInstance();
+      var playerID = preferences.getString(constant.Session.playId);
+      var memberId = preferences.getString(constant.Session.Member_Id);
+      print(memId);
+      print("print mem id +++++++++++++++++++");
+      print(preferences.getString('playerId'));
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {"memberId": memId, "playerId": preferences.getString('playerId'), "IMEI": uniqueId};
+        var data = {
+          "memberId": memberId,
+          "playerId": playerID,
+          "IMEI": uniqueId
+        };
         print("data");
         print(data);
-        Services.responseHandler(apiName: "member/logout", body: data).then(
+        Services1.responseHandler(apiName: "member/logout", body: data).then(
             (data) async {
           if (data.Data != null && data.Data.toString() == "1") {
             SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -344,6 +352,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
           });
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
+              print("Print ResidentData..................");
+              print(MyResidentsData);
               MyResidentsData = data.Data;
             });
           } else {
@@ -364,6 +374,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
   }
 
   String residenceTypeOfParentMember = "";
+
   //get family api
   GetFamilyDetail() async {
     try {
@@ -373,7 +384,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
           isLoading = true;
         });
         var data = {"societyId": SocietyId, "wingId": WingId, "flatId": FlatId};
-        Services.responseHandler(apiName: "member/getFamilyMembers_v1", body: data)
+        Services.responseHandler(
+                apiName: "member/getFamilyMembers_v1", body: data)
             .then((data) async {
           setState(() {
             isLoading = false;
@@ -381,7 +393,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
               FmemberData = data.Data;
-              residenceTypeOfParentMember = FmemberData[0]["society"]["ResidenceType"].toString();
+              residenceTypeOfParentMember =
+                  FmemberData[0]["society"]["ResidenceType"].toString();
               for (int i = 0; i < FmemberData.length; i++) {
                 if (FmemberData[i]["_id"].toString() == MemberId) {
                   FmemberData.remove(FmemberData[i]);
@@ -475,8 +488,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
         });
         Services.responseHandler(apiName: "member/getMemberRole", body: data)
             .then((data) async {
-              print("data.Data");
-              print(data.Data);
+          print("data.Data");
+          print(data.Data);
           if (data.Data[0]["society"]["isAdmin"].toString() == "1") {
             setState(() {
               Profile = data.Data[0]["Image"];
@@ -544,21 +557,21 @@ class _CustomerProfileState extends State<CustomerProfile> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(left: 10.0),
+                              padding: EdgeInsets.only(left: 10.0),
                               child: ClipOval(
                                 child: Profile != "null" && Profile != ""
                                     ? FadeInImage.assetNetwork(
-                                  placeholder:  "images/man.png",
-                                  image: constant.Image_Url + '$Profile',
-                                  width: 60,
-                                  height: 60,
-                                  fit: BoxFit.cover,
-                                )
+                                        placeholder: "images/man.png",
+                                        image: constant.Image_Url + '$Profile',
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                      )
                                     : Image.asset(
-                                  "images/man.png",
-                                  width: 60,
-                                  height: 60,
-                                ),
+                                        "images/man.png",
+                                        width: 60,
+                                        height: 60,
+                                      ),
                               ),
                             ),
                             Expanded(
@@ -609,7 +622,6 @@ class _CustomerProfileState extends State<CustomerProfile> {
                       ),
                     ),
                   ),
-
                   //for my residence
                   Padding(
                     padding:
@@ -661,54 +673,53 @@ class _CustomerProfileState extends State<CustomerProfile> {
                       ],
                     ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.only(
                       top: 25.0,
                       //bottom: 10,
                     ),
                     child: Container(
-                      height: 90,
-                      child: ListView.builder(
-                          physics: BouncingScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: MyResidentsData.length + 1,
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index > MyResidentsData.length - 1) {
-                              return Container(
-                                width: 150,
-                                decoration: DottedDecoration(
-                                  shape: Shape.box,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: FlatButton(
-                                  child: Icon(
-                                    Icons.add,
-                                    size: 30,
-                                    color: appPrimaryMaterialColor,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        SlideLeftRoute(
-                                            page: AddMyResidents(
-                                          onAddMyResidents: GetMyResidents,
-                                        )));
-                                  },
-                                ),
-                              );
-                            } else {
-                              return MyResidenceComponent(
-                                onDeleteProperty: GetMyResidents,
-                                resData: MyResidentsData[index],
-                                index: index,
-                              );
-                            }
-                          }),
-                    ),
+                            height: 90,
+                            child: ListView.builder(
+                                physics: BouncingScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                itemCount: MyResidentsData.length + 1,
+                                shrinkWrap: true,
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index > MyResidentsData.length - 1) {
+                                    return Container(
+                                      width: 150,
+                                      decoration: DottedDecoration(
+                                        shape: Shape.box,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: FlatButton(
+                                        child: Icon(
+                                          Icons.add,
+                                          size: 30,
+                                          color: appPrimaryMaterialColor,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              SlideLeftRoute(
+                                                  page: AddMyResidents(
+                                                onAddMyResidents:
+                                                    GetMyResidents,
+                                              )));
+                                        },
+                                      ),
+                                    );
+                                  } else {
+                                    return MyResidenceComponent(
+                                      onDeleteProperty: GetMyResidents,
+                                      resData: MyResidentsData[index],
+                                      index: index,
+                                    );
+                                  }
+                                }),
+                          ),
                   ),
-
                   //for Family Member
                   Padding(
                     padding:
@@ -809,7 +820,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
                                 } else {
                                   return FamilyMemberComponent(
                                     memberName: Name,
-                                    residenceTypeOfParentMember : residenceTypeOfParentMember,
+                                    residenceTypeOfParentMember:
+                                        residenceTypeOfParentMember,
                                     familyData: FmemberData[index],
                                     onDelete: GetFamilyDetail,
                                     onUpdate: () {
@@ -1017,8 +1029,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
                               return MyVehicleComponent(
                                 vehicleData: VehicleData[index],
                                 onDelete: () {
-                                    _DeleteMemberVehicle(
-                                        VehicleData[index]["vehicleNo"]);
+                                  _DeleteMemberVehicle(
+                                      VehicleData[index]["vehicleNo"]);
                                 },
                               );
                             }

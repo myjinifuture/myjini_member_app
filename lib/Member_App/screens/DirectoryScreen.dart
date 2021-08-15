@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,9 +9,7 @@ import 'package:smart_society_new/Admin_App/Component/NoDataComponent.dart';
 import 'package:smart_society_new/Mall_App/transitions/slide_route.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
-
 import 'HomeScreen.dart';
-
 
 // this is member directory - takes lots of time to search
 class DirecotryScreen extends StatefulWidget {
@@ -74,6 +71,7 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
 
   String SocietyId,MobileNo;
   bool lengthIsZero = false;
+
   _getDirectoryListing({String seletecedWing}) async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -99,7 +97,7 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
                       contains(widget.searchMemberName.toUpperCase().trim().replaceAll(" ", ""))||
                       data.Data[i]["Vehicles"].toString().toUpperCase().replaceAll("-", "")
                       .contains(widget.searchMemberName.replaceAll(" ", "").replaceAll("-",""))  ||
-                      (data.Data[i]["WingData"][0]["wingName"] + data.Data[i]["FlatData"][0]["flatNo"])
+                      (data.Data[i]["WingData"][0]["wingName"] + data.Data[i]["FlatData"]["flatNo"])
                           .toString().toUpperCase().replaceAll("-", "")
                           .contains(widget.searchMemberName.replaceAll(" ", ""))){
                     selectedWing = data.Data[i]["society"]["wingId"].toString();

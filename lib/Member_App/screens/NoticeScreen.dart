@@ -249,11 +249,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
       ),
       body: Container(
         color: Colors.grey[100],
-        child: isLoading
-            ? Container(
-                child: Center(child: CircularProgressIndicator()),
-              )
-            : NoticeData.length > 0
+        child: NoticeData.length > 0
                 ? AnimationLimiter(
                     child: ListView.builder(
                       itemBuilder: _NoticeCard,

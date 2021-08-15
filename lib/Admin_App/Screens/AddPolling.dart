@@ -357,9 +357,8 @@ class _AddPollingState extends State<AddPolling> {
                               controller: txtQuestion,
                               scrollPadding: EdgeInsets.all(0),
                               decoration: InputDecoration(
-                                  border: new OutlineInputBorder(
-                                      borderSide:
-                                          new BorderSide(color: Colors.black),
+                                  border: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black),
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(10))),
                                   prefixIcon: Icon(

@@ -18,7 +18,8 @@ class MemberProfile extends StatefulWidget {
   Function onAdminUpdate;
   String isContactNumberPrivate;
 
-  MemberProfile({this.memberData,this.isContactNumberPrivate,this.onAdminUpdate});
+  MemberProfile(
+      {this.memberData, this.isContactNumberPrivate, this.onAdminUpdate});
 
   @override
   _MemberProfileState createState() => _MemberProfileState();
@@ -33,7 +34,7 @@ class _MemberProfileState extends State<MemberProfile> {
   bool isLoading = false;
   bool isMemberLoading = false;
   bool isAdmin;
-  List memberRoleDetails=[];
+  List memberRoleDetails = [];
   ProgressDialog pr;
 
   bool madeAdmin = false;
@@ -44,16 +45,15 @@ class _MemberProfileState extends State<MemberProfile> {
 
   @override
   void initState() {
-    if( widget.memberData["FlatData"][0]["residenceType"].toString()=="0"){
+    if (widget.memberData["FlatData"]["residenceType"].toString() == "0") {
       ResidanceType = "Owner";
-    }
-    else if( widget.memberData["FlatData"][0]["residenceType"].toString()=="1"){
+    } else if (widget.memberData["FlatData"]["residenceType"].toString() ==
+        "1") {
       ResidanceType = "Closed";
-    }
-    else if( widget.memberData["FlatData"][0]["residenceType"].toString()=="2"){
+    } else if (widget.memberData["FlatData"]["residenceType"].toString() ==
+        "2") {
       ResidanceType = "Rent";
-    }
-    else{
+    } else {
       ResidanceType = "Dead";
     }
     // print("widget.isCONTACTPRIVATE");
@@ -80,7 +80,8 @@ class _MemberProfileState extends State<MemberProfile> {
     SocietyId = prefs.getString(Session.SocietyId);
     FlatId = prefs.getString(Session.FlatId);
     WingId = prefs.getString(Session.WingId);
-    getMemberRole(widget.memberData["_id"], widget.memberData["society"]["societyId"]);
+    getMemberRole(
+        widget.memberData["_id"], widget.memberData["society"]["societyId"]);
   }
 
   _getVisitor() async {
@@ -100,7 +101,7 @@ class _MemberProfileState extends State<MemberProfile> {
           isLoading = true;
         });
         Services.responseHandler(
-            apiName: "member/getMemberVisitor_V1", body: data)
+                apiName: "member/getMemberVisitor_V1", body: data)
             .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
             setState(() {
@@ -195,7 +196,6 @@ class _MemberProfileState extends State<MemberProfile> {
             showMsg("No Family Member Found");
         }, onError: (e) {
           showMsg("Something Went Wrong Please Try Again");
-
         });
       }
     } on SocketException catch (_) {
@@ -214,7 +214,8 @@ class _MemberProfileState extends State<MemberProfile> {
             new FlatButton(
               child: new Text("Okay"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -560,7 +561,9 @@ class _MemberProfileState extends State<MemberProfile> {
                     ],
                   ),
                 )
-              : Center(child: Text('No Data Found'),);
+              : Center(
+                  child: Text('No Data Found'),
+                );
         });
   }
 
@@ -635,16 +638,16 @@ class _MemberProfileState extends State<MemberProfile> {
         });
         Services.responseHandler(apiName: "member/getMemberRole", body: data)
             .then((data) async {
-          if (data.Data.length>0&&data.IsSuccess==true) {
+          if (data.Data.length > 0 && data.IsSuccess == true) {
             setState(() {
               // Profile = data.Data[0]["Image"];
-              memberRoleDetails=data.Data;
+              memberRoleDetails = data.Data;
               isMemberLoading = false;
-              if(memberRoleDetails[0]["society"]["isAdmin"].toString()=='1'){
-                isAdmin=true;
-              }
-              else{
-                isAdmin=false;
+              if (memberRoleDetails[0]["society"]["isAdmin"].toString() ==
+                  '1') {
+                isAdmin = true;
+              } else {
+                isAdmin = false;
               }
             });
           } else {
@@ -674,15 +677,15 @@ class _MemberProfileState extends State<MemberProfile> {
         var data = {
           "societyId": widget.memberData["society"]["societyId"].toString(),
           "memberId": widget.memberData["_id"].toString(),
-          "makeAdmin":widget.memberData["society"]["isAdmin"]==0?1:0,
-          "adminId" : MemberId
+          "makeAdmin": widget.memberData["society"]["isAdmin"] == 0 ? 1 : 0,
+          "adminId": MemberId
         };
         print("data");
         print(data);
         Services.responseHandler(apiName: "admin/assignAdminRole", body: data)
             .then((data) async {
-              print("data displayed");
-              print(data.Data);
+          print("data displayed");
+          print(data.Data);
           if (data.toString() == "1") {
             setState(() {
               Fluttertoast.showToast(
@@ -691,8 +694,7 @@ class _MemberProfileState extends State<MemberProfile> {
                   gravity: ToastGravity.TOP,
                   textColor: Colors.red);
             });
-          }
-          else if (data.toString() == "2") {
+          } else if (data.toString() == "2") {
             setState(() {
               Fluttertoast.showToast(
                   msg: "Admin Revoked Successfully",
@@ -700,8 +702,7 @@ class _MemberProfileState extends State<MemberProfile> {
                   gravity: ToastGravity.TOP,
                   textColor: Colors.red);
             });
-          }
-          else {
+          } else {
             setState(() {
               isLoading = false;
             });
@@ -732,31 +733,38 @@ class _MemberProfileState extends State<MemberProfile> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         actions: [
-          widget.memberData["ContactNo"]!=ContactNo?Padding(
+          widget.memberData["ContactNo"] != ContactNo
+              ? Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: isMemberLoading==false?OutlineButton(
-                    onPressed: () {
-                      print("function called");
-                      _makeAdmin();
-                      Navigator.pushNamedAndRemoveUntil(context, '/HomeScreen', (route) => false);
-                      // Navigator.pushReplacementNamed(context, '/MemberProfile');// ask monil to make makeadmin api 17 - number
-                    },
-                    child: widget.memberData["society"]["isAdmin"]!=0?Text(
-                      "Revoke Admin",
-                      style: TextStyle(color: Colors.white),
-                    ):Text(
-                      "Make Admin",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      side: new BorderSide(color: Colors.blue),
-                      //the outline color
-                      borderRadius: new BorderRadius.all(
-                        new Radius.circular(4),
-                      ),
-                    ),
-                  ):Container(),
-                ):Container(),
+                  child: isMemberLoading == false
+                      ? OutlineButton(
+                          onPressed: () {
+                            print("function called");
+                            _makeAdmin();
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, '/HomeScreen', (route) => false);
+                            // Navigator.pushReplacementNamed(context, '/MemberProfile');// ask monil to make makeadmin api 17 - number
+                          },
+                          child: widget.memberData["society"]["isAdmin"] != 0
+                              ? Text(
+                                  "Revoke Admin",
+                                  style: TextStyle(color: Colors.white),
+                                )
+                              : Text(
+                                  "Make Admin",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                          shape: RoundedRectangleBorder(
+                            side: new BorderSide(color: Colors.blue),
+                            //the outline color
+                            borderRadius: new BorderRadius.all(
+                              new Radius.circular(4),
+                            ),
+                          ),
+                        )
+                      : Container(),
+                )
+              : Container(),
         ],
       ),
       body: isLoading
@@ -819,9 +827,7 @@ class _MemberProfileState extends State<MemberProfile> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              Text(
-                                  ResidanceType
-                                      .checkForNull(),
+                              Text(ResidanceType.checkForNull(),
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.w600,
@@ -885,14 +891,17 @@ class _MemberProfileState extends State<MemberProfile> {
                         color: Colors.grey[500],
                         size: 22,
                       ),
-                      title:widget.isContactNumberPrivate == "true" ?
-                      Text("********"+"${widget.memberData["ContactNo"]}".substring(8,10),
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.purple
-                        ),
-                      ): Text("${widget.memberData["ContactNo"]}"),
+                      title: widget.isContactNumberPrivate == "true"
+                          ? Text(
+                              "********" +
+                                  "${widget.memberData["ContactNo"]}"
+                                      .substring(8, 10),
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.purple),
+                            )
+                          : Text("${widget.memberData["ContactNo"]}"),
                       subtitle: Text("Mobile No"),
                     ),
                     Padding(

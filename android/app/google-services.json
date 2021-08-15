@@ -23,11 +23,27 @@
           }
         },
         {
-          "client_id": "653223090945-bffbdu5pb5t88kaparb9t9n2n4748kti.apps.googleusercontent.com",
+          "client_id": "653223090945-fq5q9a48ftf1skt5el44oirlq1iq2ijv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.itfuturz.mygenie_member",
-            "certificate_hash": "17dee0cceb4dbb578a35c3e29a83a3df030ccdac"
+            "certificate_hash": "e73c0e309c1a17e90bef9d648625d25b4c940d3e"
+          }
+        },
+        {
+          "client_id": "653223090945-mslo3k2oa0olm0n5lnn4m4k22be2scj4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.itfuturz.mygenie_member",
+            "certificate_hash": "d1eab0d20ca8de9dbec37073111fdb75c8525e55"
+          }
+        },
+        {
+          "client_id": "653223090945-omm2hk59vgi5iprnevqoa7buo4qh3cp3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.itfuturz.mygenie_member",
+            "certificate_hash": "3bff9d4e44b901a42463d68772a0a9ce23a96b71"
           }
         },
         {

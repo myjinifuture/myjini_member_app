@@ -129,9 +129,7 @@ class _MaidListingState extends State<MaidListing> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? Center(child: CircularProgressIndicator())
-        :  Stack(
+    return Stack(
       children: [
     maidList.length > 0
     ?ListView.builder(
@@ -169,6 +167,6 @@ class _MaidListingState extends State<MaidListing> {
           ),
         ),
       ],
-            );
+     );
   }
 }
