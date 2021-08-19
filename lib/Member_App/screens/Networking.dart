@@ -7,7 +7,7 @@ import 'dart:math' as math;
 import 'thankNote.dart';
 import '../screens/HomeScreen.dart';
 import '../screens/referralSlip.dart';
-import '../screens/meeting.dart';
+import '../screens/OneToOne.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 int widgetNumber = 0;
 
@@ -22,15 +22,17 @@ class NetworkingState extends State<Networking> {
   Widget navigateWidget(){
 
     if (widgetNumber==1){
-      return OneToOne();
-    }
-    if (widgetNumber==2){
       return ReferralSlip();
     }
-    if (widgetNumber==3){
+    else if (widgetNumber==2){
+      return OneToOne();
+    }
+    else{
       return ThankNote();
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

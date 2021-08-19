@@ -51,6 +51,7 @@ class Session {
   static const String ProfileUpdateFlag = "ProfileUpdateFlag";
   static const String VendorId = "VendorId";
   static const String VendorCateId = "categoryId";
+  static const String ReceiverWingId = "receiverWingID";
 
   static const String EventId = "EventId";
   static const String digital_Id = "digital_Id";

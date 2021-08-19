@@ -859,7 +859,7 @@ class _MemberProfileState extends State<MemberProfile> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Text(
-                                  "${widget.memberData["FlatData"][0]["flatNo"]}"
+                                  "${widget.memberData["FlatData"]["flatNo"]}"
                                       .checkForNull(),
                                   style: TextStyle(
                                     color: Colors.grey[800],

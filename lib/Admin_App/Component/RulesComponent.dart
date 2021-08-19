@@ -192,7 +192,6 @@ class _RulesComponentState extends State<RulesComponent> {
                               ),
                             );
                           }
-
                         },
                         child: Image.asset("images/edit_icon.png",
                             width: 24, height: 24, fit: BoxFit.fill),

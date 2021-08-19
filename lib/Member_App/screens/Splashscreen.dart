@@ -31,9 +31,9 @@ class _SplashscreenState extends State<Splashscreen> {
           .then((value) {
         constant.NODE_API = "http://3.7.94.50/";
         //constant.NODE_API = "https://myjini.herokuapp.com/";
-       // constant.NODE_API = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
+        //constant.NODE_API = "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
         //constant.Image_Url =
-          //  "${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
+          //"${value.docs[0]["DYNAMIC-URL-MYJINI-MEMBER-APP"]}";
         if (MemberId != null && MemberId != "") {
           Navigator.pushReplacementNamed(context, '/HomeScreen');
           // Navigator.push(

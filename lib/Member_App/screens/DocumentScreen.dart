@@ -329,7 +329,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                         Image.asset("images/file.png",
                             width: 70, height: 70, color: Colors.grey[300]),
                         Padding(
-                          padding: const EdgeInsets.all(6.0),
+                          padding: EdgeInsets.all(6.0),
                           child: Text("No Document Found",
                               style: TextStyle(color: Colors.grey[400])),
                         )

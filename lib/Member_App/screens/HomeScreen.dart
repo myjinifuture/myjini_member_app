@@ -94,7 +94,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     _isInForeground = state == AppLifecycleState.resumed;
     print("_isInForeground during didchangeapplifecycle");
-    // print(_isInForeground);
     switch (state) {
       case AppLifecycleState.paused:
         print('paused');
@@ -346,6 +345,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        prefs.setString(Session.ReceiverWingId,dataofMember["WingData"][0]["_id"].toString());
         var body = {
           "societyId": prefs.getString(Session.SocietyId),
           "callerMemberId": prefs.getString(Session.Member_Id),
@@ -517,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             .toString()
                             .trim()
                             .toUpperCase()
-                            .contains(_text.toUpperCase())) {
+                            .contains(_text.toUpperCase())){
                           isOtherVendor = true;
                           vendorName = vendorsDataList[i]["vendorCategoryName"];
                           vendorId = vendorsDataList[i]["_id"];

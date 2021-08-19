@@ -538,8 +538,8 @@ class _AddPollingState extends State<AddPolling> {
                                       controller: _optionList[index],
                                       scrollPadding: EdgeInsets.all(0),
                                       decoration: InputDecoration(
-                                          border: new OutlineInputBorder(
-                                              borderSide: new BorderSide(
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide(
                                                   color: Colors.black),
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(10))),

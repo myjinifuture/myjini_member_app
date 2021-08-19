@@ -161,63 +161,63 @@ class _ParcelState extends State<Parcel> {
           child: Column(
             children: [
               Expanded(
-                child: Stack(
-                  children: [
-                    Positioned(
-                      bottom: 0.0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(25.0),
-                                  topLeft: Radius.circular(25.0)),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        bottom: 0.0,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(25.0),
+                                    topLeft: Radius.circular(25.0)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Padding(padding: EdgeInsets.only(left: 20.0)),
+                                  Text(
+                                    "Parcel",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: "OpenSans"),
+                                  ),
+                                  Padding(padding: EdgeInsets.only(left: 235.0)),
+                                  isbottomBar
+                                      ? IconButton(
+                                          icon: Icon(
+                                            Icons.arrow_back_ios,
+                                            size: 20,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              isbottomBar = !isbottomBar;
+                                            });
+                                          })
+                                      : IconButton(
+                                          icon: Icon(
+                                            Icons.keyboard_arrow_down,
+                                            size: 30,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              isbottomBar = !isbottomBar;
+                                            });
+                                          })
+                                ],
+                              ),
                             ),
-                            child: Row(
-                              children: [
-                                Padding(padding: EdgeInsets.only(left: 20.0)),
-                                Text(
-                                  "Parcel",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: "OpenSans"),
-                                ),
-                                Padding(padding: EdgeInsets.only(left: 235.0)),
-                                isbottomBar
-                                    ? IconButton(
-                                        icon: Icon(
-                                          Icons.arrow_back_ios,
-                                          size: 20,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            isbottomBar = !isbottomBar;
-                                          });
-                                        })
-                                    : IconButton(
-                                        icon: Icon(
-                                          Icons.keyboard_arrow_down,
-                                          size: 30,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            isbottomBar = !isbottomBar;
-                                          });
-                                        })
-                              ],
-                            ),
-                          ),
-                          bottomBar(),
-                        ],
+                            bottomBar(),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),

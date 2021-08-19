@@ -199,7 +199,7 @@ class _DashboardState extends State<Dashboard> {
         elevation: 10.0,
         insetAnimCurve: Curves.easeInOut,
         messageTextStyle: TextStyle(
-            color: Colors.black, fontSize: 17.0, fontWeight: FontWeight.w600));
+            color: Colors.black,fontSize: 17.0, fontWeight: FontWeight.w600));
     _getLocalData();
     // _getMembers();
 

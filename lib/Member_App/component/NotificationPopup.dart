@@ -251,6 +251,9 @@ class _NotificationPopupState extends State<NotificationPopup> {
       print("tapped");
       final result = await InternetAddress.lookup('google.com');
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      var ReceiverWingID = prefs.getString(Session.ReceiverWingId);
+      print("abc");
+      print( prefs.getString(Session.WingId));
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
 
         if(widget.data["watchmanWingId"].length > 0){
@@ -266,7 +269,7 @@ class _NotificationPopupState extends State<NotificationPopup> {
           "callerWingId": prefs.getString(Session.WingId),
           "callerFlatId": prefs.getString(Session.FlatId),
           "watchmanId": widget.data["watchmanId"].toString(),
-          "receiverWingId": recieverWingId,
+          "receiverWingId": widget.data["watchmanWingId"],
           // "receiverFlatId" : widget.MemberData["FlatData"][0]["_id"].toString(),
           "contactNo": widget.data["watchmanContact"].toString(),
           "AddedBy": "Member",

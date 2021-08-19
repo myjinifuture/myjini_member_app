@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_society_new/Member_App/common/Services.dart';
 import 'package:smart_society_new/Member_App/common/constant.dart';
 
-enum referralRating { poor, average, good, very_good, highly_recommended }
+enum referralRating {poor,average,good,very_good,highly_recommended}
 
 class ReferralSlip extends StatefulWidget {
   @override
@@ -30,26 +30,19 @@ class _ReferralSlipState extends State<ReferralSlip> {
   List memberData = [];
   Image myImage1, myImage2, myImage3, myImage4, myImage5;
 
-  List<String> _locations = [
-    'Test 1',
-    'Test 2',
-    'Test 3',
-    'Test 4'
-  ]; // Option 2
   String _selectedReferralTypeTo;
-var starFill =0;
+  var starFill = 0;
+
   @override
   void initState() {
     super.initState();
     _getReferralTypeList();
     _getDirectoryListing();
-
-    myImage1 = Image.asset('assets/images/disappointed-face.png');
-    myImage2 = Image.asset('assets/images/neutral-face.png');
-    myImage3 = Image.asset('assets/images/slightly-grinning-face.png');
-    myImage4 = Image.asset('assets/images/grinning-face.png');
-    myImage5 = Image.asset('assets/images/star-struck.png');
-
+    myImage1 = Image.asset('assets/image/disappointed-face.png');
+    myImage2 = Image.asset('assets/image/neutral-face.png');
+    myImage3 = Image.asset('assets/image/slightly-grinning-face.png');
+    myImage4 = Image.asset('assets/image/grinning-face.png');
+    myImage5 = Image.asset('assets/image/star-struck.png');
   }
 
   showHHMsg(String title, String msg) {
@@ -63,7 +56,8 @@ var starFill =0;
             new FlatButton(
               child: new Text("Close"),
               onPressed: () {
-                Navigator.of(context).pop();;
+                Navigator.of(context).pop();
+                ;
               },
             ),
           ],
@@ -77,21 +71,19 @@ var starFill =0;
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var SocietyId = prefs.getString(Session.SocietyId);
       var memberId = prefs.getString(Session.Member_Id);
-      print("print member ID+++++++++++++++");
+      print("print member ID+++");
       print(memberId);
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        var data = {
-          "societyId" : SocietyId
-        };
-        // setState(() {
-        //   isLoading = true;
-        // });
-        Services.responseHandler(apiName: "admin/directoryListing",body: data).then((data) async {
+        var data = {"societyId": SocietyId};
+        Services.responseHandler(apiName: "admin/directoryListing", body: data)
+            .then((data) async {
           if (data.Data != null && data.Data.length > 0) {
-            setState(() {
-              memberData = data.Data;
-            });
+            if(mounted){
+              setState(() {
+                memberData = data.Data;
+              });
+            }
             print("memberData print..................");
             print(memberData);
           } else {
@@ -100,31 +92,32 @@ var starFill =0;
             // });
           }
         }, onError: (e) {
-          showHHMsg("Something Went Wrong Please Try Again","");
+          showHHMsg("Something Went Wrong Please Try Again", "");
         });
       }
     } on SocketException catch (_) {
-      showHHMsg("No Internet Connection.","");
+      showHHMsg("No Internet Connection.", "");
     }
   }
 
-  addReferal(String Refname,String Mobileno,String Email,String Address,String Comments,int star) async {
+  addReferal(String Refname, String Mobileno, String Email, String Address,
+      String Comments, int star) async {
     try {
-     SharedPreferences prefs = await SharedPreferences.getInstance();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       var memberId = prefs.getString(Session.Member_Id);
       print(memberId);
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         var body = {
-            "referralFrom":memberId,
-            "referralTo": _selectedReferralTypeTo,
-            "referralType": selectedType,
-            "referralName":Refname,
-            "mobile":Mobileno,
-            "email": Email,
-            "address":Address,
-            "comments": Comments,
-            "status" : star
+          "referralFrom": memberId,
+          "referralTo": _selectedReferralTypeTo,
+          "referralType": selectedType,
+          "referralName": Refname,
+          "mobile": Mobileno,
+          "email": Email,
+          "address": Address,
+          "comments": Comments,
+          "status": star
         };
         print("print body......................");
         print(body);
@@ -149,7 +142,7 @@ var starFill =0;
                   textColor: Colors.white);
             });
           } else {
-              print("Somthing went Wrong");
+            print("Somthing went Wrong");
           }
         }, onError: (e) {
           showMsg("Something Went Wrong Please Try Again");
@@ -170,12 +163,11 @@ var starFill =0;
         Services.responseHandler(apiName: "member/getReferralType", body: body)
             .then((responseData) {
           if (responseData.Data.length > 0) {
-            setState(() {
+            if(mounted){setState(() {
               referralTypeList = responseData.Data;
               print("Divyan");
               print(referralTypeList);
               for (var i = 0; i < referralTypeList.length; i++) {
-                print("divyan sondagar1");
                 if (i == 0) {
                   setState(() {
                     colourchanger.add(1);
@@ -189,7 +181,7 @@ var starFill =0;
                 }
               }
               print(colourchanger);
-            });
+            });}
           } else {
             Fluttertoast.showToast(
               msg: "${responseData.Message}",
@@ -244,11 +236,13 @@ var starFill =0;
     precacheImage(myImage4.image, context);
     precacheImage(myImage5.image, context);
   }
-  storedataincontroler(String data) async{
+
+  var name;
+  storedataincontroler(String data) async {
     setState(() {
-      for(var i=0;i<memberData.length;i++){
-        if(data==memberData[i]["_id"].toString()){
-          _txtreferralName.text=memberData[i]["Name"].toString();
+      for (var i = 0; i < memberData.length; i++) {
+        if (data == memberData[i]["_id"].toString()) {
+            name = memberData[i]["Name"].toString();
           _txtMobileNo.text = memberData[i]["ContactNo"].toString();
           _txtEmail.text = memberData[i]["EmailId"].toString();
           _txtAddress.text = memberData[i]["Address"].toString();
@@ -262,7 +256,7 @@ var starFill =0;
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            'REFERRAL SLIP',
+            'Refrral Slip',
             style: TextStyle(
               fontSize: 18,
               fontFamily: "OpenSans",
@@ -299,7 +293,8 @@ var starFill =0;
 
         body: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
-          child:Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Container(
@@ -315,13 +310,10 @@ var starFill =0;
                       value: _selectedReferralTypeTo,
                       onChanged: (newValue) {
                         setState(() {
-
-                         // _txtreferralName=
                           _selectedReferralTypeTo = newValue;
-                          print("<divyan sondagar");
-                          print(_selectedReferralTypeTo);
+                            print(_selectedReferralTypeTo);
                           storedataincontroler(_selectedReferralTypeTo);
-                        //  _selectedReferralTypeMySelf(_selectedReferralTypeTo);
+                          //  _selectedReferralTypeMySelf(_selectedReferralTypeTo);
                         });
                       },
                       items: memberData.map((location) {
@@ -336,8 +328,11 @@ var starFill =0;
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10,left:10,),
-            child:Text('Referral Type'),
+              padding: EdgeInsets.only(
+                top: 10,
+                left: 10,
+              ),
+              child: Text('Referral Type',style:TextStyle(fontFamily: "OpenSans",)),
             ),
             Container(
               height: MediaQuery.of(context).size.height / 15,
@@ -362,21 +357,21 @@ var starFill =0;
                             });
                           }
                         }
-                        if(colourchanger[0]==1){
+                        if (colourchanger[0] == 1) {
                           setState(() {
                             storedataincontroler(_selectedReferralTypeTo);
                           });
-                        }else{
+                        } else {
                           setState(() {
-                            _txtEmail.text="";
-                            _txtMobileNo.text="";
-                            _txtAddress.text="";
-                            _txtreferralName.text="";
+                            _txtEmail.text = "";
+                            _txtMobileNo.text = "";
+                            _txtAddress.text = "";
+                            _txtreferralName.text = "";
                           });
                         }
                       },
                       child: Padding(
-                        padding: EdgeInsets.only(left: 10.0,top: 10.0),
+                        padding: EdgeInsets.only(left: 10.0, top: 10.0),
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
@@ -411,79 +406,94 @@ var starFill =0;
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10.0,left: 10.0,right: 10.0),
-
-            child:Container(
-              height: MediaQuery.of(context).size.height / 15,
-              child: TextFormField(
-                controller: _txtreferralName,
-                decoration: InputDecoration(
-                  hintText: 'Referral Name',
-                  focusColor: Colors.deepPurple,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(7))),
+              padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height / 15,
+                child: TextFormField(
+                  controller: _txtreferralName,
+                  decoration: InputDecoration(
+                    hintText: 'Referral Name',
+                    focusColor: Colors.deepPurple,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(7))),
+                  ),
                 ),
               ),
             ),
+            Padding(
+              padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height /11,
+                child: TextFormField(
+                  controller: _txtMobileNo,
+                  validator: (value) {
+                    if (value.trim() == "" || value.length < 10) {
+                      return 'Please Enter 10 Digit Mobile Number';
+                    }
+                    return null;
+                  },
+                  maxLength: 10,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: 'Telephone',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(7))),
+                  ),
+                ),
+              ),
             ),
-            Padding(padding: EdgeInsets.only(top: 10.0,left:10.0,right: 10.0),
-           child: Container(
-              height: MediaQuery.of(context).size.height / 15,
-              child: TextField(
-                controller: _txtMobileNo,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  hintText: 'Telephone',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(7))),
+            Padding(
+              padding: EdgeInsets.only(left: 10, top: 10.0, right: 10.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height / 15,
+                child: TextField(
+                  controller: _txtEmail,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    hintText: 'Email',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(7))),
+                  ),
                 ),
               ),
-            ),),
-            Padding(padding: EdgeInsets.only(left: 10,top:10.0,right: 10.0),
-           child: Container(
-              height: MediaQuery.of(context).size.height / 15,
-              child: TextField(
-                controller: _txtEmail,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  hintText: 'Email',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(7))),
-                ),
-              ),
-            ),),
-            Padding(padding: EdgeInsets.only(top: 10.0,left:10.0,right: 10.0),
-            child:Container(
-              height: MediaQuery.of(context).size.height / 10,
-              child: TextField(
-                controller: _txtAddress,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  hintText: 'Address',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(7))),
-                ),
-              ),
-            ),),
-            Padding(padding: EdgeInsets.only(top: 10.0,left:10.0,right: 10.0),
-            child:Container(
-              height: MediaQuery.of(context).size.height / 8,
-              child: TextField(
-                controller: _txtComments,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  hintText: 'Comments',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(7))),
-                ),
-              ),
-            ),),
-            Padding(padding: EdgeInsets.only(top: 10.0,left:10.0,right: 10.0),
-            child:Text(
-              'How hot is this referral ?',
-              style: TextStyle(fontSize: 14),
             ),
+            Padding(
+              padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height / 7.5,
+                child: TextField(
+                  controller: _txtAddress,
+                  maxLines: 5,
+                  decoration: InputDecoration(
+                    hintText: 'Address',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(7))),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+              child: Container(
+                height: MediaQuery.of(context).size.height / 8,
+                child: TextField(
+                  controller: _txtComments,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: 'Comments',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(7))),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+              child: Text(
+                'How hot is this referral ?',
+                style: TextStyle(fontSize: 14,fontFamily: "OpenSans",),
+              ),
             ),
             SizedBox(height: 30),
             Center(
@@ -536,46 +546,62 @@ var starFill =0;
                         rating(4);
                       }),
                 ]),
-            SizedBox(height: 20),
-            Center(
-              child: MaterialButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                child: Text(
-                  'Submit',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+            Padding(padding: EdgeInsets.only(top:20.0)),
+                Center(
+                  child: InkWell(
+                    onTap: (){
+                      if (_txtreferralName.text == "" ||
+                          _txtMobileNo.text == "" ||
+                          _txtEmail.text == "" ||
+                          _txtComments.text == "" ||
+                          _txtAddress.text == "" ) {
+                        Fluttertoast.showToast(
+                          msg: "Fields can't be empty",
+                          gravity: ToastGravity.TOP,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                        );
+                      } else {
+                        addReferal(
+                            _txtreferralName.text,
+                            _txtMobileNo.text,
+                            _txtEmail.text,
+                            _txtAddress.text,
+                            _txtComments.text,
+                            starFill
+                        );
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey),
+                        gradient: LinearGradient(
+                          colors: <Color>[
+                            Colors.deepPurple,
+                            Colors.purple,
+                          ]
+                        ),
+                      ),
+                      padding: EdgeInsets.only(
+                          left: 70.0, right: 70, top: 10, bottom: 10),
+                      child: Text("Submit",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "OpenSans"),
+                      ),
+                    ),
+                  ),
                 ),
-                color: Colors.deepPurple,
-                onPressed: () {
-                  if (_txtreferralName.text == "" ||
-                     _txtMobileNo.text == "" ||
-                      _txtEmail.text=="" ||
-                      _txtComments.text=="" ||
-                      _txtAddress.text==""
-                  ) {
-                    Fluttertoast.showToast(
-                      msg: "Fields can't be empty",
-                      gravity: ToastGravity.TOP,
-                      backgroundColor: Colors.red,
-                      textColor: Colors.white,
-                    );
-                  }else{
-
-                    addReferal(_txtreferralName.text,_txtMobileNo.text,_txtEmail.text,_txtAddress.text,_txtComments.text,starFill);
-                  }
-                },
-              ),
-            ),
+                SizedBox(height: 20),
           ]),
         ));
   }
-
 
   rating(int i) {
     var flag = 0;
     for (flag = 0; flag <= i; flag++) {
       star[flag] = true;
-
     }
     starFill = flag;
     print("ptint starFill.........");

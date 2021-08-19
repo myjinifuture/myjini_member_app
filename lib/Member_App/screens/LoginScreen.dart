@@ -180,8 +180,6 @@ class _LoginScreenState extends State<LoginScreen> {
         constant.Session.Address, logindata[0]["SocietyData"][0]["Address"].toString());
     await prefs.setString(
         constant.Session.Wing, logindata[0]["WingData"][0]["wingName"].toString());
-    await prefs.setString(
-       constant.Session.FlatNo,logindata[0]["FlatData"][0]["flatNo"].toString());
 
     await prefs.setString(
         constant.Session.isPrivate, logindata[0]["IsPrivate"].toString());
@@ -189,8 +187,14 @@ class _LoginScreenState extends State<LoginScreen> {
         constant.Session.Wing, logindata[0]["Wing"].toString());*/
     await prefs.setString(
         constant.Session.WingId, logindata[0]["society"]["wingId"].toString());
-    await prefs.setString(
-       constant.Session.FlatId, logindata[0]["society"]["flatId"].toString());
+
+   if(logindata[0]["SocietyData"][0]["SocietyTypeIs"] != "Community"){
+     await prefs.setString(
+         constant.Session.FlatId, logindata[0]["society"]["flatId"].toString());
+     await prefs.setString(
+         constant.Session.FlatNo,logindata[0]["FlatData"][0]["flatNo"].toString());
+
+   }
     await prefs.setString(
         constant.Session.SocietyCode, logindata[0]["SocietyData"][0]["societyCode"].toString());
     await prefs.setString(
@@ -228,8 +232,6 @@ class _LoginScreenState extends State<LoginScreen> {
             "DeviceType" : Platform.isAndroid ? "Android" : "IOS",
           };
 
-          print("print Data ............................");
-          print(data);
           Services.responseHandler(apiName: "member/login",body: data).then((data) async {
             // pr.hide();
             print(data.Message);

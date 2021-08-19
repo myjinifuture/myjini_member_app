@@ -37,7 +37,7 @@ class Services {
         ResponseDataClass responseData = new ResponseDataClass(
             Message: "No Data", IsSuccess: false, Data: "");
         var data = response.data;
-
+        print(data);
         print(response.data["Data"]);
         print(response.data["Message"]);
         print(response.data["IsSuccess"]);

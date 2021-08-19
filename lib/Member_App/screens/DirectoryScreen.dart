@@ -54,11 +54,11 @@ class _DirecotryScreenState extends State<DirecotryScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: new Text(title),
-          content: new Text(msg),
+          title: Text(title),
+          content: Text(msg),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text("Close"),
+             FlatButton(
+              child: Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();;
               },
